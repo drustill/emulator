@@ -9,5 +9,6 @@ class CPU
     Flags flags;
     Registers registers;
 
-    void ADD(uint8_t &reg);
+    void ADD(uint8_t value);
+    void LD(const uint8_t &src, uint8_t &dst);
 }

@@ -5,6 +5,11 @@ CPU::CPU()
 
 }
 
+void CPU::LD(const uint8_t &src, uint8_t &dst)
+{
+  r1 = r2
+}
+
 void CPU::ADD(uint8_t value)
 {
   uint16_t result = registers.a + value;
@@ -22,6 +27,8 @@ void CPU::execute(uint8_t opcode)
   {
     case 0x00:
       break;
+    case 0x41:
+      LD(registers.b, registers.c)
     case 0x80:
       ADD(registers.b);
       break;
