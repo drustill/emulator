@@ -1,0 +1,13 @@
+#include "registers.h"
+
+class CPU
+{
+  public:
+    CPU();
+    void execute(uint8_t opcode);
+  private:
+    Flags flags;
+    Registers registers;
+
+    void ADD(uint8_t &reg);
+}

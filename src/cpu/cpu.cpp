@@ -1,8 +1,34 @@
-struct Registers
+#include "cpu.h"
+
+CPU::CPU()
 {
-  union { struct {uint8_t a, f; } uint16_t af; };
-  union { struct {uint8_t b, c; } uint16_t bc; };
-  union { struct {uint8_t d, e; } uint16_t de; };
-  union { struct {uint8_t h, l; } uint16_t hl; };
-  uint16_t sp, pc;
+
+}
+
+void CPU::ADD(uint8_t value)
+{
+  uint16_t result = registers.a + value;
+  flags.z = ((result & 0xFF) == 0);
+  flags.n = false;
+  flags.h = (registers.a & 0xF + value & 0xF) > 0xF;
+  flags.c = result > 0xFF;
+
+  registers.a = result & 0xFF; // Wrap back to 8 bit
+}
+
+void CPU::execute(uint8_t opcode)
+{
+  switch opcode
+  {
+    case 0x00:
+      break;
+    case 0x80:
+      ADD(registers.b);
+      break;
+    case 0xC6:
+    case 0x86:
+      // How to read?
+      // ADD(registers.hl);
+      // break;
+  }
 }
