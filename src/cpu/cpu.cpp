@@ -1,8 +1,8 @@
 #include "cpu.h"
 
-CPU::CPU()
+CPU::CPU(Memory* mem) : memory(mem)
 {
-
+  registers.pc = 0x0100;
 }
 
 void CPU::LD(const uint8_t &src, uint8_t &dst)
