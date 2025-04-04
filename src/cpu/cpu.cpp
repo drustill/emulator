@@ -32,57 +32,55 @@ void CPU::SUB(uint8_t value)
   registers.a = result & 0xFF; // Wrap back to 8 bit
 }
 
-void CPU::decode_reg(uint8_t opcode)
+uint8_t& CPU::decode_reg(uint8_t code)
 {
-  uint16_t op_top (opcode & 0xC0) >> 6;
-  uint16_t op_mid (opcode & 0x38) >> 3;
-  uint16_t op_end (opcode & 0x07);
-
-
+  switch (code)
+  {
+    case 0: return registers.b;
+    case 1: return registers.c;
+    case 2: return registers.d;
+    case 3: return registers.e;
+    case 4: return registers.h;
+    case 5: return registers.l;
+    case 7: return registers.a;
+    default:
+      throw std::invalid_argument("Invalid register code. Probably HL");
+  }
 }
 
 void CPU::execute(uint8_t opcode)
 {
-  switch opcode
+  uint8_t op_top (opcode & 0xC0) >> 6;
+  switch (op_top)
   {
-    case 0x00:
+    case 0x00: {
+      // NOP
       break;
-    case 0x41:
-      LD(registers.b, registers.c)
+    }
 
-    case 0x80:
-      ADD(registers.b);
-      break;
-    case 0x81:
-      ADD(registers.c);
-      break;
-    case 0x82:
-      ADD(registers.d);
-      break;
-    case 0x83:
-      ADD(registers.e);
-      break;
-    case 0x84:
-      ADD(registers.h);
-      break;
-    case 0x85:
-      ADD(registers.l);
-      break;
-    case 0x86:
-      ADD(registers.hl)
-      break;
-    case 0x87:
-      ADD(registers.a);
-      break;
+    case 0x01: {
+      // LD
+      uint8_t dst = (opcode & 0x38) >> 3;
+      uint8_t src = (opcode & 0x07);
 
-    case 0xC6:
-      // How to read?
-
-    case 0x90:
-      SUB(registers.b);
+      if (dst == 6 && src == 6) {
+        break;
+      } else if (dst == 6) {
+        // Something with HL
+      } else if (src == 6) {
+        // decode_reg(dst) == Read HL
+      } else {
+        decode_reg(dst) = decode_reg(src);
+      }
       break;
-    case 0xD6:
-      // How to read?
+    }
+
+    case 0x02: {
+      // ADD, SUB
+      uint8_t dst = opcode & 0x07;
+      ADD(decode_reg(dst));
+      break;
+    }
 
   }
 }

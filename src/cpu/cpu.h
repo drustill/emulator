@@ -9,8 +9,7 @@ class CPU
     Flags flags;
     Registers registers;
 
-    void decode_reg(uint8_t opcode);
-
+    uint8_t& decode_reg(uint8_t code);
     void ADD(uint8_t value);
-    void LD(const uint8_t &src, uint8_t &dst);
+    void SUB(uint8_t value);
 }
