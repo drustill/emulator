@@ -5,7 +5,10 @@
  */
 CPU::CPU(Memory* mem) : memory(mem)
 {
-  registers.pc = 0x0100;
+  registers.pc = 0x100;
+
+  // http://www.codeslinger.co.uk/pages/projects/gameboy/hardware.html
+  // registers.sp = 0xFFFE;
 }
 
 /**
@@ -64,16 +67,34 @@ uint8_t& CPU::decode_reg(uint8_t code)
 }
 
 /**
- * execute: Execute an instruction
+ * fetch_byte: Fetch a byte from memory
  */
-void CPU::execute(uint8_t opcode)
+uint8_t CPU::fetch_byte()
+{
+  return memory->read(registers.pc++)
+}
+
+int CPU::execute_next_opcode()
+{
+  int res = 0;
+  uint8_t opcode = fetch_byte();
+  registers.pc++;
+  res = execute(opcode);
+  return res;
+}
+
+/**
+ * execute: Execute an instruction
+ * Returns the duration in number of cycles
+ */
+int CPU::execute(uint8_t opcode)
 {
   uint8_t op_top (opcode & 0xC0) >> 6;
   switch (op_top)
   {
     case 0x00: {
       // NOP
-      break;
+      return 4;
     }
 
     case 0x01: {
@@ -82,13 +103,17 @@ void CPU::execute(uint8_t opcode)
       uint8_t src = (opcode & 0x07);
 
       if (dst == 6 && src == 6) {
-        break;
+        std::cerr << "Loading HL from HL" << "\n";
+        return 0;
       } else if (dst == 6) {
         // Something with HL
+        return 8;
       } else if (src == 6) {
         // decode_reg(dst) == Read HL
+        return 8;
       } else {
         decode_reg(dst) = decode_reg(src);
+        return 4;
       }
       break;
     }
@@ -97,8 +122,12 @@ void CPU::execute(uint8_t opcode)
       // ADD, SUB
       uint8_t dst = opcode & 0x07;
       ADD(decode_reg(dst));
-      break;
+      return 4;
     }
 
+    default: {
+      std::cerr << "Unimplemented opcode: " << std::hex << (int)opcode << "\n";
+      return 0;
+    }
   }
 }
