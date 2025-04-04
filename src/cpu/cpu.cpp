@@ -1,15 +1,24 @@
 #include "cpu.h"
 
+/**
+ * CPU constructor
+ */
 CPU::CPU(Memory* mem) : memory(mem)
 {
   registers.pc = 0x0100;
 }
 
+/**
+ * LD: Load data
+ */
 void CPU::LD(const uint8_t &src, uint8_t &dst)
 {
   r1 = r2
 }
 
+/**
+ * ADD: Add data
+ */
 void CPU::ADD(uint8_t value)
 {
   uint16_t result = registers.a + value;
@@ -21,6 +30,9 @@ void CPU::ADD(uint8_t value)
   registers.a = result & 0xFF; // Wrap back to 8 bit
 }
 
+/**
+ * SUB: Subtract data
+ */
 void CPU::SUB(uint8_t value)
 {
   uint16_t result = registers.a - value;
@@ -32,6 +44,9 @@ void CPU::SUB(uint8_t value)
   registers.a = result & 0xFF; // Wrap back to 8 bit
 }
 
+/**
+ * decode_reg: Map opcode to register
+ */
 uint8_t& CPU::decode_reg(uint8_t code)
 {
   switch (code)
@@ -48,6 +63,9 @@ uint8_t& CPU::decode_reg(uint8_t code)
   }
 }
 
+/**
+ * execute: Execute an instruction
+ */
 void CPU::execute(uint8_t opcode)
 {
   uint8_t op_top (opcode & 0xC0) >> 6;
