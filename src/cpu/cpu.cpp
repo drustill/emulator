@@ -1,3 +1,4 @@
+#include <iostream>
 #include "cpu.h"
 
 /**
@@ -12,11 +13,16 @@ CPU::CPU(Memory* mem) : memory(mem)
 }
 
 /**
- * LD: Load data
+ * execute_next_opcode: Fetch and execute the next opcode
+ * Returns the number of cycles taken
  */
-void CPU::LD(const uint8_t &src, uint8_t &dst)
+int CPU::execute_next_opcode()
 {
-  r1 = r2
+  int res = 0;
+  uint8_t opcode = fetch_byte();
+  registers.pc++;
+  res = execute(opcode);
+  return res;
 }
 
 /**
@@ -71,16 +77,7 @@ uint8_t& CPU::decode_reg(uint8_t code)
  */
 uint8_t CPU::fetch_byte()
 {
-  return memory->read(registers.pc++)
-}
-
-int CPU::execute_next_opcode()
-{
-  int res = 0;
-  uint8_t opcode = fetch_byte();
-  registers.pc++;
-  res = execute(opcode);
-  return res;
+  return memory->read(registers.pc++) ;
 }
 
 /**
@@ -89,7 +86,7 @@ int CPU::execute_next_opcode()
  */
 int CPU::execute(uint8_t opcode)
 {
-  uint8_t op_top (opcode & 0xC0) >> 6;
+  uint8_t op_top = (opcode & 0xC0) >> 6;
   switch (op_top)
   {
     case 0x00: {

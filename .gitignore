@@ -1,2 +1,5 @@
 # Ignore ROMs
 roms/
+
+# Ignore binaries
+bin/

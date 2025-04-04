@@ -1,10 +1,11 @@
+#include <cstdint>
 #include "registers.h"
 #include "../memory/memory.h" // Should change compiler flags to use "memory/memory.h"
 
 class CPU
 {
   public:
-    CPU(Memory* mem);
+    CPU (Memory* mem);
     int execute_next_opcode();
 
   private:
@@ -17,4 +18,4 @@ class CPU
     uint8_t fetch_byte();
     void ADD(uint8_t value);
     void SUB(uint8_t value);
-}
+} ;

@@ -13,7 +13,7 @@ void load_rom(const std::string& path, uint8_t* buffer, size_t size)
   std::ifstream file (path, std::ifstream::binary);
   if (!file.is_open()) {
     std::cout << "Bad ROM";
-    return
+    return ;
   }
 
   // read into the buffer
@@ -27,7 +27,9 @@ void load_rom(const std::string& path, uint8_t* buffer, size_t size)
 int main()
 {
   uint8_t Cartridge[0x200000];
-  load_rom('', Cartridge, sizeof(Cartridge))
+  const std::string ROMPATH = "../roms/gb-test-roms/cpu_instrs/individual/01-special.gb";
+
+  load_rom(ROMPATH, Cartridge, sizeof(Cartridge));
 
   Memory memory;
   CPU cpu(&memory);
@@ -37,7 +39,7 @@ int main()
 
   while (cycles_this_update < MAXCYCLES)
   {
-    int cycles = execute_next_opcode();
+    int cycles = cpu.execute_next_opcode();
     cycles_this_update += cycles;
 
     // TODO: Render
