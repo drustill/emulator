@@ -19,19 +19,21 @@ void load_rom(const std::string& path, uint8_t* buffer, size_t size)
   // read into the buffer
   file.read(reinterpret_cast<char*>(buffer), size);
 
-  if (!file) {
-      std::cerr << "Warning: only read " << file.gcount() << " bytes from ROM.\n";
-  }
+  // if (!file) {
+  std::cerr << "Read " << file.gcount() << " bytes from ROM.\n";
+  // }
 }
 
 int main()
 {
   uint8_t Cartridge[0x200000];
   const std::string ROMPATH = "../roms/gb-test-roms/cpu_instrs/individual/01-special.gb";
-
-  load_rom(ROMPATH, Cartridge, sizeof(Cartridge));
+  // const std::string ROMPATH = "../roms/gb-test-roms/cpu_instrs/cpu_instrs.gb";
 
   Memory memory;
+  load_rom(ROMPATH, Cartridge, sizeof(Cartridge));
+  std::memcpy(&memory.data[0x0000], Cartridge, 0x8000);
+
   CPU cpu(&memory);
 
   const int MAXCYCLES = 69905;
