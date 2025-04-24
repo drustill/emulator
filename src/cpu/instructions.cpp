@@ -7,15 +7,29 @@
  * nn16: 16-bit immediate value
  */
 
-
 /* LD opcode mappings */
+void CPU::opcode_0x12() { LD_r16_r8(bc, a); }
+void CPU::opcode_0x22() { LD_r16_r8(de, a); }
+void CPU::opcode_0x32() { LD_r16_r8(hl.increment(), a); } // HL+
+void CPU::opcode_0x42() { LD_r16_r8(hl.decrement(), a); } // HL-
+
+void CPU::opcode_0x06() { LD_r8_n8(b); }
+void CPU::opcode_0x16() { LD_r8_n8(d); }
+void CPU::opcode_0x26() { LD_r8_n8(h); }
+void CPU::opcode_0x36() { LD_r16_n8(hl); }
+
+void CPU::opcode_0x0E() { LD_r8_n8(c); }
+void CPU::opcode_0x1E() { LD_r8_n8(e); }
+void CPU::opcode_0x2E() { LD_r8_n8(l); }
+void CPU::opcode_0x2E() { LD_r8_n8(a); }
+
 void CPU::opcode_0x40() { LD_r8_r8(b, b); }
 void CPU::opcode_0x41() { LD_r8_r8(b, c); }
 void CPU::opcode_0x42() { LD_r8_r8(b, d); }
 void CPU::opcode_0x43() { LD_r8_r8(b, e); }
 void CPU::opcode_0x44() { LD_r8_r8(b, h); }
 void CPU::opcode_0x45() { LD_r8_r8(b, l); }
-void CPU::opcode_0x46() { LD_r8_from_hl(b); }
+void CPU::opcode_0x46() { LD_r8_r16(b, hl); }
 void CPU::opcode_0x47() { LD_r8_r8(b, a); }
 
 void CPU::opcode_0x48() { LD_r8_r8(c, b); }
@@ -24,7 +38,7 @@ void CPU::opcode_0x4A() { LD_r8_r8(c, d); }
 void CPU::opcode_0x4B() { LD_r8_r8(c, e); }
 void CPU::opcode_0x4C() { LD_r8_r8(c, h); }
 void CPU::opcode_0x4D() { LD_r8_r8(c, l); }
-void CPU::opcode_0x4E() { LD_r8_from_hl(c); }
+void CPU::opcode_0x4E() { LD_r8_r16(c, hl); }
 void CPU::opcode_0x4F() { LD_r8_r8(c, a); }
 
 void CPU::opcode_0x50() { LD_r8_r8(d, b); }
@@ -33,7 +47,7 @@ void CPU::opcode_0x52() { LD_r8_r8(d, d); }
 void CPU::opcode_0x53() { LD_r8_r8(d, e); }
 void CPU::opcode_0x54() { LD_r8_r8(d, h); }
 void CPU::opcode_0x55() { LD_r8_r8(d, l); }
-void CPU::opcode_0x56() { LD_r8_from_hl(d); }
+void CPU::opcode_0x56() { LD_r8_r16(d, hl); }
 void CPU::opcode_0x57() { LD_r8_r8(d, a); }
 
 void CPU::opcode_0x58() { LD_r8_r8(e, b); }
@@ -42,7 +56,7 @@ void CPU::opcode_0x5A() { LD_r8_r8(e, d); }
 void CPU::opcode_0x5B() { LD_r8_r8(e, e); }
 void CPU::opcode_0x5C() { LD_r8_r8(e, h); }
 void CPU::opcode_0x5D() { LD_r8_r8(e, l); }
-void CPU::opcode_0x6E() { LD_r8_from_hl(e); }
+void CPU::opcode_0x6E() { LD_r8_r16(e, hl); }
 void CPU::opcode_0x5F() { LD_r8_r8(e, a); }
 
 void CPU::opcode_0x60() { LD_r8_r8(h, b); }
@@ -51,7 +65,7 @@ void CPU::opcode_0x62() { LD_r8_r8(h, d); }
 void CPU::opcode_0x63() { LD_r8_r8(h, e); }
 void CPU::opcode_0x64() { LD_r8_r8(h, h); }
 void CPU::opcode_0x65() { LD_r8_r8(h, l); }
-void CPU::opcode_0x66() { LD_hl_from_r8(h); }
+void CPU::opcode_0x66() { LD_r8_r16(h, hl); }
 void CPU::opcode_0x67() { LD_r8_r8(h, a); }
 
 void CPU::opcode_0x68() { LD_r8_r8(l, b); }
@@ -60,8 +74,35 @@ void CPU::opcode_0x6A() { LD_r8_r8(l, d); }
 void CPU::opcode_0x6B() { LD_r8_r8(l, e); }
 void CPU::opcode_0x6C() { LD_r8_r8(l, h); }
 void CPU::opcode_0x6D() { LD_r8_r8(l, l); }
-void CPU::opcode_0x6E() { LD_r8_from_hl(l); }
+void CPU::opcode_0x6E() { LD_r8_r16(l, hl); }
 void CPU::opcode_0x6F() { LD_r8_r8(l, a); }
+
+void CPU::opcode_0x70() { LD_r16_r8(hl, b); }
+void CPU::opcode_0x71() { LD_r16_r8(hl, c); }
+void CPU::opcode_0x72() { LD_r16_r8(hl, d); }
+void CPU::opcode_0x73() { LD_r16_r8(hl, e); }
+void CPU::opcode_0x74() { LD_r16_r8(hl, h); }
+void CPU::opcode_0x75() { LD_r16_r8(hl, l); }
+void CPU::opcode_0x77() { LD_r16_r8(hl, a); }
+
+void CPU::opcode_0x78() { LD_r8_r8(a, b); }
+void CPU::opcode_0x79() { LD_r8_r8(a, c); }
+void CPU::opcode_0x7A() { LD_r8_r8(a, d); }
+void CPU::opcode_0x7B() { LD_r8_r8(a, e); }
+void CPU::opcode_0x7C() { LD_r8_r8(a, h); }
+void CPU::opcode_0x7D() { LD_r8_r8(a, l); }
+void CPU::opcode_0x7E() { LD_r8_r16(a, hl); }
+void CPU::opcode_0x7F() { LD_r8_r8(a, a); }
+
+void CPU::opcode_0xE2() { LD_r8_r8(a, c + 0xFF00); }
+void CPU::opcode_0xF2() { LD_r8_r8(c + 0xFF00, a); }
+
+void CPU::opcode_0xEA() { LD_nn16_r8(a); }
+void CPU::opcode_0xFA() { LD_r8_nn16(a); }
+
+/* LDH */
+void CPU::opcode_0xE0() { LDH_r8_n8(a); }
+void CPU::opcode_0xF0() { LDH_n8_r8(a); }
 
 /* LD */
 void CPU::LD_r8_r8(ByteRegister& reg1, ByteRegister& reg2)
@@ -69,24 +110,61 @@ void CPU::LD_r8_r8(ByteRegister& reg1, ByteRegister& reg2)
   reg1.set(reg2.get());
 }
 
-void CPU::LD_hl_from_r8(ByteRegister& reg)
+void CPU::LD_r8_n8(ByteRegister& reg)
 {
-  word hl = hl.get();
-  mmu->write(hl, reg.get());
-}
-
-void CPU::LD_r8_from_hl(ByteRegister& reg)
-{
-  word hl = hl.get();
-  reg.set(mmu->read(hl));
-}
-
-void CPU::LD_r8_n8(ByteRegister& reg, byte value)
-{
+  byte value = mmu->read(pc++)
   reg.set(value);
 }
 
-void CPU::LD_r16_nn16(WordRegister& reg, word value)
+void CPU::LD_r8_r16(ByteRegister& reg, WordRegister& reg16)
 {
+}
+
+void CPU::LD_nn16_r8(ByteRegister& reg)
+{
+  word addr = mmu->read(pc++);
+  addr |= mmu->read(pc++) << 8;
+
+  mmu->write(addr, reg.get());
+}
+
+void CPU::LD_r8_nn16(ByteRegister& reg)
+{
+  word addr = mmu->read(pc++);
+  addr |= mmu->read(pc++) << 8;
+
+  reg.set(mmu->read(addr));
+}
+
+void CPU::LD_r16_r8(WordRegister& reg16, ByteRegister& reg)
+{
+  word value = reg.get();
+  reg16.set(value);
+}
+
+void CPU::LD_r16_n8(WordRegister& reg)
+{
+  byte value = mmu->read(pc++);
   reg.set(value);
+}
+
+void CPU::LD_r16_nn16(WordRegister& reg)
+{
+  byte value = mmu->read(pc++);
+  value |= mmu->read(pc++) << 8;
+
+  reg.set(value);
+}
+
+/* LDH */
+void CPU::LDH_r8_n8(ByteRegister& reg)
+{
+  byte value = mmu->read(pc++);
+  mmu->write(0xFF00 + value, reg.get());
+}
+
+void CPU::LDH_n8_r8(ByteRegister& reg)
+{
+  byte value = mmu->read(pc++);
+  reg.set(mmu->read(0xFF00 + value));
 }
