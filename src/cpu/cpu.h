@@ -1,21 +1,20 @@
 #include <cstdint>
-#include "registers.h"
-#include "../memory/memory.h" // Should change compiler flags to use "memory/memory.h"
+#include "register.h"
+#include "mmu.h"
 
 class CPU
 {
   public:
-    CPU (Memory* mem);
-    int execute_next_opcode();
+    CPU (MMU* mmu);
+    int tick();
+
+    int execute(byte opcode);
 
   private:
+    MMU* mmu;
     Flags flags;
-    Memory* memory;
-    Registers registers;
+    ByteRegister a, b, c, d, e, h, l;
+    WordRegister af, bc, de, hl;
+    WordRegister sp, pc;
 
-    int execute(uint8_t opcode);
-    uint8_t& decode_reg(uint8_t code);
-    uint8_t fetch_byte();
-    void ADD(uint8_t value);
-    void SUB(uint8_t value);
 } ;
