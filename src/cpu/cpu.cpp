@@ -5,9 +5,9 @@
  * CPU constructor
  * - http://www.codeslinger.co.uk/pages/projects/gameboy/hardware.html
  */
-CPU::CPU(Memory* mem) : memory(mem)
+CPU::CPU(MMU* mmu) : mmu(mmu)
 {
-  registers.pc = 0x100;
+  pc.set(0x100);
 }
 
 /**
@@ -16,11 +16,12 @@ CPU::CPU(Memory* mem) : memory(mem)
  */
 int CPU::tick()
 {
-  byte opcode = mmu->read(pc++);
+  byte opcode = mmu->read(pc.get());
+  pc.increment();
   return execute(opcode);
 }
 
 int CPU::execute(byte opcode)
 {
-  // Big switch statement to functions
+  return 0;
 }

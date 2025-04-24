@@ -10,7 +10,7 @@ class ByteRegister
     void set(byte newValue) { value = newValue; }
     void increment() { value++; }
     void decrement() { value--; }
-}
+};
 
 class WordRegister
 {
@@ -22,7 +22,7 @@ class WordRegister
     void set(word newValue) { value = newValue; }
     void increment() { value++; }
     void decrement() { value--; }
-}
+};
 
 struct Flags
 {

@@ -57,7 +57,7 @@ void CPU::opcode_0x5A() { LD_r8_r8(e, d); }
 void CPU::opcode_0x5B() { LD_r8_r8(e, e); }
 void CPU::opcode_0x5C() { LD_r8_r8(e, h); }
 void CPU::opcode_0x5D() { LD_r8_r8(e, l); }
-void CPU::opcode_0x6E() { LD_r8_r16(e, hl); }
+void CPU::opcode_0x5E() { LD_r8_r16(e, hl); }
 void CPU::opcode_0x5F() { LD_r8_r8(e, a); }
 
 void CPU::opcode_0x60() { LD_r8_r8(h, b); }
@@ -95,12 +95,18 @@ void CPU::opcode_0x7D() { LD_r8_r8(a, l); }
 void CPU::opcode_0x7E() { LD_r8_r16(a, hl); }
 void CPU::opcode_0x7F() { LD_r8_r8(a, a); }
 
-void CPU::opcode_0xE2() { LD_r8_r8(a, c + 0xFF00); }
-void CPU::opcode_0xF2() { LD_r8_r8(c + 0xFF00, a); }
+void CPU::opcode_0xE2() {
+  word addr = c.get() + 0xFF00;
+  mmu->write(addr, a.get());
+}
+
+void CPU::opcode_0xF2() {
+  word val = mmu->read(0xFF00 + c.get());
+  a.set(val);
+}
 
 void CPU::opcode_0xEA() { LD_nn16_r8(a); }
 void CPU::opcode_0xFA() { LD_r8_nn16(a); }
-
 
 /* LDH */
 void CPU::opcode_0xE0() { LDH_r8_n8(a); }
@@ -115,7 +121,8 @@ void CPU::LD_r8_r8(ByteRegister& reg1, ByteRegister& reg2)
 
 void CPU::LD_r8_n8(ByteRegister& reg)
 {
-  byte value = mmu->read(pc++)
+  byte value = mmu->read(pc.get());
+  pc.increment();
   reg.set(value);
 }
 
@@ -133,23 +140,28 @@ void CPU::LD_r16_r8(WordRegister& reg16, ByteRegister& reg)
 
 void CPU::LD_addr16_n8(WordRegister& reg)
 {
-  byte value = mmu->read(pc++);
+  byte value = mmu->read(pc.get());
+  pc.increment();
   word addr = reg.get();
   mmu->write(addr, value);
 }
 
 void CPU::LD_nn16_r8(ByteRegister& reg)
 {
-  word addr = mmu->read(pc++);
-  addr |= mmu->read(pc++) << 8;
+  word addr = mmu->read(pc.get());
+  pc.increment();
+  addr |= mmu->read(pc.get()) << 8;
+  pc.increment();
 
   mmu->write(addr, reg.get());
 }
 
 void CPU::LD_r8_nn16(ByteRegister& reg)
 {
-  word addr = mmu->read(pc++);
-  addr |= mmu->read(pc++) << 8;
+  word addr = mmu->read(pc.get());
+  pc.increment();
+  addr |= mmu->read(pc.get()) << 8;
+  pc.increment();
 
   reg.set(mmu->read(addr));
 }
@@ -158,12 +170,14 @@ void CPU::LD_r8_nn16(ByteRegister& reg)
 /* LDH */
 void CPU::LDH_r8_n8(ByteRegister& reg)
 {
-  byte value = mmu->read(pc++);
+  byte value = mmu->read(pc.get());
+  pc.increment();
   mmu->write(0xFF00 + value, reg.get());
 }
 
 void CPU::LDH_n8_r8(ByteRegister& reg)
 {
-  byte value = mmu->read(pc++);
+  byte value = mmu->read(pc.get());
+  pc.increment();
   reg.set(mmu->read(0xFF00 + value));
 }

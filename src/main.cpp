@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include "cpu/cpu.h"
-#include "memory/memory.h"
+#include "cpu/mmu.h"
 
 void load_rom(const std::string& path, uint8_t* buffer, size_t size)
 {
@@ -27,21 +27,21 @@ void load_rom(const std::string& path, uint8_t* buffer, size_t size)
 int main()
 {
   uint8_t Cartridge[0x200000];
-  const std::string ROMPATH = "../roms/gb-test-roms/cpu_instrs/individual/01-special.gb";
+  const std::string ROMPATH = "../roms/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb";
   // const std::string ROMPATH = "../roms/gb-test-roms/cpu_instrs/cpu_instrs.gb";
 
-  Memory memory;
+  MMU mmu;
   load_rom(ROMPATH, Cartridge, sizeof(Cartridge));
-  std::memcpy(&memory.data[0x0000], Cartridge, 0x8000);
+  std::memcpy(&mmu.data[0x0000], Cartridge, 0x8000);
 
-  CPU cpu(&memory);
+  CPU cpu(&mmu);
 
   const int MAXCYCLES = 69905;
   int cycles_this_update = 0;
 
   while (cycles_this_update < MAXCYCLES)
   {
-    int cycles = cpu.execute_next_opcode();
+    int cycles = cpu.tick();
     cycles_this_update += cycles;
 
     // TODO: Render
