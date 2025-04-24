@@ -7,6 +7,7 @@
  * nn16: 16-bit immediate value
  */
 
+
 /* LD opcode mappings */
 void CPU::opcode_0x12() { LD_r16_r8(bc, a); }
 void CPU::opcode_0x22() { LD_r16_r8(de, a); }
@@ -100,9 +101,11 @@ void CPU::opcode_0xF2() { LD_r8_r8(c + 0xFF00, a); }
 void CPU::opcode_0xEA() { LD_nn16_r8(a); }
 void CPU::opcode_0xFA() { LD_r8_nn16(a); }
 
+
 /* LDH */
 void CPU::opcode_0xE0() { LDH_r8_n8(a); }
 void CPU::opcode_0xF0() { LDH_n8_r8(a); }
+
 
 /* LD */
 void CPU::LD_r8_r8(ByteRegister& reg1, ByteRegister& reg2)
@@ -118,6 +121,20 @@ void CPU::LD_r8_n8(ByteRegister& reg)
 
 void CPU::LD_r8_r16(ByteRegister& reg, WordRegister& reg16)
 {
+  word addr = reg16.get();
+  reg.set(mmu->read(addr));
+}
+
+void CPU::LD_r16_r8(WordRegister& reg16, ByteRegister& reg)
+{
+  word value = reg.get();
+  reg16.set(value);
+}
+
+void CPU::LD_r16_n8(WordRegister& reg)
+{
+  byte value = mmu->read(pc++);
+  reg.set(value);
 }
 
 void CPU::LD_nn16_r8(ByteRegister& reg)
@@ -136,25 +153,6 @@ void CPU::LD_r8_nn16(ByteRegister& reg)
   reg.set(mmu->read(addr));
 }
 
-void CPU::LD_r16_r8(WordRegister& reg16, ByteRegister& reg)
-{
-  word value = reg.get();
-  reg16.set(value);
-}
-
-void CPU::LD_r16_n8(WordRegister& reg)
-{
-  byte value = mmu->read(pc++);
-  reg.set(value);
-}
-
-void CPU::LD_r16_nn16(WordRegister& reg)
-{
-  byte value = mmu->read(pc++);
-  value |= mmu->read(pc++) << 8;
-
-  reg.set(value);
-}
 
 /* LDH */
 void CPU::LDH_r8_n8(ByteRegister& reg)

@@ -16,8 +16,7 @@ CPU::CPU(Memory* mem) : memory(mem)
  */
 int CPU::tick()
 {
-  byte opcode = mmu->read(registers.pc);
-  registers.pc++;
+  byte opcode = mmu->read(pc++);
   return execute(opcode);
 }
 
