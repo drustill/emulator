@@ -9,20 +9,20 @@
 
 
 /* LD opcode mappings */
-void CPU::opcode_0x12() { LD_r16_r8(bc, a); }
-void CPU::opcode_0x22() { LD_r16_r8(de, a); }
-void CPU::opcode_0x32() { LD_r16_r8(hl.increment(), a); } // HL+
-void CPU::opcode_0x42() { LD_r16_r8(hl.decrement(), a); } // HL-
+void CPU::opcode_0x02() { LD_r16_r8(bc, a); }
+void CPU::opcode_0x12() { LD_r16_r8(de, a); }
+void CPU::opcode_0x22() { LD_r16_r8(hl, a); hl.increment(); } // HL+
+void CPU::opcode_0x32() { LD_r16_r8(hl, a); hl.decrement(); } // HL-
 
 void CPU::opcode_0x06() { LD_r8_n8(b); }
 void CPU::opcode_0x16() { LD_r8_n8(d); }
 void CPU::opcode_0x26() { LD_r8_n8(h); }
-void CPU::opcode_0x36() { LD_r16_n8(hl); }
+void CPU::opcode_0x36() { LD_addr16_n8(hl); }
 
 void CPU::opcode_0x0E() { LD_r8_n8(c); }
 void CPU::opcode_0x1E() { LD_r8_n8(e); }
 void CPU::opcode_0x2E() { LD_r8_n8(l); }
-void CPU::opcode_0x2E() { LD_r8_n8(a); }
+void CPU::opcode_0x3E() { LD_r8_n8(a); }
 
 void CPU::opcode_0x40() { LD_r8_r8(b, b); }
 void CPU::opcode_0x41() { LD_r8_r8(b, c); }
@@ -131,10 +131,11 @@ void CPU::LD_r16_r8(WordRegister& reg16, ByteRegister& reg)
   reg16.set(value);
 }
 
-void CPU::LD_r16_n8(WordRegister& reg)
+void CPU::LD_addr16_n8(WordRegister& reg)
 {
   byte value = mmu->read(pc++);
-  reg.set(value);
+  word addr = reg.get();
+  mmu->write(addr, value);
 }
 
 void CPU::LD_nn16_r8(ByteRegister& reg)

@@ -125,7 +125,7 @@ class CPU
 
     void LD_r8_n8(ByteRegister& reg);
 
-    void LD_r16_n8(WordRegister& reg);
+    void LD_addr16_n8(WordRegister& reg);
 
     void LD_nn16_r8(ByteRegister& reg);
     void LD_r8_nn16(ByteRegister& reg);
