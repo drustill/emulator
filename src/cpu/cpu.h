@@ -31,6 +31,9 @@ class CPU
 
     void opcode_0x08();
 
+    void opcode_0x20();
+    void opcode_0x30();
+
     void opcode_0x02();
     void opcode_0x12();
     void opcode_0x22();
@@ -169,4 +172,6 @@ class CPU
     void JP_n16();
 
     void INC_r8(ByteRegister& reg);
+
+    void JR_cc_e(bool flag);
 };

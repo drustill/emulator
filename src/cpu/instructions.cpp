@@ -176,6 +176,10 @@ void CPU::opcode_0xF9() {
 /* JP */
 void CPU::opcode_0xC3() { JP_n16(); }
 
+/* JR */
+void CPU::opcode_0x20() { JR_cc_e(flags.zf) }
+void CPU::opcode_0x30() { JR_cc_e(flags.cf) }
+
 
 /* ======================================== */
 
@@ -293,3 +297,8 @@ void CPU::JP_n16()
   pc.set(addr);
 }
 
+/* JR */
+void CPU::JR_cc_e(bool flag)
+{
+
+}
