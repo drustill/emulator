@@ -76,7 +76,8 @@ int CPU::execute(byte opcode)
     case 0x24: opcode_0x24(); break; case 0x34: opcode_0x34(); break; case 0x0C: opcode_0x0C(); break; case 0x1C: opcode_0x1C(); break;
     case 0x2C: opcode_0x2C(); break; case 0x3C: opcode_0x3C(); break; case 0x20: opcode_0x20(); break; case 0x30: opcode_0x30(); break;
     case 0xF3: opcode_0xF3(); break; case 0xFB: opcode_0xFB(); break; case 0xC4: opcode_0xC4(); break; case 0xD4: opcode_0xD4(); break;
-    case 0xCC: opcode_0xCC(); break; case 0xDC: opcode_0xDC(); break; case 0xCD: opcode_0xCD(); break;
+    case 0xCC: opcode_0xCC(); break; case 0xDC: opcode_0xDC(); break; case 0xCD: opcode_0xCD(); break; case 0x18: opcode_0x18(); break;
+    case 0x28: opcode_0x28(); break; case 0x38: opcode_0x38(); break; case 0xC9: opcode_0xC9(); break;
 
     default:
       std::cerr << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;

@@ -187,6 +187,9 @@ void CPU::opcode_0xC3() { JP_n16(); }
 void CPU::opcode_0x20() { JR_cc_e(!flags.zf); }
 void CPU::opcode_0x30() { JR_cc_e(!flags.cf); }
 
+void CPU::opcode_0x18() { JR_cc_e(); }
+void CPU::opcode_0x28() { JR_cc_e(flags.zf); }
+void CPU::opcode_0x38() { JR_cc_e(flags.cf); }
 
 /* CALL */
 void CPU::opcode_0xCD() { CALL_nn(); }
@@ -196,6 +199,10 @@ void CPU::opcode_0xDC() { CALL_nn(flags.cf); }
 
 void CPU::opcode_0xC4() { CALL_nn(!flags.zf); }
 void CPU::opcode_0xD4() { CALL_nn(!flags.cf); }
+
+
+/* RET */
+void CPU::opcode_0xC9() { RET_cc(); }
 
 /* ======================================== */
 
@@ -342,4 +349,17 @@ void CPU::CALL_nn(bool conditional)
     word nn = (msb << 8) | lsb;
     pc.set(nn);
   }
+}
+
+
+/* RET */
+void CPU::RET_cc(bool condtiional)
+{
+  byte lsb = mmu->read(sp.get());
+  sp.increment();
+  byte msb = mmu->read(sp.get());
+  sp.increment();
+
+  word addr = (msb << 8) | lsb;
+  pc.set(addr);
 }
