@@ -7,6 +7,7 @@
  * nn16: 16-bit immediate value
  */
 
+void CPU::opcode_0x00() { /* NOP */ }
 
 /* LD opcode mappings */
 void CPU::opcode_0x02() { LD_r16_r8(bc, a); }
@@ -112,6 +113,54 @@ void CPU::opcode_0xFA() { LD_r8_nn16(a); }
 void CPU::opcode_0xE0() { LDH_r8_n8(a); }
 void CPU::opcode_0xF0() { LDH_n8_r8(a); }
 
+/* LD 16 */
+void CPU::opcode_0x01() { LD_r16_nn16(bc); }
+void CPU::opcode_0x11() { LD_r16_nn16(de); }
+void CPU::opcode_0x21() { LD_r16_nn16(hl); }
+void CPU::opcode_0x31() { LD_r16_nn16(sp); }
+
+void CPU::opcode_0x08() { LD_nn16_r16(sp); } // SP -> nn16
+
+void CPU::opcode_0xF8() {
+  int8_t e = static_cast<int8_t>(mmu->read(pc.get()));
+  pc.increment();
+  word res = sp.get() + e;
+  hl.set(res);
+
+  // Flag logic
+  byte lo = uint8_t(sp.get() & 0xFF);
+  byte ue = uint8_t(e);
+
+  bool half_carry = ((lo & 0x0F) + (ue & 0x0F)) > 0x0F;
+  bool carry = (uint16_t(lo) + uint16_t(ue)) > 0xFF;
+
+  flags.zf = false;
+  flags.nf = false;
+  flags.hf = half_carry;
+  flags.cf = carry;
+}
+void CPU::opcode_0xF9() {
+  sp.set(hl.get());
+}
+
+
+/* JP */
+void CPU::opcode_0xC3() { JP_n16(); }
+
+
+/* ======================================== */
+
+
+/* JP */
+void CPU::JP_n16()
+{
+  word addr = mmu->read(pc.get());
+  pc.increment();
+  addr |= mmu->read(pc.get()) << 8;
+  pc.increment();
+
+  pc.set(addr);
+}
 
 /* LD */
 void CPU::LD_r8_r8(ByteRegister& reg1, ByteRegister& reg2)
@@ -134,8 +183,7 @@ void CPU::LD_r8_r16(ByteRegister& reg, WordRegister& reg16)
 
 void CPU::LD_r16_r8(WordRegister& reg16, ByteRegister& reg)
 {
-  word value = reg.get();
-  reg16.set(value);
+  mmu->write(reg16.get(), reg.get());
 }
 
 void CPU::LD_addr16_n8(WordRegister& reg)
@@ -181,3 +229,25 @@ void CPU::LDH_n8_r8(ByteRegister& reg)
   pc.increment();
   reg.set(mmu->read(0xFF00 + value));
 }
+
+
+/* LD 16 */
+void CPU::LD_r16_nn16(WordRegister& reg)
+{
+  word addr = mmu->read(pc.get());
+  pc.increment();
+  addr |= mmu->read(pc.get()) << 8;
+  pc.increment();
+
+  reg.set(addr);
+}
+
+void CPU::LD_nn16_r16(WordRegister& reg)
+{
+  word addr = mmu->read(pc.get());
+  pc.increment();
+  addr |= mmu->read(pc.get()) << 8;
+
+  mmu->write(addr, reg.get());
+}
+

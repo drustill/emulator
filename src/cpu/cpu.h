@@ -18,9 +18,19 @@ class CPU
     WordRegister af, bc, de, hl;
     WordRegister sp, pc;
 
+
     /**
      * Opcode functions
      */
+    void opcode_0x00();
+
+    void opcode_0x01();
+    void opcode_0x11();
+    void opcode_0x21();
+    void opcode_0x31();
+
+    void opcode_0x08();
+
     void opcode_0x02();
     void opcode_0x12();
     void opcode_0x22();
@@ -115,6 +125,11 @@ class CPU
     void opcode_0xE0();
     void opcode_0xF0();
 
+    void opcode_0xC3();
+
+    void opcode_0xF8();
+    void opcode_0xF9();
+
     /**
      * Opcode implementations
      */
@@ -131,4 +146,10 @@ class CPU
 
     void LDH_r8_n8(ByteRegister& reg);
     void LDH_n8_r8(ByteRegister& reg);
+
+
+    void LD_r16_nn16(WordRegister& reg);
+    void LD_nn16_r16(WordRegister& reg);
+
+    void JP_n16();
 };

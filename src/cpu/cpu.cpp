@@ -35,7 +35,9 @@ CPU::CPU(MMU* mmu) : mmu(mmu)
  */
 int CPU::tick()
 {
-  byte opcode = mmu->read(pc.get());
+  word addr = pc.get();
+  byte opcode = mmu->read(addr);
+  std::cout << "PC=0x" << std::hex << addr << std::endl;
   pc.increment();
   return execute(opcode);
 }
@@ -65,11 +67,14 @@ int CPU::execute(byte opcode)
     case 0x79: opcode_0x79(); break; case 0x7A: opcode_0x7A(); break; case 0x7B: opcode_0x7B(); break; case 0x7C: opcode_0x7C(); break;
     case 0x7D: opcode_0x7D(); break; case 0x7E: opcode_0x7E(); break; case 0x7F: opcode_0x7F(); break; case 0xE2: opcode_0xE2(); break;
     case 0xF2: opcode_0xF2(); break; case 0xEA: opcode_0xEA(); break; case 0xFA: opcode_0xFA(); break; case 0xE0: opcode_0xE0(); break;
-    case 0xF0: opcode_0xF0(); break;
+    case 0xF0: opcode_0xF0(); break; case 0x00: opcode_0x00(); break; case 0xC3: opcode_0xC3(); break; case 0x01: opcode_0x01(); break;
+    case 0x11: opcode_0x11(); break; case 0x21: opcode_0x21(); break; case 0x31: opcode_0x31(); break; case 0x08: opcode_0x08(); break;
+    case 0xF8: opcode_0xF8(); break; case 0xF9: opcode_0xF9(); break;
 
     default:
       std::cerr << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
-      return 0;
+      return 69905;
+      // break;
   }
 
   return CycleTable[opcode];
