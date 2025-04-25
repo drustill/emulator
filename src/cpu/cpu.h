@@ -167,4 +167,6 @@ class CPU
     void LD_nn16_r16(WordRegister& reg);
 
     void JP_n16();
+
+    void INC_r8(ByteRegister& reg);
 };
