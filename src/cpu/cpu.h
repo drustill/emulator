@@ -21,6 +21,11 @@ class CPU
     WordRegister sp, pc;
 
     /**
+     * Interrupt master enable
+     */
+    bool ime = false;
+
+    /**
      * Safe logging
      */
     Logger* logger;
@@ -30,6 +35,8 @@ class CPU
      * Opcode functions
      */
     void opcode_0x00();
+    void opcode_0xF3();
+    void opcode_0xFB();
 
     void opcode_0x01();
     void opcode_0x11();

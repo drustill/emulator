@@ -7,7 +7,10 @@
  * nn16: 16-bit immediate value
  */
 
+/* MISC */
 void CPU::opcode_0x00() { /* NOP */ }
+void CPU::opcode_0xF3() { ime = false; }
+void CPU::opcode_0xFB() { ime = true; }
 
 /* INC */
 void CPU::opcode_0x04() { INC_r8(b); }
@@ -179,10 +182,14 @@ void CPU::opcode_0xF9() {
 /* JP */
 void CPU::opcode_0xC3() { JP_n16(); }
 
+
 /* JR */
 void CPU::opcode_0x20() { JR_cc_e(!flags.zf); }
 void CPU::opcode_0x30() { JR_cc_e(!flags.cf); }
 
+
+/* CALL */
+void CPU::opcode_0xCD() {}
 
 /* ======================================== */
 
@@ -311,3 +318,6 @@ void CPU::JR_cc_e(bool conditional)
     pc.set(res);
   }
 }
+
+
+/* Call */
