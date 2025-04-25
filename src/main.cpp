@@ -4,6 +4,7 @@
 #include <cstring>
 #include "cpu/cpu.h"
 #include "cpu/mmu.h"
+#include "logger.h"
 
 const int MAXCYCLES = 69905;
 
@@ -18,7 +19,8 @@ int main()
 
   rom.read(reinterpret_cast<char*>(mmu.data), sizeof(mmu.data));
 
-  CPU cpu(&mmu);
+  Logger logger("log.txt");
+  CPU cpu(&mmu, &logger);
 
   int cycles_this_update = 0;
 

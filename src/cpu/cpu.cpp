@@ -24,7 +24,7 @@ int CycleTable[256] = {
  * CPU constructor
  * - http://www.codeslinger.co.uk/pages/projects/gameboy/hardware.html
  */
-CPU::CPU(MMU* mmu) : mmu(mmu)
+CPU::CPU(MMU* mmu, Logger* logger) : mmu(mmu), logger(logger)
 {
   pc.set(0x100);
 }
@@ -37,7 +37,7 @@ int CPU::tick()
 {
   word addr = pc.get();
   byte opcode = mmu->read(addr);
-  std::cout << "PC=0x" << std::hex << addr << " | " << "Opcode=0x" << std::hex << int(opcode) << std::dec << std::endl;
+  // std::cout << "PC=0x" << std::hex << addr << " | " << "Opcode=0x" << std::hex << int(opcode) << std::dec << std::endl;
   pc.increment();
   return execute(opcode);
 }

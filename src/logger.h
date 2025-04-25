@@ -1,3 +1,5 @@
+#pragma once
+
 class Logger
 {
   const char* filepath;

@@ -1,11 +1,13 @@
 #include <cstdint>
+
+#include "../logger.h"
 #include "register.h"
 #include "mmu.h"
 
 class CPU
 {
   public:
-    CPU (MMU* mmu);
+    CPU (MMU* mmu, Logger* logger = nullptr);
     int tick();
 
     int execute(byte opcode);
@@ -18,6 +20,11 @@ class CPU
     WordRegister af, bc, de, hl;
     WordRegister sp, pc;
 
+    /**
+     * Safe logging
+     */
+    Logger* logger;
+    void log_(const char* msg) { if (logger) logger->log(msg); }
 
     /**
      * Opcode functions
