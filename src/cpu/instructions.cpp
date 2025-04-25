@@ -123,12 +123,14 @@ void CPU::opcode_0x7D() { LD_r8_r8(a, l); }
 void CPU::opcode_0x7E() { LD_r8_r16(a, hl); }
 void CPU::opcode_0x7F() { LD_r8_r8(a, a); }
 
-void CPU::opcode_0xE2() {
+void CPU::opcode_0xE2()
+{
   word addr = c.get() + 0xFF00;
   mmu->write(addr, a.get());
 }
 
-void CPU::opcode_0xF2() {
+void CPU::opcode_0xF2()
+{
   word val = mmu->read(0xFF00 + c.get());
   a.set(val);
 }
@@ -150,7 +152,8 @@ void CPU::opcode_0x31() { LD_r16_nn16(sp); }
 
 void CPU::opcode_0x08() { LD_nn16_r16(sp); } // SP -> nn16
 
-void CPU::opcode_0xF8() {
+void CPU::opcode_0xF8()
+{
   int8_t e = static_cast<int8_t>(mmu->read(pc.get()));
   pc.increment();
   word res = sp.get() + e;
