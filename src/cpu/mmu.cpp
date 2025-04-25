@@ -15,11 +15,13 @@ void MMU::write(word addr, byte value)
 
   switch (addr) {
     case 0xFF01:
+      std::cout << "[WRITE] 0xFF01\n";
       // game just wrote a character into the serial data register
       serial_data = value;
       break;
 
     case 0xFF02:
+      std::cout << "[WRITE] 0xFF02\n";
       // high‐bit set = “transmit” on GameBoy hardware
       if (value & 0x80) {
         // print the last-stored byte as ASCII
