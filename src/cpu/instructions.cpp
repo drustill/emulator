@@ -20,6 +20,11 @@ void CPU::opcode_0x16() { LD_r8_n8(d); }
 void CPU::opcode_0x26() { LD_r8_n8(h); }
 void CPU::opcode_0x36() { LD_addr16_n8(hl); }
 
+void CPU::opcode_0x0A() { LD_r8_r16(a, bc); }
+void CPU::opcode_0x1A() { LD_r8_r16(a, de); }
+void CPU::opcode_0x2A() { LD_r8_r16(a, hl); hl.increment(); }
+void CPU::opcode_0x3A() { LD_r8_r16(a, hl); hl.decrement(); }
+
 void CPU::opcode_0x0E() { LD_r8_n8(c); }
 void CPU::opcode_0x1E() { LD_r8_n8(e); }
 void CPU::opcode_0x2E() { LD_r8_n8(l); }
