@@ -9,6 +9,28 @@
 
 void CPU::opcode_0x00() { /* NOP */ }
 
+/* INC */
+void CPU::opcode_0x04() { INC_r8(b); }
+void CPU::opcode_0x14() { INC_r8(d); }
+void CPU::opcode_0x24() { INC_r8(h); }
+void CPU::opcode_0x34()
+{
+  byte lo = uint8_t(hl.get() & 0xFF);
+  bool half_carry = ((lo & 0x0F) + 1) > 0x0F;
+
+  hl.increment();
+
+  flags.zf = (hl.get() == 0);
+  flags.nf = false;
+  flags.hf = half_carry;
+}
+
+void CPU::opcode_0x0C() { INC_r8(c); }
+void CPU::opcode_0x1C() { INC_r8(e); }
+void CPU::opcode_0x2C() { INC_r8(l); }
+void CPU::opcode_0x3C() { INC_r8(a); }
+
+
 /* LD opcode mappings */
 void CPU::opcode_0x02() { LD_r16_r8(bc, a); }
 void CPU::opcode_0x12() { LD_r16_r8(de, a); }
@@ -114,9 +136,11 @@ void CPU::opcode_0xF2() {
 void CPU::opcode_0xEA() { LD_nn16_r8(a); }
 void CPU::opcode_0xFA() { LD_r8_nn16(a); }
 
+
 /* LDH */
 void CPU::opcode_0xE0() { LDH_r8_n8(a); }
 void CPU::opcode_0xF0() { LDH_n8_r8(a); }
+
 
 /* LD 16 */
 void CPU::opcode_0x01() { LD_r16_nn16(bc); }
@@ -155,16 +179,17 @@ void CPU::opcode_0xC3() { JP_n16(); }
 
 /* ======================================== */
 
-
-/* JP */
-void CPU::JP_n16()
+/* INC */
+void CPU::INC_r8(ByteRegister& reg)
 {
-  word addr = mmu->read(pc.get());
-  pc.increment();
-  addr |= mmu->read(pc.get()) << 8;
-  pc.increment();
+  byte lo = uint8_t(reg.get() & 0xFF);
+  bool half_carry = ((lo & 0x0F) + 1) > 0x0F;
 
-  pc.set(addr);
+  reg.increment();
+
+  flags.zf = (reg.get() == 0);
+  flags.nf = false;
+  flags.hf = half_carry;
 }
 
 /* LD */
@@ -254,5 +279,17 @@ void CPU::LD_nn16_r16(WordRegister& reg)
   addr |= mmu->read(pc.get()) << 8;
 
   mmu->write(addr, reg.get());
+}
+
+
+/* JP */
+void CPU::JP_n16()
+{
+  word addr = mmu->read(pc.get());
+  pc.increment();
+  addr |= mmu->read(pc.get()) << 8;
+  pc.increment();
+
+  pc.set(addr);
 }
 

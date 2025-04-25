@@ -36,6 +36,11 @@ class CPU
     void opcode_0x22();
     void opcode_0x32();
 
+    void opcode_0x04();
+    void opcode_0x14();
+    void opcode_0x24();
+    void opcode_0x34();
+
     void opcode_0x06();
     void opcode_0x16();
     void opcode_0x26();
@@ -45,6 +50,11 @@ class CPU
     void opcode_0x1A();
     void opcode_0x2A();
     void opcode_0x3A();
+
+    void opcode_0x0C();
+    void opcode_0x1C();
+    void opcode_0x2C();
+    void opcode_0x3C();
 
     void opcode_0x0E();
     void opcode_0x1E();
