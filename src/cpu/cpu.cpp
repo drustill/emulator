@@ -37,15 +37,13 @@ int CPU::tick()
 {
   word addr = pc.get();
   byte opcode = mmu->read(addr);
-  std::cout << "PC=0x" << std::hex << addr << std::endl;
+  std::cout << "PC=0x" << std::hex << addr << " | " << "Opcode=0x" << std::hex << int(opcode) << std::dec << std::endl;
   pc.increment();
   return execute(opcode);
 }
 
 int CPU::execute(byte opcode)
 {
-  std::cout << "Executing opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
-
   switch (opcode) {
     case 0x02: opcode_0x02(); break; case 0x12: opcode_0x12(); break; case 0x22: opcode_0x22(); break; case 0x32: opcode_0x32(); break;
     case 0x06: opcode_0x06(); break; case 0x16: opcode_0x16(); break; case 0x26: opcode_0x26(); break; case 0x36: opcode_0x36(); break;
@@ -69,7 +67,8 @@ int CPU::execute(byte opcode)
     case 0xF2: opcode_0xF2(); break; case 0xEA: opcode_0xEA(); break; case 0xFA: opcode_0xFA(); break; case 0xE0: opcode_0xE0(); break;
     case 0xF0: opcode_0xF0(); break; case 0x00: opcode_0x00(); break; case 0xC3: opcode_0xC3(); break; case 0x01: opcode_0x01(); break;
     case 0x11: opcode_0x11(); break; case 0x21: opcode_0x21(); break; case 0x31: opcode_0x31(); break; case 0x08: opcode_0x08(); break;
-    case 0xF8: opcode_0xF8(); break; case 0xF9: opcode_0xF9(); break;
+    case 0xF8: opcode_0xF8(); break; case 0xF9: opcode_0xF9(); break; case 0x0A: opcode_0x0A(); break; case 0x1A: opcode_0x1A(); break;
+    case 0x2A: opcode_0x2A(); break; case 0x3A: opcode_0x3A(); break;
 
     default:
       std::cerr << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
