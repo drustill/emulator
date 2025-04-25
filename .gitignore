@@ -6,3 +6,7 @@ bin/
 
 # TODO: Set up CMake
 test/
+
+# Ignore logs
+src/*.txt
+src/*.log
