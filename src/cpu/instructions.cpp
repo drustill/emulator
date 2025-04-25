@@ -180,8 +180,8 @@ void CPU::opcode_0xF9() {
 void CPU::opcode_0xC3() { JP_n16(); }
 
 /* JR */
-void CPU::opcode_0x20() { JR_cc_e(flags.zf) }
-void CPU::opcode_0x30() { JR_cc_e(flags.cf) }
+void CPU::opcode_0x20() { JR_cc_e(!flags.zf) }
+void CPU::opcode_0x30() { JR_cc_e(!flags.cf) }
 
 
 /* ======================================== */
@@ -301,7 +301,13 @@ void CPU::JP_n16()
 }
 
 /* JR */
-void CPU::JR_cc_e(bool flag)
+void CPU::JR_cc_e(bool conditional)
 {
+  uint8_t e static_cast<int8_t>(mmu->read(pc.get()));
+  pc.increment();
 
+  if (conditional) {
+    word res = pc.get() + e;
+    pc.set(res);
+  }
 }
