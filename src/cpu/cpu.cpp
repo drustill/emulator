@@ -1,4 +1,6 @@
 #include <iostream>
+#include <format>
+
 #include "cpu.h"
 
 int CycleTable[256] = {
@@ -37,7 +39,8 @@ int CPU::tick()
 {
   word addr = pc.get();
   byte opcode = mmu->read(addr);
-  // std::cout << "PC=0x" << std::hex << addr << " | " << "Opcode=0x" << std::hex << int(opcode) << std::dec << std::endl;
+  auto s = std::format("PC=0x{:X} | Opcode=0x{:X}", addr, int(opcode));
+  log_(s.c_str());
   pc.increment();
   return execute(opcode);
 }
