@@ -3,3 +3,6 @@ roms/
 
 # Ignore binaries
 bin/
+
+# TODO: Set up CMake
+test/
