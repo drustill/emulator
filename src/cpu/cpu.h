@@ -162,6 +162,14 @@ class CPU
     void opcode_0xF8();
     void opcode_0xF9();
 
+    void opcode_0xC4();
+    void opcode_0xD4();
+
+    void opcode_0xCC();
+    void opcode_0xDC();
+
+    void opcode_0xCD();
+
     /**
      * Opcode implementations
      */
@@ -188,4 +196,6 @@ class CPU
     void INC_r8(ByteRegister& reg);
 
     void JR_cc_e(bool flag);
+
+    void CALL_nn(bool conditional = true);
 };
