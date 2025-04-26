@@ -206,4 +206,7 @@ class CPU
     void CALL_nn(bool conditional = true);
 
     void RET_cc(bool conditional = true);
+
+    void POP_r16(WordRegister& reg);
+    void PUSH_r16(WordRegister& reg);
 };

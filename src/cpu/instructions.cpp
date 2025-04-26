@@ -363,3 +363,11 @@ void CPU::RET_cc(bool condtiional)
   word addr = (msb << 8) | lsb;
   pc.set(addr);
 }
+
+
+/* POP */
+void CPU::POP_r16(WordRegister& reg) {}
+
+
+/* PUSH */
+void CPU::PUSH_r16(WordRegister& reg) {}
