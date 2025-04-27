@@ -310,7 +310,7 @@ void CPU::opcode_0xBA() { CP_r8(d); }
 void CPU::opcode_0xB9() { CP_r8(c); }
 void CPU::opcode_0xB8() { CP_r8(b); }
 
-void CPU::opcode_0xF6() { CP_n8(); }
+void CPU::opcode_0xFE() { CP_n8(); }
 void CPU::opcode_0xBE() { CP_r16(hl); }
 
 
@@ -600,6 +600,9 @@ void CPU::CP(byte value)
   flags.nf = true;
   flags.hf = (a.get() & 0x0F) < (value & 0x0F);
   flags.cf = a.get() < value;
+
+  LOG("CP: 0x%02X, 0x%02X, 0x%02X", a.get(), result, value);
+  LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
 }
 void CPU::CP_r8(ByteRegister& reg)
 {

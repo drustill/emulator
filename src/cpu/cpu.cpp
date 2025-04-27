@@ -111,7 +111,9 @@ int CPU::execute(byte opcode)
     case 0x3B: opcode_0x3B(); break; case 0x2B: opcode_0x2B(); break; case 0x1B: opcode_0x1B(); break; case 0x0B: opcode_0x0B(); break;
     case 0xB7: opcode_0xB7(); break; case 0xB5: opcode_0xB5(); break; case 0xB4: opcode_0xB4(); break; case 0xB3: opcode_0xB3(); break;
     case 0xB2: opcode_0xB2(); break; case 0xB1: opcode_0xB1(); break; case 0xB0: opcode_0xB0(); break; case 0xF6: opcode_0xF6(); break;
-    case 0xB6: opcode_0xB6(); break;
+    case 0xB6: opcode_0xB6(); break; case 0xBF: opcode_0xBF(); break; case 0xBE: opcode_0xBE(); break; case 0xBD: opcode_0xBD(); break;
+    case 0xBC: opcode_0xBC(); break; case 0xBB: opcode_0xBB(); break; case 0xBA: opcode_0xBA(); break; case 0xB9: opcode_0xB9(); break;
+    case 0xB8: opcode_0xB8(); break; case 0xFE: opcode_0xFE(); break;
 
     default:
       std::cerr << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
@@ -121,4 +123,3 @@ int CPU::execute(byte opcode)
 
   return cond_cycles ? TrueCycleTable[opcode] : FalseCycleTable[opcode];
 }
-
