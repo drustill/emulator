@@ -371,7 +371,7 @@ void CPU::JR_cc_e(bool conditional)
 }
 
 
-/* Call */
+/* CALL */
 void CPU::CALL_nn(bool conditional)
 {
   if (conditional) {
@@ -449,3 +449,12 @@ void CPU::AND_r16(WordRegister& reg)
 {
   AND(mmu->read(reg.get()));
 }
+
+
+/* DEC */
+void CPU::DEC_r16(WordRegister& reg) {}
+void CPU::DEC_r8(ByteRegister& reg) {}
+void CPU::DEC_hl() {}
+
+
+
