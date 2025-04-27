@@ -280,8 +280,20 @@ void CPU::opcode_0x1B() { DEC_r16(de); }
 void CPU::opcode_0x0B() { DEC_r16(bc); }
 
 
+/* OR */
+void CPU::opcode_0xB7() { OR_r8(a); }
+void CPU::opcode_0xB5() { OR_r8(l); }
+void CPU::opcode_0xB4() { OR_r8(h); }
+void CPU::opcode_0xB3() { OR_r8(e); }
+void CPU::opcode_0xB2() { OR_r8(d); }
+void CPU::opcode_0xB1() { OR_r8(c); }
+void CPU::opcode_0xB0() { OR_r8(b); }
+void CPU::opcode_0xF6() { OR_n8(); }
+void CPU::opcode_0xB6() { OR_r16(hl); }
+
 
 /* ======================================== */
+
 
 /* INC */
 void CPU::INC_r8(ByteRegister& reg)

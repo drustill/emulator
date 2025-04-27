@@ -214,6 +214,16 @@ class CPU
     void opcode_0x1B();
     void opcode_0x0B();
 
+    void opcode_0xB7();
+    void opcode_0xB6();
+    void opcode_0xB5();
+    void opcode_0xB4();
+    void opcode_0xB3();
+    void opcode_0xB2();
+    void opcode_0xB1();
+    void opcode_0xB0();
+    void opcode_0xF6();
+
     /**
      * Opcode implementations
      */
