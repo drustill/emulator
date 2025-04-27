@@ -19,8 +19,7 @@ int main()
 
   rom.read(reinterpret_cast<char*>(mmu.data), sizeof(mmu.data));
 
-  Logger logger("log.txt");
-  CPU cpu(&mmu, &logger);
+  CPU cpu(&mmu);
 
   int cycles_this_update = 0;
 
@@ -31,4 +30,6 @@ int main()
 
     // TODO: Render
   }
+
+  CLOSE();
 }

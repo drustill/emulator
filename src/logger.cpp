@@ -1,14 +1,17 @@
-#include <fstream>
-#include <iostream>
-
 #include "logger.h"
 
-void Logger::log(const char* msg)
+// https://en.cppreference.com/w/c/variadic/va_start
+
+Logger _logger;
+
+void Logger::log(const char* msg, ...)
 {
-  std::fstream fs;
-  fs.open(filepath, std::fstream::in | std::fstream::out | std::fstream::app);
 
-  fs << msg << "\n";
+  va_list args;
+  va_start(args, msg);
 
-  fs.close();
+  std::string formatted_msg = std::string(msg);
+  va_end(args);
+
+  fs << formatted_msg << std::endl;
 }

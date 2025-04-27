@@ -1,13 +1,12 @@
 #include <cstdint>
 
-#include "../logger.h"
 #include "register.h"
 #include "mmu.h"
 
 class CPU
 {
   public:
-    CPU (MMU* mmu, Logger* logger = nullptr);
+    CPU (MMU* mmu);
     int tick();
 
     int execute(byte opcode);
@@ -24,12 +23,6 @@ class CPU
      * Interrupt master enable
      */
     bool ime = false;
-
-    /**
-     * Safe logging
-     */
-    Logger* logger;
-    void log_(const char* msg) { if (logger) logger->log(msg); }
 
     /**
      * Opcode functions

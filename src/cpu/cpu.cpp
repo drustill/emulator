@@ -1,6 +1,7 @@
 #include <iostream>
 #include <format>
 
+#include "../logger.h"
 #include "cpu.h"
 
 int CycleTable[256] = {
@@ -26,8 +27,9 @@ int CycleTable[256] = {
  * CPU constructor
  * - http://www.codeslinger.co.uk/pages/projects/gameboy/hardware.html
  */
-CPU::CPU(MMU* mmu, Logger* logger) : mmu(mmu), logger(logger)
+CPU::CPU(MMU* mmu) : mmu(mmu)
 {
+  LOG("here");
   pc.set(0x100);
 }
 
@@ -39,8 +41,6 @@ int CPU::tick()
 {
   word addr = pc.get();
   byte opcode = mmu->read(addr);
-  auto s = std::format("PC=0x{:X} | Opcode=0x{:X}", addr, int(opcode));
-  log_(s.c_str());
   pc.increment();
   return execute(opcode);
 }
