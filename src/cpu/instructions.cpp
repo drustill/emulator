@@ -204,6 +204,29 @@ void CPU::opcode_0xD4() { CALL_nn(!flags.cf); }
 /* RET */
 void CPU::opcode_0xC9() { RET_cc(); }
 
+
+/* POP */
+void CPU::opcode_0xC1() { POP_r16(bc); }
+void CPU::opcode_0xD1() { POP_r16(de); }
+void CPU::opcode_0xE1() { POP_r16(hl); }
+void CPU::opcode_0xF1()
+{
+  byte lsb = f.get();
+  POP_r16(af);
+
+  flags.zf = (lsb & 0x10);
+  flags.nf = (lsb & 0x20);
+  flags.hf = (lsb & 0x40);
+  flags.cf = (lsb & 0x80);
+}
+
+
+/* PUSH */
+void CPU::opcode_0xC5() { PUSH_r16(bc); }
+void CPU::opcode_0xD5() { PUSH_r16(de); }
+void CPU::opcode_0xE5() { PUSH_r16(hl); }
+void CPU::opcode_0xF5() { PUSH_r16(af); }
+
 /* ======================================== */
 
 /* INC */
