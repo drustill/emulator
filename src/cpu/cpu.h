@@ -186,6 +186,16 @@ class CPU
     void opcode_0xE5();
     void opcode_0xF5();
 
+    void opcode_0xA0();
+    void opcode_0xA1();
+    void opcode_0xA2();
+    void opcode_0xA3();
+    void opcode_0xA4();
+    void opcode_0xA5();
+    void opcode_0xA6();
+    void opcode_0xA7();
+    void opcode_0xE6();
+
     /**
      * Opcode implementations
      */
