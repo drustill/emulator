@@ -25,6 +25,11 @@ class CPU
     bool ime = false;
 
     /**
+     * True Condition Cycles
+     */
+    bool cond_cycles = false;
+
+    /**
      * Opcode functions
      */
     void opcode_0x00();

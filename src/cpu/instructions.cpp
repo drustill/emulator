@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include "../logger.h"
 
 /**
  * r8: ByteRegister
@@ -363,6 +364,7 @@ void CPU::JR_cc_e(bool conditional)
   pc.increment();
 
   if (conditional) {
+    cond_cycles = true;
     word res = pc.get() + e;
     pc.set(res);
   }
@@ -373,6 +375,7 @@ void CPU::JR_cc_e(bool conditional)
 void CPU::CALL_nn(bool conditional)
 {
   if (conditional) {
+    cond_cycles = true;
     byte lsb = mmu->read(pc.get());
     pc.increment();
     byte msb = mmu->read(pc.get());

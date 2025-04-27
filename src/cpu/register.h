@@ -26,8 +26,8 @@ class WordRegister
 
 struct Flags
 {
-  bool zf : 1; // Zero Flag
-  bool nf : 1; // Subtract Flag
-  bool hf : 1; // Half Carry Flag
-  bool cf : 1; // Carry Flag
+  bool zf; // Zero Flag
+  bool nf; // Subtract Flag
+  bool hf; // Half Carry Flag
+  bool cf; // Carry Flag
 };

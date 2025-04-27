@@ -5,7 +5,26 @@
 #include "../optable.h"
 #include "cpu.h"
 
-int CycleTable[256] = {
+int TrueCycleTable[256] = {
+  1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
+  1, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
+  3, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
+  3, 3, 2, 2, 3, 3, 3, 1, 3, 2, 2, 2, 1, 1, 2, 1,
+  1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+  1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+  1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+  2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1,
+  1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+  1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+  1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+  1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+  5, 3, 4, 4, 6, 4, 2, 4, 5, 4, 4, 0, 6, 6, 2, 4,
+  5, 3, 4, 0, 6, 4, 2, 4, 5, 4, 4, 0, 6, 0, 2, 4,
+  3, 3, 2, 0, 0, 4, 2, 4, 4, 1, 4, 0, 0, 0, 2, 4,
+  3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4
+};
+
+int FalseCycleTable[256] = {
   1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
   1, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
   2, 3, 2, 2, 1, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1,
@@ -24,6 +43,7 @@ int CycleTable[256] = {
   3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4
 };
 
+
 /**
  * CPU constructor
  * - http://www.codeslinger.co.uk/pages/projects/gameboy/hardware.html
@@ -41,13 +61,15 @@ int CPU::tick()
 {
   word addr = pc.get();
   byte opcode = mmu->read(addr);
-  LOG("[0x%04X]  %s (0x%x)", addr, opcode_metadata[opcode].c_str(), int(opcode))
   pc.increment();
-  return execute(opcode);
+  int res = execute(opcode);
+  LOG("[0x%04X]  %s (0x%x) -> [%d]", addr, opcode_metadata[opcode].c_str(), int(opcode), res);
+  return res;
 }
 
 int CPU::execute(byte opcode)
 {
+  cond_cycles = false;
 
   switch (opcode) {
     case 0x02: opcode_0x02(); break; case 0x12: opcode_0x12(); break; case 0x22: opcode_0x22(); break; case 0x32: opcode_0x32(); break;
@@ -91,5 +113,5 @@ int CPU::execute(byte opcode)
       // break;
   }
 
-  return CycleTable[opcode];
+  return cond_cycles ? TrueCycleTable[opcode] : FalseCycleTable[opcode];
 }
