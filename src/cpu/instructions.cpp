@@ -227,7 +227,20 @@ void CPU::opcode_0xF1()
 void CPU::opcode_0xC5() { PUSH_r16(bc); }
 void CPU::opcode_0xD5() { PUSH_r16(de); }
 void CPU::opcode_0xE5() { PUSH_r16(hl); }
-void CPU::opcode_0xF5() { PUSH_r16(af); }
+void CPU::opcode_0xF5()
+{
+  sp.decrement();
+  mmu->write(sp.get(), a.get());
+
+  sp.decrement();
+  byte flag = flags.zf << 7 | flags.nf << 6 | flags.hf << 5 | flags.cf << 4;
+  mmu->write(sp.get(), flag);
+
+  word value = (a.get() << 8) | flag;
+
+  LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
+  LOG("PUSH: 0x%04X, 0x%04X, 0x%04X", value, a.get(), flag);
+}
 
 
 /* AND */
@@ -446,6 +459,7 @@ void CPU::PUSH_r16(WordRegister& reg)
   sp.decrement();
   mmu->write(sp.get(), reg.get() & 0xFF);
 
+  LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
   LOG("PUSH: 0x%04X", reg.get());
 }
 
