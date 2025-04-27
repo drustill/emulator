@@ -257,4 +257,9 @@ class CPU
 
     void INC_r16(WordRegister& reg);
     void DEC_r16(WordRegister& reg);
+
+    void OR(byte value);
+    void OR_r8(ByteRegister& reg);
+    void OR_n8();
+    void OR_r16(WordRegister& reg);
 };

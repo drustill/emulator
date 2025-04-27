@@ -522,3 +522,14 @@ void CPU::DEC_r16(WordRegister& reg)
 {
   reg.decrement();
 }
+
+
+/* OR */
+void CPU::OR(byte value)
+{}
+void CPU::OR_r8(ByteRegister& reg)
+{}
+void CPU::OR_n8()
+{}
+void CPU::OR_r16(WordRegister& reg)
+{}
