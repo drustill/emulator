@@ -39,6 +39,7 @@ void CPU::opcode_0x3C() { INC_r8(a); }
 void CPU::opcode_0x02() { LD_r16_r8(bc, a); }
 void CPU::opcode_0x12() { LD_r16_r8(de, a); }
 void CPU::opcode_0x22() { LD_r16_r8(hl, a); hl.increment(); } // HL+
+
 void CPU::opcode_0x32() { LD_r16_r8(hl, a); hl.decrement(); } // HL-
 
 void CPU::opcode_0x06() { LD_r8_n8(b); }
@@ -131,6 +132,7 @@ void CPU::opcode_0xE2()
 {
   word addr = c.get() + 0xFF00;
   mmu->write(addr, a.get());
+  a.increment();
 }
 
 void CPU::opcode_0xF2()
@@ -291,6 +293,7 @@ void CPU::LD_r8_r16(ByteRegister& reg, WordRegister& reg16)
 void CPU::LD_r16_r8(WordRegister& reg16, ByteRegister& reg)
 {
   mmu->write(reg16.get(), reg.get());
+  reg16.increment();
 }
 
 void CPU::LD_addr16_n8(WordRegister& reg)
@@ -299,6 +302,7 @@ void CPU::LD_addr16_n8(WordRegister& reg)
   pc.increment();
   word addr = reg.get();
   mmu->write(addr, value);
+  reg.increment();
 }
 
 void CPU::LD_nn16_r8(ByteRegister& reg)
@@ -309,6 +313,7 @@ void CPU::LD_nn16_r8(ByteRegister& reg)
   pc.increment();
 
   mmu->write(addr, reg.get());
+  reg.increment();
 }
 
 void CPU::LD_r8_nn16(ByteRegister& reg)
@@ -328,6 +333,7 @@ void CPU::LDH_r8_n8(ByteRegister& reg)
   byte value = mmu->read(pc.get());
   pc.increment();
   mmu->write(0xFF00 + value, reg.get());
+  reg.increment();
 }
 
 void CPU::LDH_n8_r8(ByteRegister& reg)
@@ -356,6 +362,7 @@ void CPU::LD_nn16_r16(WordRegister& reg)
   addr |= mmu->read(pc.get()) << 8;
 
   mmu->write(addr, reg.get());
+  reg.increment();
 }
 
 
@@ -366,8 +373,6 @@ void CPU::JP_n16()
   pc.increment();
   addr |= mmu->read(pc.get()) << 8;
   pc.increment();
-
-  LOG("[JP] addr: 0x%04X", addr);
 
   pc.set(addr);
 }
@@ -398,6 +403,7 @@ void CPU::CALL_nn(bool conditional)
 
     sp.decrement();
     mmu->write(sp.get(), lsb);
+    sp.decrement();
     mmu->write(sp.get(), msb);
 
     word nn = (msb << 8) | lsb;
