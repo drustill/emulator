@@ -9,8 +9,6 @@ class CPU
     CPU (MMU* mmu);
     int tick();
 
-    int execute(byte opcode);
-
   private:
     MMU* mmu;
     Flags flags;
@@ -18,6 +16,11 @@ class CPU
     ByteRegister a, b, c, d, e, h, l;
     WordRegister af, bc, de, hl;
     WordRegister sp, pc;
+
+    /**
+     * Switch on opcode
+     */
+    int execute(byte opcode);
 
     /**
      * Interrupt master enable
