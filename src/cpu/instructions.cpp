@@ -302,6 +302,16 @@ void CPU::opcode_0xB6() { OR_r16(hl); }
 
 
 /* CP */
+void CPU::opcode_0xBF() { CP_r8(a); }
+void CPU::opcode_0xBD() { CP_r8(l); }
+void CPU::opcode_0xBC() { CP_r8(h); }
+void CPU::opcode_0xBB() { CP_r8(e); }
+void CPU::opcode_0xBA() { CP_r8(d); }
+void CPU::opcode_0xB9() { CP_r8(c); }
+void CPU::opcode_0xB8() { CP_r8(b); }
+
+void CPU::opcode_0xF6() { CP_n8(); }
+void CPU::opcode_0xBE() { CP_r16(hl); }
 
 
 
