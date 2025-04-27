@@ -24,6 +24,26 @@ class WordRegister
     void decrement() { value--; }
 };
 
+
+class RegisterPair
+{
+  ByteRegister& hi;
+  ByteRegister& lo;
+
+  public:
+    RegisterPair(ByteRegister& hi, ByteRegister& lo) : hi(hi), lo(lo) {}
+
+    byte high() { return hi.get(); }
+    byte low() { return lo.get(); }
+
+    word get();
+    void set(word value);
+
+    void increment();
+    void decrement();
+
+};
+
 struct Flags
 {
   bool zf; // Zero Flag
