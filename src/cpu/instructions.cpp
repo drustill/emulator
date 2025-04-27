@@ -360,7 +360,7 @@ void CPU::JP_n16()
 /* JR */
 void CPU::JR_cc_e(bool conditional)
 {
-  uint8_t e = static_cast<int8_t>(mmu->read(pc.get()));
+  int8_t e = static_cast<int8_t>(mmu->read(pc.get()));
   pc.increment();
 
   if (conditional) {
