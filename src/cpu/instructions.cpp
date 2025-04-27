@@ -229,8 +229,6 @@ void CPU::opcode_0xF5() { PUSH_r16(af); }
 
 
 /* AND */
-void CPU::opcode_0xA6() { AND_hl(); }
-void CPU::opcode_0xE6() { AND_n8(); }
 void CPU::opcode_0xA0() { AND_r8(b); }
 void CPU::opcode_0xA1() { AND_r8(c); }
 void CPU::opcode_0xA2() { AND_r8(d); }
@@ -238,6 +236,8 @@ void CPU::opcode_0xA3() { AND_r8(e); }
 void CPU::opcode_0xA4() { AND_r8(h); }
 void CPU::opcode_0xA5() { AND_r8(l); }
 void CPU::opcode_0xA7() { AND_r8(a); }
+void CPU::opcode_0xA6() { AND_r16(hl); }
+void CPU::opcode_0xE6() { AND_r16(pc); }
 
 
 /* ======================================== */
@@ -428,7 +428,21 @@ void CPU::PUSH_r16(WordRegister& reg)
 
 
 /* AND */
-void CPU::AND(byte value) {}
-void CPU::AND_r8(ByteRegister& reg) {}
-void CPU::AND_n8() {}
-void CPU::AND_hl() {}
+void CPU::AND(byte value)
+{
+  byte result = a.get() & value;
+  a.set(result);
+
+  flags.zf = (result == 0);
+  flags.nf = false;
+  flags.hf = true;
+  flags.cf = false;
+}
+void CPU::AND_r8(ByteRegister& reg)
+{
+  AND(reg.get());
+}
+void CPU::AND_r16(WordRegister& reg)
+{
+  AND(mmu->read(reg.get()));
+}

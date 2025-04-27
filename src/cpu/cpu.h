@@ -232,6 +232,5 @@ class CPU
 
     void AND(byte value);
     void AND_r8(ByteRegister& reg);
-    void AND_n8();
-    void AND_hl();
+    void AND_r16(WordRegister& reg);
 };
