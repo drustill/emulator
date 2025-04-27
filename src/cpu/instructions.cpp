@@ -301,6 +301,10 @@ void CPU::opcode_0xF6() { OR_n8(); }
 void CPU::opcode_0xB6() { OR_r16(hl); }
 
 
+/* CP */
+
+
+
 /* ======================================== */
 
 
@@ -575,3 +579,10 @@ void CPU::OR_r16(WordRegister& reg)
   byte value = mmu->read(hl.get());
   OR(value);
 }
+
+
+/* CP */
+void CPU::CP(byte value) {}
+void CPU::CP_r8(ByteRegister& reg) {}
+void CPU::CP_n8() {}
+void CPU::CP_r16(WordRegister& reg) {}

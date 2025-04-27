@@ -272,4 +272,9 @@ class CPU
     void OR_r8(ByteRegister& reg);
     void OR_n8();
     void OR_r16(WordRegister& reg);
+
+    void CP(byte value);
+    void CP_r8(ByteRegister& reg);
+    void CP_n8();
+    void CP_r16(WordRegister& reg);
 };
