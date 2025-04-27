@@ -255,16 +255,16 @@ void CPU::opcode_0x3D() { DEC_r8(a); }
 
 
 /* INC 16 */
-void CPU::opcode_0x33() { INC_r16(); }
-void CPU::opcode_0x23() { INC_r16(); }
-void CPU::opcode_0x13() { INC_r16(); }
-void CPU::opcode_0x03() { INC_r16(); }
+void CPU::opcode_0x33() { INC_r16(sp); }
+void CPU::opcode_0x23() { INC_r16(hl); }
+void CPU::opcode_0x13() { INC_r16(de); }
+void CPU::opcode_0x03() { INC_r16(bc); }
 
 /* DEC 16 */
-void CPU::opcode_0x3B() { DEC_r16(); }
-void CPU::opcode_0x2B() { DEC_r15(); }
-void CPU::opcode_0x1B() { DEC_r16(); }
-void CPU::opcode_0x0B() { DEC_r16(); }
+void CPU::opcode_0x3B() { DEC_r16(sp); }
+void CPU::opcode_0x2B() { DEC_r15(hl); }
+void CPU::opcode_0x1B() { DEC_r16(de); }
+void CPU::opcode_0x0B() { DEC_r16(bc); }
 
 
 
