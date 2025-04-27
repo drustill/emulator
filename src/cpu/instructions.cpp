@@ -397,9 +397,9 @@ void CPU::CALL_nn(bool conditional)
     pc.increment();
 
     sp.decrement();
-    mmu->write(sp.get(), msb);
+    mmu->write(sp.get(), pc.get() >> 8);
     sp.decrement();
-    mmu->write(sp.get(), lsb);
+    mmu->write(sp.get(), pc.get());
 
     word nn = (msb << 8) | lsb;
     pc.set(nn);
