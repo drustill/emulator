@@ -241,6 +241,19 @@ void CPU::opcode_0xA6() { AND_r16(hl); }
 void CPU::opcode_0xE6() { AND_r16(pc); }
 
 
+/* DEC */
+void CPU::opcode_0x05() { DEC_r8(b); }
+void CPU::opcode_0x15();{ DEC_r8(d); }
+void CPU::opcode_0x25();{ DEC_r8(h); }
+void CPU::opcode_0x35();{ DEC_hl(); }
+
+void CPU::opcode_0x0D();{ DEC_r8(c); }
+void CPU::opcode_0x1D();{ DEC_r8(e); }
+void CPU::opcode_0x2D();{ DEC_r8(l); }
+void CPU::opcode_0x3D();{ DEC_r8(a); }
+
+
+
 /* ======================================== */
 
 /* INC */
@@ -455,6 +468,3 @@ void CPU::AND_r16(WordRegister& reg)
 void CPU::DEC_r16(WordRegister& reg) {}
 void CPU::DEC_r8(ByteRegister& reg) {}
 void CPU::DEC_hl() {}
-
-
-
