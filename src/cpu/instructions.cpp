@@ -243,14 +243,14 @@ void CPU::opcode_0xE6() { AND_r16(pc); }
 
 /* DEC */
 void CPU::opcode_0x05() { DEC_r8(b); }
-void CPU::opcode_0x15();{ DEC_r8(d); }
-void CPU::opcode_0x25();{ DEC_r8(h); }
-void CPU::opcode_0x35();{ DEC_hl(); }
+void CPU::opcode_0x15() { DEC_r8(d); }
+void CPU::opcode_0x25() { DEC_r8(h); }
+void CPU::opcode_0x35() { DEC_hl(); }
 
-void CPU::opcode_0x0D();{ DEC_r8(c); }
-void CPU::opcode_0x1D();{ DEC_r8(e); }
-void CPU::opcode_0x2D();{ DEC_r8(l); }
-void CPU::opcode_0x3D();{ DEC_r8(a); }
+void CPU::opcode_0x0D() { DEC_r8(c); }
+void CPU::opcode_0x1D() { DEC_r8(e); }
+void CPU::opcode_0x2D() { DEC_r8(l); }
+void CPU::opcode_0x3D() { DEC_r8(a); }
 
 
 
@@ -367,6 +367,8 @@ void CPU::JP_n16()
   addr |= mmu->read(pc.get()) << 8;
   pc.increment();
 
+  LOG("[JP] addr: 0x%04X", addr);
+
   pc.set(addr);
 }
 
@@ -466,5 +468,27 @@ void CPU::AND_r16(WordRegister& reg)
 
 /* DEC */
 void CPU::DEC_r16(WordRegister& reg) {}
-void CPU::DEC_r8(ByteRegister& reg) {}
-void CPU::DEC_hl() {}
+
+void CPU::DEC_r8(ByteRegister& reg)
+{
+  byte lo = uint8_t(reg.get() & 0xFF);
+  bool half_carry = ((lo & 0x0F) + 1) > 0x0F;
+
+  reg.decrement();
+
+  flags.zf = (reg.get() == 0);
+  flags.nf = true;
+  flags.hf = half_carry;
+}
+
+void CPU::DEC_hl()
+{
+  byte lo = uint8_t(hl.get() & 0xFF);
+  bool half_carry = ((lo & 0x0F) + 1) > 0x0F;
+
+  hl.decrement();
+
+  flags.zf = (hl.get() == 0);
+  flags.nf = true;
+  flags.hf = half_carry;
+}
