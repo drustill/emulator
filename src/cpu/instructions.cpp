@@ -211,13 +211,13 @@ void CPU::opcode_0xD1() { POP_r16(de); }
 void CPU::opcode_0xE1() { POP_r16(hl); }
 void CPU::opcode_0xF1()
 {
-  byte lsb = f.get();
+  byte lsb = (af.get() & 0x0F);
   POP_r16(af);
 
-  flags.zf = (lsb & 0x10);
-  flags.nf = (lsb & 0x20);
-  flags.hf = (lsb & 0x40);
-  flags.cf = (lsb & 0x80);
+  flags.zf = ((lsb & 0x10) != 0);
+  flags.nf = ((lsb & 0x20) != 0);
+  flags.hf = ((lsb & 0x40) != 0);
+  flags.cf = ((lsb & 0x80) != 0);
 }
 
 
@@ -389,8 +389,26 @@ void CPU::RET_cc(bool condtiional)
 
 
 /* POP */
-void CPU::POP_r16(WordRegister& reg) {}
+void CPU::POP_r16(WordRegister& reg)
+{
+  byte lsb = sp.get();
+  sp.increment();
+  byte msb = sp.get();
+  sp.increment();
+
+  word data = (msb << 8) | lsb;
+  reg.set(data);
+}
 
 
 /* PUSH */
-void CPU::PUSH_r16(WordRegister& reg) {}
+void CPU::PUSH_r16(WordRegister& reg)
+{
+  sp.decrement();
+  byte msb = reg.get();
+  mmu->write(sp.get(), msb);
+
+  sp.decrement();
+  byte lsb = reg.get();
+  mmu->write(sp.get(), lsb);
+}
