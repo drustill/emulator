@@ -2,6 +2,7 @@
 #include <format>
 
 #include "../logger.h"
+#include "../optable.h"
 #include "cpu.h"
 
 int CycleTable[256] = {
@@ -29,7 +30,6 @@ int CycleTable[256] = {
  */
 CPU::CPU(MMU* mmu) : mmu(mmu)
 {
-  LOG("here");
   pc.set(0x100);
 }
 
@@ -41,6 +41,7 @@ int CPU::tick()
 {
   word addr = pc.get();
   byte opcode = mmu->read(addr);
+  LOG("%s", opcode_metadata[opcode].c_str())
   pc.increment();
   return execute(opcode);
 }

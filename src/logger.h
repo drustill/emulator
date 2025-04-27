@@ -10,6 +10,7 @@ class Logger
 
     std::fstream fs;
 
+    std::string fmt(const char* msg, va_list args);
     void log(const char* msg, ...);
 };
 
