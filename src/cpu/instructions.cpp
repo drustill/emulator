@@ -586,13 +586,32 @@ void CPU::OR_n8()
 }
 void CPU::OR_r16(WordRegister& reg)
 {
-  byte value = mmu->read(hl.get());
+  byte value = mmu->read(reg.get());
   OR(value);
 }
 
 
 /* CP */
-void CPU::CP(byte value) {}
-void CPU::CP_r8(ByteRegister& reg) {}
-void CPU::CP_n8() {}
-void CPU::CP_r16(WordRegister& reg) {}
+void CPU::CP(byte value)
+{
+  byte result = a.get() - value;
+
+  flags.zf = (result == 0);
+  flags.nf = true;
+  flags.hf = (a.get() & 0x0F) < (value & 0x0F);
+  flags.cf = a.get() < value;
+}
+void CPU::CP_r8(ByteRegister& reg)
+{
+  CP(reg.get());
+}
+void CPU::CP_n8()
+{
+  byte value = mmu->read(pc.get());
+  CP(value);
+}
+void CPU::CP_r16(WordRegister& reg)
+{
+  byte value = mmu->read(reg.get());
+  CP(value);
+}
