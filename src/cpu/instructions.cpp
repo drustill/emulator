@@ -469,7 +469,6 @@ void CPU::AND_r16(WordRegister& reg)
 
 /* DEC */
 void CPU::DEC_r16(WordRegister& reg) {}
-
 void CPU::DEC_r8(ByteRegister& reg)
 {
   byte lo = uint8_t(reg.get() & 0xFF);
@@ -481,7 +480,6 @@ void CPU::DEC_r8(ByteRegister& reg)
   flags.nf = true;
   flags.hf = half_carry;
 }
-
 void CPU::DEC_hl()
 {
   byte lo = uint8_t(hl.get() & 0xFF);
@@ -492,4 +490,18 @@ void CPU::DEC_hl()
   flags.zf = (hl.get() == 0);
   flags.nf = true;
   flags.hf = half_carry;
+}
+
+
+/* INC 16 */
+void CPU::INC_r16(WordRegister& reg)
+{
+  reg.increment();
+}
+
+
+/* DEC 16 */
+void CPU::DEC_r16(WordRegister& reg)
+{
+  reg.decrement();
 }

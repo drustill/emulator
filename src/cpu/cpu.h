@@ -245,4 +245,7 @@ class CPU
     void DEC_r16(WordRegister& reg);
     void DEC_r8(ByteRegister& reg);
     void DEC_hl();
+
+    void INC_r16(WordRegister& reg);
+    void DEC_r16(WordRegister& reg);
 };
