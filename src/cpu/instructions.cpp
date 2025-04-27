@@ -262,7 +262,7 @@ void CPU::opcode_0x03() { INC_r16(bc); }
 
 /* DEC 16 */
 void CPU::opcode_0x3B() { DEC_r16(sp); }
-void CPU::opcode_0x2B() { DEC_r15(hl); }
+void CPU::opcode_0x2B() { DEC_r16(hl); }
 void CPU::opcode_0x1B() { DEC_r16(de); }
 void CPU::opcode_0x0B() { DEC_r16(bc); }
 
@@ -450,12 +450,9 @@ void CPU::POP_r16(WordRegister& reg)
 void CPU::PUSH_r16(WordRegister& reg)
 {
   sp.decrement();
-  byte msb = reg.get();
-  mmu->write(sp.get(), msb);
-
+  mmu->write(sp.get(), reg.get() >> 8);
   sp.decrement();
-  byte lsb = reg.get();
-  mmu->write(sp.get(), lsb);
+  mmu->write(sp.get(), reg.get());
 }
 
 
@@ -481,7 +478,6 @@ void CPU::AND_r16(WordRegister& reg)
 
 
 /* DEC */
-void CPU::DEC_r16(WordRegister& reg) {}
 void CPU::DEC_r8(ByteRegister& reg)
 {
   byte lo = uint8_t(reg.get() & 0xFF);
