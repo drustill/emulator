@@ -286,7 +286,16 @@ void CPU::opcode_0xB5() { OR_r8(l); }
 void CPU::opcode_0xB4() { OR_r8(h); }
 void CPU::opcode_0xB3() { OR_r8(e); }
 void CPU::opcode_0xB2() { OR_r8(d); }
-void CPU::opcode_0xB1() { OR_r8(c); }
+void CPU::opcode_0xB1() {
+  byte bc_msb = bc.get() >> 8;
+  byte bc_lsb = bc.get() & 0x00FF;
+
+  /* NEEDS FIX */
+  b.set(bc_msb);
+  c.set(bc_lsb);
+
+  OR_r8(c);
+}
 void CPU::opcode_0xB0() { OR_r8(b); }
 void CPU::opcode_0xF6() { OR_n8(); }
 void CPU::opcode_0xB6() { OR_r16(hl); }
@@ -538,10 +547,31 @@ void CPU::DEC_r16(WordRegister& reg)
 
 /* OR */
 void CPU::OR(byte value)
-{}
+{
+  byte reg = a.get();
+  byte result = reg | value;
+  a.set(result);
+
+  flags.zf = (result == 0);
+  flags.nf = false;
+  flags.hf = false;
+  flags.cf = false;
+
+  LOG("OR: 0x%02X, 0x%02X", reg, value);
+  LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
+
+}
 void CPU::OR_r8(ByteRegister& reg)
-{}
+{
+  OR(reg.get());
+}
 void CPU::OR_n8()
-{}
+{
+  byte value = mmu->read(pc.get());
+  OR(value);
+}
 void CPU::OR_r16(WordRegister& reg)
-{}
+{
+  byte value = mmu->read(hl.get());
+  OR(value);
+}
