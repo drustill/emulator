@@ -219,4 +219,9 @@ class CPU
 
     void POP_r16(WordRegister& reg);
     void PUSH_r16(WordRegister& reg);
+
+    void AND(byte value);
+    void AND_r8(ByteRegister& reg);
+    void AND_n8();
+    void AND_hl();
 };

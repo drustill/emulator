@@ -227,6 +227,9 @@ void CPU::opcode_0xD5() { PUSH_r16(de); }
 void CPU::opcode_0xE5() { PUSH_r16(hl); }
 void CPU::opcode_0xF5() { PUSH_r16(af); }
 
+
+/* AND */
+
 /* ======================================== */
 
 /* INC */
@@ -412,3 +415,10 @@ void CPU::PUSH_r16(WordRegister& reg)
   byte lsb = reg.get();
   mmu->write(sp.get(), lsb);
 }
+
+
+/* AND */
+void CPU::AND(byte value);
+void CPU::AND_r8(ByteRegister& reg);
+void CPU::AND_n8();
+void CPU::AND_hl();
