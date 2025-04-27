@@ -213,13 +213,13 @@ void CPU::opcode_0xD1() { POP_r16(de); }
 void CPU::opcode_0xE1() { POP_r16(hl); }
 void CPU::opcode_0xF1()
 {
-  byte lsb = (af.get() & 0x0F);
+  byte popped_lsb = mmu->read(sp.get());
   POP_r16(af);
 
-  flags.zf = ((lsb & 0x10) != 0);
-  flags.nf = ((lsb & 0x20) != 0);
-  flags.hf = ((lsb & 0x40) != 0);
-  flags.cf = ((lsb & 0x80) != 0);
+  flags.zf = ((popped_lsb & 0x10) != 0);
+  flags.nf = ((popped_lsb & 0x20) != 0);
+  flags.hf = ((popped_lsb & 0x40) != 0);
+  flags.cf = ((popped_lsb & 0x80) != 0);
 }
 
 
@@ -409,10 +409,7 @@ void CPU::CALL_nn(bool conditional)
     byte msb = mmu->read(pc.get());
     pc.increment();
 
-    sp.decrement();
-    mmu->write(sp.get(), pc.get() >> 8);
-    sp.decrement();
-    mmu->write(sp.get(), pc.get());
+    PUSH_r16(pc);
 
     word nn = (msb << 8) | lsb;
     pc.set(nn);
@@ -423,26 +420,21 @@ void CPU::CALL_nn(bool conditional)
 /* RET */
 void CPU::RET_cc(bool condtiional)
 {
-  byte lsb = mmu->read(sp.get());
-  sp.increment();
-  byte msb = mmu->read(sp.get());
-  sp.increment();
-
-  word addr = (msb << 8) | lsb;
-  pc.set(addr);
+  POP_r16(pc);
 }
 
 
 /* POP */
 void CPU::POP_r16(WordRegister& reg)
 {
-  byte lsb = sp.get();
+  byte lsb = mmu->read(sp.get());
   sp.increment();
-  byte msb = sp.get();
+  byte msb = mmu->read(sp.get());
   sp.increment();
 
-  word data = (msb << 8) | lsb;
-  reg.set(data);
+  word value = (msb << 8) | lsb;
+  LOG("POP: 0x%04X", value);
+  reg.set(value);
 }
 
 
@@ -452,7 +444,9 @@ void CPU::PUSH_r16(WordRegister& reg)
   sp.decrement();
   mmu->write(sp.get(), reg.get() >> 8);
   sp.decrement();
-  mmu->write(sp.get(), reg.get());
+  mmu->write(sp.get(), reg.get() & 0xFF);
+
+  LOG("PUSH: 0x%04X", reg.get());
 }
 
 
