@@ -10,7 +10,7 @@ const int MAXCYCLES = 69905;
 
 int main()
 {
-  const std::string ROMPATH = "../roms/gb-test-roms/cpu_instrs/cpu_instrs.gb";
+  const std::string ROMPATH = "../roms/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb";
 
   MMU mmu;
   std::memset(mmu.data, 0, sizeof(mmu.data));

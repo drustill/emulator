@@ -41,7 +41,7 @@ int CPU::tick()
 {
   word addr = pc.get();
   byte opcode = mmu->read(addr);
-  LOG("%s", opcode_metadata[opcode].c_str())
+  LOG("[0x%04X]  %s (0x%x)", addr, opcode_metadata[opcode].c_str(), int(opcode))
   pc.increment();
   return execute(opcode);
 }
