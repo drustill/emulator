@@ -132,7 +132,6 @@ void CPU::opcode_0xE2()
 {
   word addr = c.get() + 0xFF00;
   mmu->write(addr, a.get());
-  a.increment();
 }
 
 void CPU::opcode_0xF2()
@@ -302,7 +301,6 @@ void CPU::LD_addr16_n8(WordRegister& reg)
   pc.increment();
   word addr = reg.get();
   mmu->write(addr, value);
-  reg.increment();
 }
 
 void CPU::LD_nn16_r8(ByteRegister& reg)
@@ -313,7 +311,6 @@ void CPU::LD_nn16_r8(ByteRegister& reg)
   pc.increment();
 
   mmu->write(addr, reg.get());
-  reg.increment();
 }
 
 void CPU::LD_r8_nn16(ByteRegister& reg)
@@ -333,7 +330,6 @@ void CPU::LDH_r8_n8(ByteRegister& reg)
   byte value = mmu->read(pc.get());
   pc.increment();
   mmu->write(0xFF00 + value, reg.get());
-  reg.increment();
 }
 
 void CPU::LDH_n8_r8(ByteRegister& reg)
@@ -362,7 +358,6 @@ void CPU::LD_nn16_r16(WordRegister& reg)
   addr |= mmu->read(pc.get()) << 8;
 
   mmu->write(addr, reg.get());
-  reg.increment();
 }
 
 
@@ -402,9 +397,9 @@ void CPU::CALL_nn(bool conditional)
     pc.increment();
 
     sp.decrement();
-    mmu->write(sp.get(), lsb);
-    sp.decrement();
     mmu->write(sp.get(), msb);
+    sp.decrement();
+    mmu->write(sp.get(), lsb);
 
     word nn = (msb << 8) | lsb;
     pc.set(nn);
