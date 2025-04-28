@@ -77,6 +77,8 @@ CPU::CPU(MMU* mmu) : mmu(mmu)
  */
 int CPU::tick()
 {
+  if (halted) return 1;
+
   word addr = pc.get();
   byte opcode = read_pc();
 
@@ -182,6 +184,8 @@ int CPU::execute(byte opcode, word address)
     case 0x9A: opcode_0x9A(); break; case 0x99: opcode_0x99(); break; case 0x98: opcode_0x98(); break; case 0xDE: opcode_0xDE(); break;
     case 0x9E: opcode_0x9E(); break; case 0x07: opcode_0x07(); break; case 0x17: opcode_0x17(); break; case 0x0F: opcode_0x0F(); break;
     case 0x1F: opcode_0x1F(); break; case 0xC0: opcode_0xC0(); break; case 0xD0: opcode_0xD0(); break; case 0x29: opcode_0x29(); break;
+    case 0xC2: opcode_0xC2(); break; case 0xD2: opcode_0xD2(); break; case 0xCA: opcode_0xCA(); break; case 0xDA: opcode_0xDA(); break;
+    case 0xE9: opcode_0xE9(); break; case 0x76: opcode_0x76(); break;
 
     default:
       std::cerr << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
@@ -264,4 +268,3 @@ int CPU::execute_cb(byte opcode, word address)
 
   return CallbackCycleTable[opcode];
 }
-

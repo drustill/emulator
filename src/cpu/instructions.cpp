@@ -12,6 +12,7 @@
 void CPU::opcode_0x00() { /* NOP */ }
 void CPU::opcode_0xF3() { ime = false; }
 void CPU::opcode_0xFB() { ime = true; }
+void CPU::opcode_0x76() { halted = true; }
 
 void CPU::opcode_0x07() { RLCA(); }
 void CPU::opcode_0x17() { RLA(); }
@@ -183,7 +184,12 @@ void CPU::opcode_0xF9() {
 
 
 /* JP */
-void CPU::opcode_0xC3() { JP_n16(); }
+void CPU::opcode_0xC2() { JP(!f.read((uint8_t)Flag::Z_ZERO)); }
+void CPU::opcode_0xD2() { JP(!f.read((uint8_t)Flag::C_CARRY)); }
+void CPU::opcode_0xCA() { JP(f.read((uint8_t)Flag::Z_ZERO)); }
+void CPU::opcode_0xDA() { JP(f.read((uint8_t)Flag::C_CARRY)); }
+void CPU::opcode_0xE9() { JP_hl(); }
+void CPU::opcode_0xC3() { JP(); }
 
 
 /* JR */
@@ -499,20 +505,25 @@ void CPU::LD_nn16_r16(RegisterPair& reg)
 
 
 /* JP */
-void CPU::JP_n16()
+void CPU::JP(bool conditional)
 {
-  word addr = mmu->read(pc.get());
-  pc.increment();
-  addr |= mmu->read(pc.get()) << 8;
-  pc.increment();
+  if (conditional) {
+    cond_cycles = true;
 
-  pc.set(addr);
+    pc.set(read_pc_word());
+  }
+}
+void CPU::JP_hl()
+{
+  pc.set(hl.get());
 }
 
 /* JR */
 void CPU::JR_cc_e(bool conditional)
 {
   int8_t offset = read_pc_signed();
+
+  if (offset == -2) exit(0);
 
   if (conditional) {
     cond_cycles = true;
@@ -531,6 +542,7 @@ void CPU::CALL_nn(bool conditional)
 
   if (conditional) {
     cond_cycles = true;
+
     stack_push(pc);
     pc.set(nn);
   }
@@ -540,7 +552,11 @@ void CPU::CALL_nn(bool conditional)
 /* RET */
 void CPU::RET_cc(bool conditional)
 {
-  if (conditional) stack_pop(pc);
+  if (conditional) {
+    cond_cycles = true;
+
+    stack_pop(pc);
+  }
 }
 
 

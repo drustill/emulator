@@ -57,6 +57,11 @@ class CPU
     int execute_cb(byte opcode, word address);
 
     /**
+     * Halted flag
+     */
+    bool halted = false;
+
+    /**
      * Interrupt master enable
      */
     bool ime = false;
@@ -341,7 +346,13 @@ class CPU
     void opcode_0x29();
     void opcode_0x39();
 
+    void opcode_0xC2();
+    void opcode_0xD2();
+    void opcode_0xCA();
+    void opcode_0xDA();
     void opcode_0xE9();
+
+    void opcode_0x76();
 
     /**
      * Opcode implementations
@@ -366,7 +377,8 @@ class CPU
     void LD_r16_nn16(RegisterPair& reg);
     void LD_nn16_r16(RegisterPair& reg);
 
-    void JP_n16();
+    void JP(bool conditional = true);
+    void JP_hl();
 
     void INC_r8(ByteRegister& reg);
 
