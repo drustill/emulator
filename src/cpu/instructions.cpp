@@ -664,28 +664,78 @@ void CPU::XOR_r16(RegisterPair& reg)
 
 
 /* ADD */
-void CPU::ADD(byte value) {}
+void CPU::ADD(byte value)
+{
+  byte reg = a.get();
+  uint result = reg + value
+
+  a.set(static_cast<byte>(result));
+
+  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) + (value & 0xF) > 0xF);
+  f.write((uint8_t)Flag::C_CARRY, (result & 0x100) != 0);
+}
 void CPU::ADD_r8(ByteRegister& reg) {}
 void CPU::ADD_n8() {}
 void CPU::ADD_r16(RegisterPair& reg) {}
 
 
 /* SUB */
-void CPU::SUB(byte value) {}
+void CPU::SUB(byte value)
+{
+  byte reg = a.get();
+  int result = reg - value;
+
+  a.set(static_cast<byte>(result));
+
+  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) - (value & 0xF) < 0));
+  f.write((uint8_t)Flag::C_CARRY, result < 0);
+}
 void CPU::SUB_r8(ByteRegister& reg) {}
 void CPU::SUB_n8() {}
 void CPU::SUB_r16(RegisterPair& reg) {}
 
 
 /* ADC */
-void CPU::ADC(byte value) {}
+void CPU::ADC(byte value)
+{
+  byte reg = a.value();
+  byte carry = (uint8_t)f.read(Flag::C_CARRY);
+
+  uint result_full = reg + value + carry;
+  byte result = static_cast<int8_t>(result_full);
+
+  a.set(result);
+
+  f.write((uint8_t)Flag::Z_ZERO, result == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) + (value & 0xF) + carry) > 0xF);
+  f.write((uint8_t)Flag::C_CARRY, result_full > 0xFF);
+}
 void CPU::ADC_r8(ByteRegister& reg) {}
 void CPU::ADC_n8() {}
 void CPU::ADC_r16(RegisterPair& reg) {}
 
 
 /* SBC */
-void CPU::SBC(byte value) {}
+void CPU::SBC(byte value)
+{
+  byte carry = (uint8_t)f.read(Flag::C_CARRY);
+  byte reg = a.get();
+
+  int result_full = reg - value - carry;
+  byte result = static_cast<uint8_t>(result_full);
+
+  a.set(result);
+
+  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, true);
+  f.write((uint8_t)Flag::H_HALFCARRY, result_full < 0);
+  f.write((uint8_t)Flag::C_CARRY, ((reg & 0xF) - (value & 0xF) - carry) < 0);
+}
 void CPU::SBC_r8(ByteRegister& reg) {}
 void CPU::SBC_n8() {}
 void CPU::SBC_r16(RegisterPair& reg) {}
