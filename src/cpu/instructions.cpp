@@ -290,6 +290,18 @@ void CPU::opcode_0xFE() { CP_n8(); }
 void CPU::opcode_0xBE() { CP_r16(hl); }
 
 
+/* XOR */
+void CPU::opcode_0xAF() { XOR_r8(a); }
+void CPU::opcode_0xAD() { XOR_r8(l); }
+void CPU::opcode_0xAC() { XOR_r8(h); }
+void CPU::opcode_0xAB() { XOR_r8(e); }
+void CPU::opcode_0xAA() { XOR_r8(d); }
+void CPU::opcode_0xA9() { XOR_r8(c); }
+void CPU::opcode_0xA8() { XOR_r8(b); }
+
+void CPU::opcode_0xEE() { XOR_n8(); }
+void CPU::opcode_0xAE() { XOR_r16(hl); }
+
 
 /* ======================================== */
 
@@ -579,3 +591,10 @@ void CPU::CP_r16(RegisterPair& reg)
 {
   CP(mmu->read(reg.get()));
 }
+
+
+/* XOR */
+void XOR(byte value) {}
+void XOR_r8(ByteRegister& reg) {}
+void XOR_n8() {}
+void XOR_r16(RegisterPair& reg) {}

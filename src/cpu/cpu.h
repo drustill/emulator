@@ -272,6 +272,15 @@ class CPU
     void opcode_0xB8();
     void opcode_0xFE();
 
+    void opcode_0xAF();
+    void opcode_0xAE();
+    void opcode_0xAD();
+    void opcode_0xAC();
+    void opcode_0xAB();
+    void opcode_0xAA();
+    void opcode_0xA9();
+    void opcode_0xA8();
+
     /**
      * Opcode implementations
      */
@@ -330,4 +339,9 @@ class CPU
     void CP_r8(ByteRegister& reg);
     void CP_n8();
     void CP_r16(RegisterPair& reg);
+
+    void XOR(byte value);
+    void XOR_r8(ByteRegister& reg);
+    void XOR_n8();
+    void XOR_r16(RegisterPair& reg);
 };
