@@ -33,8 +33,7 @@ class CPU
       sp.decrement();
       mmu->write(sp.get(), reg.get() & 0xFF);
 
-      // LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
-      LOG("PUSH: 0x%04X", reg.get());
+      // LOG("PUSH: 0x%04X", reg.get());
     }
 
     template<typename R>
@@ -46,7 +45,7 @@ class CPU
       sp.increment();
 
       word value = (msb << 8) | lsb;
-      LOG("POP: 0x%04X", value);
+      // LOG("POP: 0x%04X", value);
       reg.set(value);
     }
 
@@ -208,6 +207,9 @@ class CPU
     void opcode_0x28();
     void opcode_0x38();
 
+    void opcode_0xC8();
+    void opcode_0xD8();
+
     void opcode_0xC9();
 
     void opcode_0xC1();
@@ -302,9 +304,6 @@ class CPU
     void CALL_nn(bool conditional = true);
 
     void RET_cc(bool conditional = true);
-
-    // void POP_r16(WordRegister& reg);
-    // void PUSH_r16(WordRegister& reg);
 
     void AND(byte value);
     void AND_n8();

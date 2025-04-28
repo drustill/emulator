@@ -170,23 +170,6 @@ void CPU::opcode_0xF8()
   f.write((uint8_t)Flag::C_CARRY, (reg ^ e ^ (result & 0xFFFF) & 0x100) == 0x100);
 
   hl.set(result);
-
-  // int8_t e = static_cast<int8_t>(mmu->read(pc.get()));
-  // pc.increment();
-  // word res = sp.get() + e;
-  // hl.set(res);
-
-  // // Flag logic
-  // byte lo = uint8_t(sp.get() & 0xFF);
-  // byte ue = uint8_t(e);
-
-  // bool half_carry = ;
-  // bool carry = (uint16_t(lo) + uint16_t(ue)) > 0xFF;
-
-  // flags.zf = false;
-  // flags.nf = false;
-  // flags.hf = half_carry;
-  // flags.cf = carry;
 }
 void CPU::opcode_0xF9() {
   sp.set(hl.get());
@@ -217,6 +200,8 @@ void CPU::opcode_0xD4() { CALL_nn(!f.read((uint8_t)Flag::C_CARRY)); }
 
 /* RET */
 void CPU::opcode_0xC9() { RET_cc(); }
+void CPU::opcode_0xC8() { RET_cc(f.read((uint8_t)Flag::Z_ZERO)); }
+void CPU::opcode_0xD8() { RET_cc(f.read((uint8_t)Flag::C_CARRY)); }
 
 
 /* POP */
@@ -231,20 +216,6 @@ void CPU::opcode_0xC5() { stack_push(bc); }
 void CPU::opcode_0xD5() { stack_push(de); }
 void CPU::opcode_0xE5() { stack_push(hl); }
 void CPU::opcode_0xF5() { stack_push(af); }
-
-// {
-  // sp.decrement();
-  // mmu->write(sp.get(), a.get());
-
-  // sp.decrement();
-  // byte flag = flags.zf << 7 | flags.nf << 6 | flags.hf << 5 | flags.cf << 4;
-  // mmu->write(sp.get(), flag);
-
-  // word value = (a.get() << 8) | flag;
-
-  // LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
-  // LOG("PUSH: 0x%04X, 0x%04X, 0x%04X", value, a.get(), flag);
-// }
 
 
 /* AND */
@@ -489,33 +460,6 @@ void CPU::RET_cc(bool condtiional)
 }
 
 
-/* POP */
-// void CPU::POP_r16(WordRegister& reg)
-// {
-//   byte lsb = mmu->read(sp.get());
-//   sp.increment();
-//   byte msb = mmu->read(sp.get());
-//   sp.increment();
-
-//   word value = (msb << 8) | lsb;
-//   LOG("POP: 0x%04X", value);
-//   reg.set(value);
-// }
-
-
-// /* PUSH */
-// void CPU::PUSH_r16(WordRegister& reg)
-// {
-//   sp.decrement();
-//   mmu->write(sp.get(), reg.get() >> 8);
-//   sp.decrement();
-//   mmu->write(sp.get(), reg.get() & 0xFF);
-
-//   LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
-//   LOG("PUSH: 0x%04X", reg.get());
-// }
-
-
 /* AND */
 void CPU::AND(byte value)
 {
@@ -600,19 +544,6 @@ void CPU::OR(byte value)
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
   f.write((uint8_t)Flag::C_CARRY, false);
-
-  // byte reg = a.get();
-  // byte result = reg | value;
-  // a.set(result);
-
-  // flags.zf = (result == 0);
-  // flags.nf = false;
-  // flags.hf = false;
-  // flags.cf = false;
-
-  // LOG("OR: 0x%02X, 0x%02X", reg, value);
-  // LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
-
 }
 void CPU::OR_r8(ByteRegister& reg)
 {
@@ -635,16 +566,6 @@ void CPU::CP(byte value)
   f.write((uint8_t)Flag::N_SUBTRACT, true);
   f.write((uint8_t)Flag::H_HALFCARRY, (a.get() & 0xF) - (value & 0xF) < 0);
   f.write((uint8_t)Flag::C_CARRY, a.get() < value);
-
-  // byte result = a.get() - value;
-
-  // flags.zf = (result == 0);
-  // flags.nf = true;
-  // flags.hf = (a.get() & 0x0F) < (value & 0x0F);
-  // flags.cf = a.get() < value;
-
-  // LOG("CP: 0x%02X, 0x%02X, 0x%02X", a.get(), result, value);
-  // LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
 }
 void CPU::CP_r8(ByteRegister& reg)
 {
