@@ -1,12 +1,1 @@
-# Ignore ROMs
-roms/
-
-# Ignore binaries
-bin/
-
-# TODO: Set up CMake
-test/
-
-# Ignore logs
-src/*.txt
-src/*.log
+/build
