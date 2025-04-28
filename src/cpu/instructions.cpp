@@ -208,6 +208,8 @@ void CPU::opcode_0xD4() { CALL_nn(!f.read((uint8_t)Flag::C_CARRY)); }
 void CPU::opcode_0xC9() { RET_cc(); }
 void CPU::opcode_0xC8() { RET_cc(f.read((uint8_t)Flag::Z_ZERO)); }
 void CPU::opcode_0xD8() { RET_cc(f.read((uint8_t)Flag::C_CARRY)); }
+void CPU::opcode_0xC0() { RET_cc(!f.read((uint8_t)Flag::Z_ZERO)); }
+void CPU::opcode_0xD0() { RET_cc(!f.read((uint8_t)Flag::C_CARRY)); }
 
 
 /* POP */
@@ -310,6 +312,11 @@ void CPU::opcode_0x80() { ADD_r8(b); }
 
 void CPU::opcode_0xC6() { ADD_n8(); }
 void CPU::opcode_0x86() { ADD_r16(hl); }
+
+void CPU::opcode_0x09() { ADD_hl_r16(bc); }
+void CPU::opcode_0x19() { ADD_hl_r16(de); }
+void CPU::opcode_0x29() { ADD_hl_r16(hl); }
+void CPU::opcode_0x39() { ADD_hl_r16(sp); }
 
 
 /* SUB */
@@ -706,6 +713,28 @@ void CPU::ADD_n8()
 void CPU::ADD_r16(RegisterPair& reg)
 {
   ADD(mmu->read(reg.get()));
+}
+void CPU::ADD_hl_r16(RegisterPair& reg)
+{
+  uint32_t result_full = reg.get() + hl.get();
+  word result = static_cast<word>(result_full);
+
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, (reg.get() ^ hl.get() ^ (result_full & 0xFFFF)) & 0x1000);
+  f.write((uint8_t)Flag::C_CARRY, result_full > 0xFFFF);
+
+  reg.set(result);
+}
+void CPU::ADD_hl_r16(WordRegister& reg)
+{
+  uint32_t result_full = reg.get() + hl.get();
+  word result = static_cast<word>(result_full);
+
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, (reg.get() ^ hl.get() ^ (result_full & 0xFFFF)) & 0x1000);
+  f.write((uint8_t)Flag::C_CARRY, result_full > 0xFFFF);
+
+  reg.set(result);
 }
 
 

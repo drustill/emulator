@@ -333,7 +333,15 @@ class CPU
     void opcode_0x0F();
     void opcode_0x1F();
 
+    void opcode_0xC0();
+    void opcode_0xD0();
 
+    void opcode_0x09();
+    void opcode_0x19();
+    void opcode_0x29();
+    void opcode_0x39();
+
+    void opcode_0xE9();
 
     /**
      * Opcode implementations
@@ -403,6 +411,8 @@ class CPU
     void ADD_r8(ByteRegister& reg);
     void ADD_n8();
     void ADD_r16(RegisterPair& reg);
+    void ADD_hl_r16(RegisterPair& reg);
+    void ADD_hl_r16(WordRegister& reg);
 
     void SUB(byte value);
     void SUB_r8(ByteRegister& reg);
