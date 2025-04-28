@@ -79,6 +79,17 @@ byte CPU::read_pc()
 }
 
 /**
+ * read_pc_word: get the next word from the program counter
+ */
+word CPU::read_pc_word()
+{
+  byte lo = read_pc();
+  byte hi = read_pc();
+
+  return (hi << 8) | lo;
+}
+
+/**
  * read_pc_signed: get the next byte from the program counter as a signed int
  */
 int8_t CPU::read_pc_signed()
@@ -135,6 +146,9 @@ int CPU::execute(byte opcode)
     case 0xB6: opcode_0xB6(); break; case 0xBF: opcode_0xBF(); break; case 0xBE: opcode_0xBE(); break; case 0xBD: opcode_0xBD(); break;
     case 0xBC: opcode_0xBC(); break; case 0xBB: opcode_0xBB(); break; case 0xBA: opcode_0xBA(); break; case 0xB9: opcode_0xB9(); break;
     case 0xB8: opcode_0xB8(); break; case 0xFE: opcode_0xFE(); break; case 0xC8: opcode_0xC8(); break; case 0xD8: opcode_0xD8(); break;
+    case 0xAF: opcode_0xAF(); break; case 0xAE: opcode_0xAE(); break; case 0xAD: opcode_0xAD(); break; case 0xAC: opcode_0xAC(); break;
+    case 0xAB: opcode_0xAB(); break; case 0xAA: opcode_0xAA(); break; case 0xA9: opcode_0xA9(); break; case 0xA8: opcode_0xA8(); break;
+    case 0xEE: opcode_0xEE(); break;
 
     default:
       std::cerr << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
@@ -144,3 +158,4 @@ int CPU::execute(byte opcode)
 
   return cond_cycles ? TrueCycleTable[opcode] : FalseCycleTable[opcode];
 }
+

@@ -23,6 +23,7 @@ class CPU
     WordRegister sp, pc;
 
     byte read_pc();
+    word read_pc_word();
     int8_t read_pc_signed();
 
     template<typename R>
@@ -280,6 +281,7 @@ class CPU
     void opcode_0xAA();
     void opcode_0xA9();
     void opcode_0xA8();
+    void opcode_0xEE();
 
     /**
      * Opcode implementations

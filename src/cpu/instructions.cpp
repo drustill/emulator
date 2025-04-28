@@ -450,16 +450,12 @@ void CPU::JR_cc_e(bool conditional)
 /* CALL */
 void CPU::CALL_nn(bool conditional)
 {
+
+  word nn = read_pc_word();
+
   if (conditional) {
     cond_cycles = true;
-    byte lsb = mmu->read(pc.get());
-    pc.increment();
-    byte msb = mmu->read(pc.get());
-    pc.increment();
-
     stack_push(pc);
-
-    word nn = (msb << 8) | lsb;
     pc.set(nn);
   }
 }
@@ -594,7 +590,23 @@ void CPU::CP_r16(RegisterPair& reg)
 
 
 /* XOR */
-void XOR(byte value) {}
-void XOR_r8(ByteRegister& reg) {}
-void XOR_n8() {}
-void XOR_r16(RegisterPair& reg) {}
+void CPU::XOR(byte value)
+{
+  a.set(a.get() ^ value);
+  f.write((uint8_t)Flag::Z_ZERO, a.get() == value);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  f.write((uint8_t)Flag::C_CARRY, false);
+}
+void CPU::XOR_r8(ByteRegister& reg)
+{
+  XOR(reg.get());
+}
+void CPU::XOR_n8()
+{
+  XOR(read_pc());
+}
+void CPU::XOR_r16(RegisterPair& reg)
+{
+  XOR(mmu->read(reg.get()));
+}
