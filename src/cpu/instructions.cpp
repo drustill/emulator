@@ -1094,7 +1094,15 @@ void CPU::RL_hl()
 }
 
 void CPU::RR(byte value)
-{}
+{
+  byte carry = f.read((uint8_t)Flag::C_CARRY) ? 0x80 : 0;
+  byte result = carry | (value >> 1);
+
+  f.write((uint8_t)Flag::Z_ZERO, result == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  f.write((uint8_t)Flag::C_CARRY, (value & 0x1) != 0);
+}
 void CPU::RR_r8(ByteRegister& reg)
 {
   RR(reg.get());
@@ -1105,7 +1113,14 @@ void CPU::RR_hl()
 }
 
 void CPU::SLA(byte value)
-{}
+{
+  byte result = value << 1;
+
+  f.write((uint8_t)Flag::Z_ZERO, result == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  f.write((uint8_t)Flag::C_CARRY, ((value >> 7) & 0x1) != 0);
+}
 void CPU::SLA_r8(ByteRegister& reg)
 {
   SLA(reg.get());
@@ -1116,7 +1131,14 @@ void CPU::SLA_hl()
 }
 
 void CPU::SRA(byte value)
-{}
+{
+  byte result = (value 0x80) | (value >> 1);
+
+  f.write((uint8_t)Flag::Z_ZERO, result == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  f.write((uint8_t)Flag::C_CARRY, ((value & 0x1) != 0));
+}
 void CPU::SRA_r8(ByteRegister& reg)
 {
   SRA(reg.get());
@@ -1127,7 +1149,14 @@ void CPU::SRA_hl()
 }
 
 void CPU::SWAP(byte value)
-{}
+{
+  byte swapped = ((value << 0x0F) & 4 | (value & 0xF0) >> 4);
+
+  f.write((uint8_t)Flag::Z_ZERO, swapped == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  f.write((uint8_t)Flag::C_CARRY, false);
+}
 void CPU::SWAP_r8(ByteRegister& reg)
 {
   SWAP(reg.get());
@@ -1138,7 +1167,14 @@ void CPU::SWAP_hl()
 }
 
 void CPU::SRL(byte value)
-{}
+{
+  byte result = value >> 1;
+
+  f.write((uint8_t)Flag::Z_ZERO, swapped == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  f.write((uint8_t)Flag::C_CARRY, (value 0x1) != 0);
+}
 void CPU::SRL_r8(ByteRegister& reg)
 {
   SRL(reg.get());
@@ -1149,7 +1185,11 @@ void CPU::SRL_hl()
 }
 
 void CPU::BIT(byte value, uint8_t bit)
-{}
+{
+  f.write((uint8_t)Flag::Z_ZERO, ((value >> bit) & 0x1) == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, true);
+}
 void CPU::BIT_r8(ByteRegister& reg, uint8_t bit)
 {
   BIT(reg.get(), bit);
@@ -1160,7 +1200,9 @@ void CPU::BIT_hl(uint8_t bit)
 }
 
 void CPU::RES(byte value, uint8_t bit)
-{}
+{
+  byte result = (value & ~(0x1 << bit));
+}
 void CPU::RES_r8(ByteRegister& reg, uint8_t bit)
 {
   RES(reg.get(), bit);
@@ -1171,7 +1213,9 @@ void CPU::RES_hl(uint8_t bit)
 }
 
 void CPU::SET(byte value, uint8_t bit)
-{}
+{
+  byte result = value | (0x1 << bit);
+}
 void CPU::SET_r8(ByteRegister& reg, uint8_t bit)
 {
   SET(reg.get(), bit);
