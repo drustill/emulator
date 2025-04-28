@@ -53,7 +53,8 @@ class CPU
     /**
      * Switch on opcode
      */
-    int execute(byte opcode);
+    int execute(byte opcode, word address);
+    // int execute_cb(byte opcode, word address);
 
     /**
      * Interrupt master enable

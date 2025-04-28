@@ -60,11 +60,15 @@ CPU::CPU(MMU* mmu) : mmu(mmu)
 int CPU::tick()
 {
   word addr = pc.get();
-  byte opcode = mmu->read(addr);
-  pc.increment();
-  LOG("[0x%04X]  %s (0x%x)", addr, opcode_metadata[opcode].c_str(), int(opcode));
-  int res = execute(opcode);
-  return res;
+  byte opcode = read_pc();
+
+  if (opcode == 0xCB) {
+    byte cbcode = read_pc();
+    exit(0);
+    // return execute_cb(cbcode, addr)
+  }
+
+  return execute(opcode, addr);
 }
 
 /**
@@ -99,8 +103,10 @@ int8_t CPU::read_pc_signed()
 
 
 
-int CPU::execute(byte opcode)
+int CPU::execute(byte opcode, word address)
 {
+  LOG("[0x%04X]  %s (0x%x)", address, opcode_metadata[opcode].c_str(), int(opcode));
+
   cond_cycles = false;
 
   switch (opcode) {
