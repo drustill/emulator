@@ -673,35 +673,35 @@ class CPU
     void opcode_cb_0x00();
 
 
-    void RLC(byte value);
+    byte RLC(byte value);
     void RLC_r8(ByteRegister& reg);
     void RLC_hl();
 
-    void RRC(byte value);
+    byte RRC(byte value);
     void RRC_r8(ByteRegister& reg);
     void RRC_hl();
 
-    void RL(byte value);
+    byte RL(byte value);
     void RL_r8(ByteRegister& reg);
     void RL_hl();
 
-    void RR(byte value);
+    byte RR(byte value);
     void RR_r8(ByteRegister& reg);
     void RR_hl();
 
-    void SLA(byte value);
+    byte SLA(byte value);
     void SLA_r8(ByteRegister& reg);
     void SLA_hl();
 
-    void SRA(byte value);
+    byte SRA(byte value);
     void SRA_r8(ByteRegister& reg);
     void SRA_hl();
 
-    void SWAP(byte value);
+    byte SWAP(byte value);
     void SWAP_r8(ByteRegister& reg);
     void SWAP_hl();
 
-    void SRL(byte value);
+    byte SRL(byte value);
     void SRL_r8(ByteRegister& reg);
     void SRL_hl();
 
@@ -709,11 +709,11 @@ class CPU
     void BIT_r8(ByteRegister& reg, uint8_t bit);
     void BIT_hl(uint8_t bit);
 
-    void RES(byte value, uint8_t bit);
+    byte RES(byte value, uint8_t bit);
     void RES_r8(ByteRegister& reg, uint8_t bit);
     void RES_hl(uint8_t bit);
 
-    void SET(byte value, uint8_t bit);
+    byte SET(byte value, uint8_t bit);
     void SET_r8(ByteRegister& reg, uint8_t bit);
     void SET_hl(uint8_t bit);
 

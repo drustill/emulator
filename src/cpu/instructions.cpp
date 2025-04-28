@@ -1038,7 +1038,7 @@ void CPU::opcode_cb_0x01() { RLC_r8(c); }
 void CPU::opcode_cb_0x00() { RLC_r8(b); }
 
 
-void CPU::RLC(byte value)
+byte CPU::RLC(byte value)
 {
   byte result = (value << 1) | ((value >> 7) & 0x1);
 
@@ -1046,17 +1046,19 @@ void CPU::RLC(byte value)
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
   f.write((uint8_t)Flag::C_CARRY, ((value >> 7) & 0x1) != 0);
+
+  return result;
 }
 void CPU::RLC_r8(ByteRegister& reg)
 {
-  RLC(reg.get());
+  reg.set(RLC(reg.get()));
 }
 void CPU::RLC_hl()
 {
   mmu->write(hl.get(), RLC(mmu->read(hl.get())));
 }
 
-void CPU::RRC(byte value)
+byte CPU::RRC(byte value)
 {
   byte result = ((value & 0x1) << 7) | (value >> 1);
 
@@ -1064,17 +1066,19 @@ void CPU::RRC(byte value)
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
   f.write((uint8_t)Flag::C_CARRY, (value & 0x1) != 0);
+
+  return result;
 }
 void CPU::RRC_r8(ByteRegister& reg)
 {
-  RRC(reg.get());
+  reg.set(RRC(reg.get()));
 }
 void CPU::RRC_hl()
 {
   mmu->write(hl.get(), RRC(mmu->read(hl.get())));
 }
 
-void CPU::RL(byte value)
+byte CPU::RL(byte value)
 {
   byte carry = f.read((uint8_t)Flag::C_CARRY) ? 1 : 0;
   byte result = (value << 1) | carry;
@@ -1083,17 +1087,19 @@ void CPU::RL(byte value)
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
   f.write((uint8_t)Flag::C_CARRY, ((value >> 7) & 0x1) != 0);
+
+  return result;
 }
 void CPU::RL_r8(ByteRegister& reg)
 {
-  RL(reg.get());
+  reg.set(RL(reg.get()));
 }
 void CPU::RL_hl()
 {
   mmu->write(hl.get(), RL(mmu->read(hl.get())));
 }
 
-void CPU::RR(byte value)
+byte CPU::RR(byte value)
 {
   byte carry = f.read((uint8_t)Flag::C_CARRY) ? 0x80 : 0;
   byte result = carry | (value >> 1);
@@ -1102,17 +1108,19 @@ void CPU::RR(byte value)
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
   f.write((uint8_t)Flag::C_CARRY, (value & 0x1) != 0);
+
+  return result;
 }
 void CPU::RR_r8(ByteRegister& reg)
 {
-  RR(reg.get());
+  reg.set(RR(reg.get()));
 }
 void CPU::RR_hl()
 {
   mmu->write(hl.get(), RR(mmu->read(hl.get())));
 }
 
-void CPU::SLA(byte value)
+byte CPU::SLA(byte value)
 {
   byte result = value << 1;
 
@@ -1120,35 +1128,39 @@ void CPU::SLA(byte value)
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
   f.write((uint8_t)Flag::C_CARRY, ((value >> 7) & 0x1) != 0);
+
+  return result;
 }
 void CPU::SLA_r8(ByteRegister& reg)
 {
-  SLA(reg.get());
+  reg.set(SLA(reg.get()));
 }
 void CPU::SLA_hl()
 {
   mmu->write(hl.get(), SLA(mmu->read(hl.get())));
 }
 
-void CPU::SRA(byte value)
+byte CPU::SRA(byte value)
 {
-  byte result = (value 0x80) | (value >> 1);
+  byte result = (value & 0x80) | (value >> 1);
 
   f.write((uint8_t)Flag::Z_ZERO, result == 0);
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
   f.write((uint8_t)Flag::C_CARRY, ((value & 0x1) != 0));
+
+  return result;
 }
 void CPU::SRA_r8(ByteRegister& reg)
 {
-  SRA(reg.get());
+  reg.set(SRA(reg.get()));
 }
 void CPU::SRA_hl()
 {
   mmu->write(hl.get(), SRA(mmu->read(hl.get())));
 }
 
-void CPU::SWAP(byte value)
+byte CPU::SWAP(byte value)
 {
   byte swapped = ((value << 0x0F) & 4 | (value & 0xF0) >> 4);
 
@@ -1156,28 +1168,32 @@ void CPU::SWAP(byte value)
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
   f.write((uint8_t)Flag::C_CARRY, false);
+
+  return swapped;
 }
 void CPU::SWAP_r8(ByteRegister& reg)
 {
-  SWAP(reg.get());
+  reg.set(SWAP(reg.get()));
 }
 void CPU::SWAP_hl()
 {
   mmu->write(hl.get(), SWAP(mmu->read(hl.get())));
 }
 
-void CPU::SRL(byte value)
+byte CPU::SRL(byte value)
 {
   byte result = value >> 1;
 
-  f.write((uint8_t)Flag::Z_ZERO, swapped == 0);
+  f.write((uint8_t)Flag::Z_ZERO, result == 0);
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, (value 0x1) != 0);
+  f.write((uint8_t)Flag::C_CARRY, (value & 0x1) != 0);
+
+  return result;
 }
 void CPU::SRL_r8(ByteRegister& reg)
 {
-  SRL(reg.get());
+  reg.set(SRL(reg.get()));
 }
 void CPU::SRL_hl()
 {
@@ -1199,28 +1215,28 @@ void CPU::BIT_hl(uint8_t bit)
   BIT(mmu->read(hl.get()), bit);
 }
 
-void CPU::RES(byte value, uint8_t bit)
+byte CPU::RES(byte value, uint8_t bit)
 {
-  byte result = (value & ~(0x1 << bit));
+  return (value & ~(0x1 << bit));
 }
 void CPU::RES_r8(ByteRegister& reg, uint8_t bit)
 {
-  RES(reg.get(), bit);
+  reg.set(RES(reg.get(), bit));
 }
 void CPU::RES_hl(uint8_t bit)
 {
-  RES(mmu->read(hl.get()), bit);
+  mmu->write(hl.get(), RES(mmu->read(hl.get()), bit));
 }
 
-void CPU::SET(byte value, uint8_t bit)
+byte CPU::SET(byte value, uint8_t bit)
 {
-  byte result = value | (0x1 << bit);
+  return value | (0x1 << bit);
 }
 void CPU::SET_r8(ByteRegister& reg, uint8_t bit)
 {
-  SET(reg.get(), bit);
+  reg.set(SET(reg.get(), bit));
 }
 void CPU::SET_hl(uint8_t bit)
 {
-  SET(mmu->read(hl.get()), bit);
+  mmu->write(hl.get(), SET(mmu->read(hl.get()), bit));
 }
