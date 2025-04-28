@@ -1,8 +1,10 @@
 #include "register.h"
+#include "../logger.h"
 
 word RegisterPair::get()
 {
-  return (hi.get() << 8) | lo.get();
+  word res = (hi.get() << 8) | lo.get();
+  return res;
 }
 
 void RegisterPair::set(word value)

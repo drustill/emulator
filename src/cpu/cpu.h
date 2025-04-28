@@ -1,5 +1,6 @@
 #include <cstdint>
 
+#include "../logger.h"
 #include "register.h"
 #include "mmu.h"
 
@@ -14,8 +15,38 @@ class CPU
     Flags flags;
 
     ByteRegister a, b, c, d, e, h, l;
-    WordRegister af, bc, de, hl;
+
+    // RegisterPair af = RegisterPair(a, f);
+    RegisterPair bc = RegisterPair(b, c);
+    RegisterPair de = RegisterPair(d, e);
+    RegisterPair hl = RegisterPair(h, l);
+
     WordRegister sp, pc;
+
+    template<typename R>
+    void stack_push(R& reg)
+    {
+      sp.decrement();
+      mmu->write(sp.get(), reg.get() >> 8);
+      sp.decrement();
+      mmu->write(sp.get(), reg.get() & 0xFF);
+
+      LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
+      LOG("PUSH: 0x%04X", reg.get());
+    }
+
+    template<typename R>
+    void stack_pop(R& reg)
+    {
+      byte lsb = mmu->read(sp.get());
+      sp.increment();
+      byte msb = mmu->read(sp.get());
+      sp.increment();
+
+      word value = (msb << 8) | lsb;
+      LOG("POP: 0x%04X", value);
+      reg.set(value);
+    }
 
     /**
      * Switch on opcode
@@ -241,12 +272,12 @@ class CPU
      * Opcode implementations
      */
     void LD_r8_r8(ByteRegister& reg1, ByteRegister& reg2);
-    void LD_r8_r16(ByteRegister& reg, WordRegister& reg16);
-    void LD_r16_r8(WordRegister& reg16, ByteRegister& reg);
+    void LD_r8_r16(ByteRegister& reg, RegisterPair& reg16);
+    void LD_r16_r8(RegisterPair& reg16, ByteRegister& reg);
 
     void LD_r8_n8(ByteRegister& reg);
 
-    void LD_addr16_n8(WordRegister& reg);
+    void LD_addr16_n8(RegisterPair& reg);
 
     void LD_nn16_r8(ByteRegister& reg);
     void LD_r8_nn16(ByteRegister& reg);
@@ -254,9 +285,11 @@ class CPU
     void LDH_r8_n8(ByteRegister& reg);
     void LDH_n8_r8(ByteRegister& reg);
 
-
     void LD_r16_nn16(WordRegister& reg);
     void LD_nn16_r16(WordRegister& reg);
+
+    void LD_r16_nn16(RegisterPair& reg);
+    void LD_nn16_r16(RegisterPair& reg);
 
     void JP_n16();
 
@@ -268,11 +301,13 @@ class CPU
 
     void RET_cc(bool conditional = true);
 
-    void POP_r16(WordRegister& reg);
-    void PUSH_r16(WordRegister& reg);
+    // void POP_r16(WordRegister& reg);
+    // void PUSH_r16(WordRegister& reg);
 
     void AND(byte value);
     void AND_r8(ByteRegister& reg);
+    void AND_r16(RegisterPair& reg);
+
     void AND_r16(WordRegister& reg);
 
     void DEC_r8(ByteRegister& reg);
@@ -281,13 +316,16 @@ class CPU
     void INC_r16(WordRegister& reg);
     void DEC_r16(WordRegister& reg);
 
+    void INC_r16(RegisterPair& reg);
+    void DEC_r16(RegisterPair& reg);
+
     void OR(byte value);
     void OR_r8(ByteRegister& reg);
     void OR_n8();
-    void OR_r16(WordRegister& reg);
+    void OR_r16(RegisterPair& reg);
 
     void CP(byte value);
     void CP_r8(ByteRegister& reg);
     void CP_n8();
-    void CP_r16(WordRegister& reg);
+    void CP_r16(RegisterPair& reg);
 };

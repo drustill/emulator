@@ -3,7 +3,7 @@
 
 /**
  * r8: ByteRegister
- * r16: WordRegister
+ * r16: WordRegister or RegisterPair
  * n8: 8-bit immediate value
  * nn16: 16-bit immediate value
  */
@@ -208,13 +208,14 @@ void CPU::opcode_0xC9() { RET_cc(); }
 
 
 /* POP */
-void CPU::opcode_0xC1() { POP_r16(bc); }
-void CPU::opcode_0xD1() { POP_r16(de); }
-void CPU::opcode_0xE1() { POP_r16(hl); }
+void CPU::opcode_0xC1() { stack_pop(bc); }
+void CPU::opcode_0xD1() { stack_pop(de); }
+void CPU::opcode_0xE1() { stack_pop(hl); }
 void CPU::opcode_0xF1()
 {
   byte popped_lsb = mmu->read(sp.get());
-  POP_r16(af);
+  // TODO:
+  // stack_pop(af);
 
   flags.zf = ((popped_lsb & 0x10) != 0);
   flags.nf = ((popped_lsb & 0x20) != 0);
@@ -224,9 +225,9 @@ void CPU::opcode_0xF1()
 
 
 /* PUSH */
-void CPU::opcode_0xC5() { PUSH_r16(bc); }
-void CPU::opcode_0xD5() { PUSH_r16(de); }
-void CPU::opcode_0xE5() { PUSH_r16(hl); }
+void CPU::opcode_0xC5() { stack_push(bc); }
+void CPU::opcode_0xD5() { stack_push(de); }
+void CPU::opcode_0xE5() { stack_push(hl); }
 void CPU::opcode_0xF5()
 {
   sp.decrement();
@@ -344,19 +345,19 @@ void CPU::LD_r8_n8(ByteRegister& reg)
   reg.set(value);
 }
 
-void CPU::LD_r8_r16(ByteRegister& reg, WordRegister& reg16)
+void CPU::LD_r8_r16(ByteRegister& reg, RegisterPair& reg16)
 {
   word addr = reg16.get();
   reg.set(mmu->read(addr));
 }
 
-void CPU::LD_r16_r8(WordRegister& reg16, ByteRegister& reg)
+void CPU::LD_r16_r8(RegisterPair& reg16, ByteRegister& reg)
 {
   mmu->write(reg16.get(), reg.get());
-  reg16.increment();
+  // reg16.increment();
 }
 
-void CPU::LD_addr16_n8(WordRegister& reg)
+void CPU::LD_addr16_n8(RegisterPair& reg)
 {
   byte value = mmu->read(pc.get());
   pc.increment();
@@ -400,8 +401,7 @@ void CPU::LDH_n8_r8(ByteRegister& reg)
   reg.set(mmu->read(0xFF00 + value));
 }
 
-
-/* LD 16 */
+/* TEMPORARY */
 void CPU::LD_r16_nn16(WordRegister& reg)
 {
   word addr = mmu->read(pc.get());
@@ -413,6 +413,26 @@ void CPU::LD_r16_nn16(WordRegister& reg)
 }
 
 void CPU::LD_nn16_r16(WordRegister& reg)
+{
+  word addr = mmu->read(pc.get());
+  pc.increment();
+  addr |= mmu->read(pc.get()) << 8;
+
+  mmu->write(addr, reg.get());
+}
+
+/* LD 16 */
+void CPU::LD_r16_nn16(RegisterPair& reg)
+{
+  word addr = mmu->read(pc.get());
+  pc.increment();
+  addr |= mmu->read(pc.get()) << 8;
+  pc.increment();
+
+  reg.set(addr);
+}
+
+void CPU::LD_nn16_r16(RegisterPair& reg)
 {
   word addr = mmu->read(pc.get());
   pc.increment();
@@ -457,7 +477,7 @@ void CPU::CALL_nn(bool conditional)
     byte msb = mmu->read(pc.get());
     pc.increment();
 
-    PUSH_r16(pc);
+    stack_push(pc);
 
     word nn = (msb << 8) | lsb;
     pc.set(nn);
@@ -468,35 +488,35 @@ void CPU::CALL_nn(bool conditional)
 /* RET */
 void CPU::RET_cc(bool condtiional)
 {
-  POP_r16(pc);
+  stack_pop(pc);
 }
 
 
 /* POP */
-void CPU::POP_r16(WordRegister& reg)
-{
-  byte lsb = mmu->read(sp.get());
-  sp.increment();
-  byte msb = mmu->read(sp.get());
-  sp.increment();
+// void CPU::POP_r16(WordRegister& reg)
+// {
+//   byte lsb = mmu->read(sp.get());
+//   sp.increment();
+//   byte msb = mmu->read(sp.get());
+//   sp.increment();
 
-  word value = (msb << 8) | lsb;
-  LOG("POP: 0x%04X", value);
-  reg.set(value);
-}
+//   word value = (msb << 8) | lsb;
+//   LOG("POP: 0x%04X", value);
+//   reg.set(value);
+// }
 
 
-/* PUSH */
-void CPU::PUSH_r16(WordRegister& reg)
-{
-  sp.decrement();
-  mmu->write(sp.get(), reg.get() >> 8);
-  sp.decrement();
-  mmu->write(sp.get(), reg.get() & 0xFF);
+// /* PUSH */
+// void CPU::PUSH_r16(WordRegister& reg)
+// {
+//   sp.decrement();
+//   mmu->write(sp.get(), reg.get() >> 8);
+//   sp.decrement();
+//   mmu->write(sp.get(), reg.get() & 0xFF);
 
-  LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
-  LOG("PUSH: 0x%04X", reg.get());
-}
+//   LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
+//   LOG("PUSH: 0x%04X", reg.get());
+// }
 
 
 /* AND */
@@ -514,10 +534,18 @@ void CPU::AND_r8(ByteRegister& reg)
 {
   AND(reg.get());
 }
+void CPU::AND_r16(RegisterPair& reg)
+{
+  AND(mmu->read(reg.get()));
+}
+
+
+/* TEMPORARY */
 void CPU::AND_r16(WordRegister& reg)
 {
   AND(mmu->read(reg.get()));
 }
+
 
 
 /* DEC */
@@ -544,16 +572,25 @@ void CPU::DEC_hl()
   flags.hf = half_carry;
 }
 
+/* TEMPORARY */
+void CPU::INC_r16(WordRegister& reg)
+{
+  reg.increment();
+}
+void CPU::DEC_r16(WordRegister& reg)
+{
+  reg.decrement();
+}
 
 /* INC 16 */
-void CPU::INC_r16(WordRegister& reg)
+void CPU::INC_r16(RegisterPair& reg)
 {
   reg.increment();
 }
 
 
 /* DEC 16 */
-void CPU::DEC_r16(WordRegister& reg)
+void CPU::DEC_r16(RegisterPair& reg)
 {
   reg.decrement();
 }
@@ -584,7 +621,7 @@ void CPU::OR_n8()
   byte value = mmu->read(pc.get());
   OR(value);
 }
-void CPU::OR_r16(WordRegister& reg)
+void CPU::OR_r16(RegisterPair& reg)
 {
   byte value = mmu->read(reg.get());
   OR(value);
@@ -613,7 +650,7 @@ void CPU::CP_n8()
   byte value = mmu->read(pc.get());
   CP(value);
 }
-void CPU::CP_r16(WordRegister& reg)
+void CPU::CP_r16(RegisterPair& reg)
 {
   byte value = mmu->read(reg.get());
   CP(value);
