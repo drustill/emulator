@@ -1057,7 +1057,14 @@ void CPU::RLC_hl()
 }
 
 void CPU::RRC(byte value)
-{}
+{
+  byte result = ((value & 0x1) << 7) | (value >> 1);
+
+  f.write((uint8_t)Flag::Z_ZERO, result == 0);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  f.write((uint8_t)Flag::C_CARRY, (value & 0x1) != 0);
+}
 void CPU::RRC_r8(ByteRegister& reg)
 {
   RRC(reg.get());
