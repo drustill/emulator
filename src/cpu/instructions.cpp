@@ -303,6 +303,30 @@ void CPU::opcode_0xEE() { XOR_n8(); }
 void CPU::opcode_0xAE() { XOR_r16(hl); }
 
 
+/* ADD */
+void CPU::opcode_0x87() { ADD_r8(a); }
+void CPU::opcode_0x85() { ADD_r8(l); }
+void CPU::opcode_0x84() { ADD_r8(h); }
+void CPU::opcode_0x83() { ADD_r8(e); }
+void CPU::opcode_0x82() { ADD_r8(d); }
+void CPU::opcode_0x81() { ADD_r8(c); }
+void CPU::opcode_0x80() { ADD_r8(b); }
+
+void CPU::opcode_0xC6() { ADD_n8(); }
+void CPU::opcode_0x86() { ADD_r16(hl); }
+
+/* SUB */
+void CPU::opcode_0x97() { SUB_r8(a); }
+void CPU::opcode_0x95() { SUB_r8(l); }
+void CPU::opcode_0x94() { SUB_r8(h); }
+void CPU::opcode_0x93() { SUB_r8(e); }
+void CPU::opcode_0x92() { SUB_r8(d); }
+void CPU::opcode_0x91() { SUB_r8(c); }
+void CPU::opcode_0x90() { SUB_r8(b); }
+
+void CPU::opcode_0xD6() { SUB_n8(); }
+void CPU::opcode_0x96() { SUB_r16(hl); }
+
 /* ======================================== */
 
 
@@ -610,3 +634,16 @@ void CPU::XOR_r16(RegisterPair& reg)
 {
   XOR(mmu->read(reg.get()));
 }
+
+
+/* ADD */
+void CPU::ADD(byte value) {}
+void CPU::ADD_r8(ByteRegister& reg) {}
+void CPU::ADD_n8() {}
+void CPU::ADD_r16(RegisterPair& reg) {}
+
+/* SUB */
+void CPU::SUB(byte value) {}
+void CPU::SUB_r8(ByteRegister& reg) {}
+void CPU::SUB_n8() {}
+void CPU::SUB_r16(RegisterPair& reg) {}

@@ -148,11 +148,16 @@ int CPU::execute(byte opcode)
     case 0xB8: opcode_0xB8(); break; case 0xFE: opcode_0xFE(); break; case 0xC8: opcode_0xC8(); break; case 0xD8: opcode_0xD8(); break;
     case 0xAF: opcode_0xAF(); break; case 0xAE: opcode_0xAE(); break; case 0xAD: opcode_0xAD(); break; case 0xAC: opcode_0xAC(); break;
     case 0xAB: opcode_0xAB(); break; case 0xAA: opcode_0xAA(); break; case 0xA9: opcode_0xA9(); break; case 0xA8: opcode_0xA8(); break;
-    case 0xEE: opcode_0xEE(); break;
+    case 0xEE: opcode_0xEE(); break; case 0x87: opcode_0x87(); break; case 0x86: opcode_0x86(); break; case 0x85: opcode_0x85(); break;
+    case 0x84: opcode_0x84(); break; case 0x83: opcode_0x83(); break; case 0x82: opcode_0x82(); break; case 0x81: opcode_0x81(); break;
+    case 0x80: opcode_0x80(); break; case 0xC6: opcode_0xC6(); break; case 0x97: opcode_0x97(); break; case 0x96: opcode_0x96(); break;
+    case 0x95: opcode_0x95(); break; case 0x94: opcode_0x94(); break; case 0x93: opcode_0x93(); break; case 0x92: opcode_0x92(); break;
+    case 0x91: opcode_0x91(); break; case 0x90: opcode_0x90(); break; case 0xD6: opcode_0xD6(); break;
 
     default:
       std::cerr << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
-      return 69905;
+      exit(1);
+      // return 69905;
       // break;
   }
 

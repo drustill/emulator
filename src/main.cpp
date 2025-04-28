@@ -23,7 +23,7 @@ int main()
 
   int cycles_this_update = 0;
 
-  while (cycles_this_update < MAXCYCLES)
+  while (1)
   {
     int cycles = cpu.tick();
     cycles_this_update += cycles;
@@ -31,5 +31,6 @@ int main()
     // TODO: Render
   }
 
+  std::cout << "Cycles: " << cycles_this_update << std::endl;
   CLOSE();
 }
