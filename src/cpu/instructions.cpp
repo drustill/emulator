@@ -13,6 +13,12 @@ void CPU::opcode_0x00() { /* NOP */ }
 void CPU::opcode_0xF3() { ime = false; }
 void CPU::opcode_0xFB() { ime = true; }
 
+void CPU::opcode_0x07() { RLCA(); }
+void CPU::opcode_0x17() { RLA(); }
+void CPU::opcode_0x0F() { RRCA(); }
+void CPU::opcode_0x1F() { RRA(); }
+
+
 /* INC */
 void CPU::opcode_0x04() { INC_r8(b); }
 void CPU::opcode_0x14() { INC_r8(d); }
@@ -262,16 +268,6 @@ void CPU::opcode_0xB4() { OR_r8(h); }
 void CPU::opcode_0xB3() { OR_r8(e); }
 void CPU::opcode_0xB2() { OR_r8(d); }
 void CPU::opcode_0xB1() { OR_r8(c); }
-// {
-//   byte bc_msb = bc.get() >> 8;
-//   byte bc_lsb = bc.get() & 0x00FF;
-
-//   /* NEEDS FIX */
-//   b.set(bc_msb);
-//   c.set(bc_lsb);
-
-//   OR_r8(c);
-// }
 void CPU::opcode_0xB0() { OR_r8(b); }
 void CPU::opcode_0xF6() { OR_n8(); }
 void CPU::opcode_0xB6() { OR_r16(hl); }
@@ -355,6 +351,28 @@ void CPU::opcode_0xDE() { SBC_n8(); }
 void CPU::opcode_0x9E() { SBC_r16(hl); }
 
 /* ======================================== */
+
+/* MISC */
+void CPU::RLCA()
+{
+  a.set(RLC(a.get()));
+  f.write((uint8_t)Flag::Z_ZERO, false);
+}
+void CPU::RLA()
+{
+  a.set(RL(a.get()));
+  f.write((uint8_t)Flag::Z_ZERO, false);
+}
+void CPU::RRCA()
+{
+  a.set(RRC(a.get()));
+  f.write((uint8_t)Flag::Z_ZERO, false);
+}
+void CPU::RRA()
+{
+  a.set(RR(a.get()));
+  f.write((uint8_t)Flag::Z_ZERO, false);
+}
 
 
 /* INC */
@@ -892,12 +910,12 @@ void CPU::opcode_cb_0x93() { RES_r8(e, 2); }
 void CPU::opcode_cb_0x92() { RES_r8(d, 2); }
 void CPU::opcode_cb_0x91() { RES_r8(c, 2); }
 void CPU::opcode_cb_0x90() { RES_r8(b, 2); }
-void CPU::opcode_cb_0x8f() { RES_r8(a, 1); }
-void CPU::opcode_cb_0x8e() { RES_hl(1); }
-void CPU::opcode_cb_0x8d() { RES_r8(l, 1); }
-void CPU::opcode_cb_0x8c() { RES_r8(h, 1); }
-void CPU::opcode_cb_0x8b() { RES_r8(e, 1); }
-void CPU::opcode_cb_0x8a() { RES_r8(d, 1); }
+void CPU::opcode_cb_0x8F() { RES_r8(a, 1); }
+void CPU::opcode_cb_0x8E() { RES_hl(1); }
+void CPU::opcode_cb_0x8D() { RES_r8(l, 1); }
+void CPU::opcode_cb_0x8C() { RES_r8(h, 1); }
+void CPU::opcode_cb_0x8B() { RES_r8(e, 1); }
+void CPU::opcode_cb_0x8A() { RES_r8(d, 1); }
 void CPU::opcode_cb_0x89() { RES_r8(c, 1); }
 void CPU::opcode_cb_0x88() { RES_r8(b, 1); }
 void CPU::opcode_cb_0x87() { RES_r8(a, 0); }
@@ -908,12 +926,12 @@ void CPU::opcode_cb_0x83() { RES_r8(e, 0); }
 void CPU::opcode_cb_0x82() { RES_r8(d, 0); }
 void CPU::opcode_cb_0x81() { RES_r8(c, 0); }
 void CPU::opcode_cb_0x80() { RES_r8(b, 0); }
-void CPU::opcode_cb_0x7f() { BIT_r8(a, 7); }
-void CPU::opcode_cb_0x7e() { BIT_hl(7); }
-void CPU::opcode_cb_0x7d() { BIT_r8(l, 7); }
-void CPU::opcode_cb_0x7c() { BIT_r8(h, 7); }
-void CPU::opcode_cb_0x7b() { BIT_r8(e, 7); }
-void CPU::opcode_cb_0x7a() { BIT_r8(d, 7); }
+void CPU::opcode_cb_0x7F() { BIT_r8(a, 7); }
+void CPU::opcode_cb_0x7E() { BIT_hl(7); }
+void CPU::opcode_cb_0x7D() { BIT_r8(l, 7); }
+void CPU::opcode_cb_0x7C() { BIT_r8(h, 7); }
+void CPU::opcode_cb_0x7B() { BIT_r8(e, 7); }
+void CPU::opcode_cb_0x7A() { BIT_r8(d, 7); }
 void CPU::opcode_cb_0x79() { BIT_r8(c, 7); }
 void CPU::opcode_cb_0x78() { BIT_r8(b, 7); }
 void CPU::opcode_cb_0x77() { BIT_r8(a, 6); }
@@ -924,12 +942,12 @@ void CPU::opcode_cb_0x73() { BIT_r8(e, 6); }
 void CPU::opcode_cb_0x72() { BIT_r8(d, 6); }
 void CPU::opcode_cb_0x71() { BIT_r8(c, 6); }
 void CPU::opcode_cb_0x70() { BIT_r8(b, 6); }
-void CPU::opcode_cb_0x6f() { BIT_r8(a, 5); }
-void CPU::opcode_cb_0x6e() { BIT_hl(5); }
-void CPU::opcode_cb_0x6d() { BIT_r8(l, 5); }
-void CPU::opcode_cb_0x6c() { BIT_r8(h, 5); }
-void CPU::opcode_cb_0x6b() { BIT_r8(e, 5); }
-void CPU::opcode_cb_0x6a() { BIT_r8(d, 5); }
+void CPU::opcode_cb_0x6F() { BIT_r8(a, 5); }
+void CPU::opcode_cb_0x6E() { BIT_hl(5); }
+void CPU::opcode_cb_0x6D() { BIT_r8(l, 5); }
+void CPU::opcode_cb_0x6C() { BIT_r8(h, 5); }
+void CPU::opcode_cb_0x6B() { BIT_r8(e, 5); }
+void CPU::opcode_cb_0x6A() { BIT_r8(d, 5); }
 void CPU::opcode_cb_0x69() { BIT_r8(c, 5); }
 void CPU::opcode_cb_0x68() { BIT_r8(b, 5); }
 void CPU::opcode_cb_0x67() { BIT_r8(a, 4); }
@@ -940,12 +958,12 @@ void CPU::opcode_cb_0x63() { BIT_r8(e, 4); }
 void CPU::opcode_cb_0x62() { BIT_r8(d, 4); }
 void CPU::opcode_cb_0x61() { BIT_r8(c, 4); }
 void CPU::opcode_cb_0x60() { BIT_r8(b, 4); }
-void CPU::opcode_cb_0x5f() { BIT_r8(a, 3); }
-void CPU::opcode_cb_0x5e() { BIT_hl(3); }
-void CPU::opcode_cb_0x5d() { BIT_r8(l, 3); }
-void CPU::opcode_cb_0x5c() { BIT_r8(h, 3); }
-void CPU::opcode_cb_0x5b() { BIT_r8(e, 3); }
-void CPU::opcode_cb_0x5a() { BIT_r8(d, 3); }
+void CPU::opcode_cb_0x5F() { BIT_r8(a, 3); }
+void CPU::opcode_cb_0x5E() { BIT_hl(3); }
+void CPU::opcode_cb_0x5D() { BIT_r8(l, 3); }
+void CPU::opcode_cb_0x5C() { BIT_r8(h, 3); }
+void CPU::opcode_cb_0x5B() { BIT_r8(e, 3); }
+void CPU::opcode_cb_0x5A() { BIT_r8(d, 3); }
 void CPU::opcode_cb_0x59() { BIT_r8(c, 3); }
 void CPU::opcode_cb_0x58() { BIT_r8(b, 3); }
 void CPU::opcode_cb_0x57() { BIT_r8(a, 2); }
@@ -956,12 +974,12 @@ void CPU::opcode_cb_0x53() { BIT_r8(e, 2); }
 void CPU::opcode_cb_0x52() { BIT_r8(d, 2); }
 void CPU::opcode_cb_0x51() { BIT_r8(c, 2); }
 void CPU::opcode_cb_0x50() { BIT_r8(b, 2); }
-void CPU::opcode_cb_0x4f() { BIT_r8(a, 1); }
-void CPU::opcode_cb_0x4e() { BIT_hl(1); }
-void CPU::opcode_cb_0x4d() { BIT_r8(l, 1); }
-void CPU::opcode_cb_0x4c() { BIT_r8(h, 1); }
-void CPU::opcode_cb_0x4b() { BIT_r8(e, 1); }
-void CPU::opcode_cb_0x4a() { BIT_r8(d, 1); }
+void CPU::opcode_cb_0x4F() { BIT_r8(a, 1); }
+void CPU::opcode_cb_0x4E() { BIT_hl(1); }
+void CPU::opcode_cb_0x4D() { BIT_r8(l, 1); }
+void CPU::opcode_cb_0x4C() { BIT_r8(h, 1); }
+void CPU::opcode_cb_0x4B() { BIT_r8(e, 1); }
+void CPU::opcode_cb_0x4A() { BIT_r8(d, 1); }
 void CPU::opcode_cb_0x49() { BIT_r8(c, 1); }
 void CPU::opcode_cb_0x48() { BIT_r8(b, 1); }
 void CPU::opcode_cb_0x47() { BIT_r8(a, 0); }
@@ -972,12 +990,12 @@ void CPU::opcode_cb_0x43() { BIT_r8(e, 0); }
 void CPU::opcode_cb_0x42() { BIT_r8(d, 0); }
 void CPU::opcode_cb_0x41() { BIT_r8(c, 0); }
 void CPU::opcode_cb_0x40() { BIT_r8(b, 0); }
-void CPU::opcode_cb_0x3f() { SRL_r8(a); }
-void CPU::opcode_cb_0x3e() { SRL_hl(); }
-void CPU::opcode_cb_0x3d() { SRL_r8(l); }
-void CPU::opcode_cb_0x3c() { SRL_r8(h); }
-void CPU::opcode_cb_0x3b() { SRL_r8(e); }
-void CPU::opcode_cb_0x3a() { SRL_r8(d); }
+void CPU::opcode_cb_0x3F() { SRL_r8(a); }
+void CPU::opcode_cb_0x3E() { SRL_hl(); }
+void CPU::opcode_cb_0x3D() { SRL_r8(l); }
+void CPU::opcode_cb_0x3C() { SRL_r8(h); }
+void CPU::opcode_cb_0x3B() { SRL_r8(e); }
+void CPU::opcode_cb_0x3A() { SRL_r8(d); }
 void CPU::opcode_cb_0x39() { SRL_r8(c); }
 void CPU::opcode_cb_0x38() { SRL_r8(b); }
 void CPU::opcode_cb_0x37() { SWAP_r8(a); }
@@ -988,12 +1006,12 @@ void CPU::opcode_cb_0x33() { SWAP_r8(e); }
 void CPU::opcode_cb_0x32() { SWAP_r8(d); }
 void CPU::opcode_cb_0x31() { SWAP_r8(c); }
 void CPU::opcode_cb_0x30() { SWAP_r8(b); }
-void CPU::opcode_cb_0x2f() { SRA_r8(a); }
-void CPU::opcode_cb_0x2e() { SRA_hl(); }
-void CPU::opcode_cb_0x2d() { SRA_r8(l); }
-void CPU::opcode_cb_0x2c() { SRA_r8(h); }
-void CPU::opcode_cb_0x2b() { SRA_r8(e); }
-void CPU::opcode_cb_0x2a() { SRA_r8(d); }
+void CPU::opcode_cb_0x2F() { SRA_r8(a); }
+void CPU::opcode_cb_0x2E() { SRA_hl(); }
+void CPU::opcode_cb_0x2D() { SRA_r8(l); }
+void CPU::opcode_cb_0x2C() { SRA_r8(h); }
+void CPU::opcode_cb_0x2B() { SRA_r8(e); }
+void CPU::opcode_cb_0x2A() { SRA_r8(d); }
 void CPU::opcode_cb_0x29() { SRA_r8(c); }
 void CPU::opcode_cb_0x28() { SRA_r8(b); }
 void CPU::opcode_cb_0x27() { SLA_r8(a); }
@@ -1004,12 +1022,12 @@ void CPU::opcode_cb_0x23() { SLA_r8(e); }
 void CPU::opcode_cb_0x22() { SLA_r8(d); }
 void CPU::opcode_cb_0x21() { SLA_r8(c); }
 void CPU::opcode_cb_0x20() { SLA_r8(b); }
-void CPU::opcode_cb_0x1f() { RR_r8(a); }
-void CPU::opcode_cb_0x1e() { RR_hl(); }
-void CPU::opcode_cb_0x1d() { RR_r8(l); }
-void CPU::opcode_cb_0x1c() { RR_r8(h); }
-void CPU::opcode_cb_0x1b() { RR_r8(e); }
-void CPU::opcode_cb_0x1a() { RR_r8(d); }
+void CPU::opcode_cb_0x1F() { RR_r8(a); }
+void CPU::opcode_cb_0x1E() { RR_hl(); }
+void CPU::opcode_cb_0x1D() { RR_r8(l); }
+void CPU::opcode_cb_0x1C() { RR_r8(h); }
+void CPU::opcode_cb_0x1B() { RR_r8(e); }
+void CPU::opcode_cb_0x1A() { RR_r8(d); }
 void CPU::opcode_cb_0x19() { RR_r8(c); }
 void CPU::opcode_cb_0x18() { RR_r8(b); }
 void CPU::opcode_cb_0x17() { RL_r8(a); }
@@ -1020,12 +1038,12 @@ void CPU::opcode_cb_0x13() { RL_r8(e); }
 void CPU::opcode_cb_0x12() { RL_r8(d); }
 void CPU::opcode_cb_0x11() { RL_r8(c); }
 void CPU::opcode_cb_0x10() { RL_r8(b); }
-void CPU::opcode_cb_0x0f() { RRC_r8(a); }
-void CPU::opcode_cb_0x0e() { RRC_hl(); }
-void CPU::opcode_cb_0x0d() { RRC_r8(l); }
-void CPU::opcode_cb_0x0c() { RRC_r8(h); }
-void CPU::opcode_cb_0x0b() { RRC_r8(e); }
-void CPU::opcode_cb_0x0a() { RRC_r8(d); }
+void CPU::opcode_cb_0x0F() { RRC_r8(a); }
+void CPU::opcode_cb_0x0E() { RRC_hl(); }
+void CPU::opcode_cb_0x0D() { RRC_r8(l); }
+void CPU::opcode_cb_0x0C() { RRC_r8(h); }
+void CPU::opcode_cb_0x0B() { RRC_r8(e); }
+void CPU::opcode_cb_0x0A() { RRC_r8(d); }
 void CPU::opcode_cb_0x09() { RRC_r8(c); }
 void CPU::opcode_cb_0x08() { RRC_r8(b); }
 void CPU::opcode_cb_0x07() { RLC_r8(a); }
