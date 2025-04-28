@@ -63,9 +63,8 @@ int CPU::tick()
   byte opcode = read_pc();
 
   if (opcode == 0xCB) {
-    byte cbcode = read_pc();
-    exit(0);
-    // return execute_cb(cbcode, addr)
+    byte cb = read_pc();
+    return execute_cb(cb, addr)
   }
 
   return execute(opcode, addr);
@@ -105,7 +104,7 @@ int8_t CPU::read_pc_signed()
 
 int CPU::execute(byte opcode, word address)
 {
-  LOG("[0x%04X]  %s (0x%x)", address, opcode_metadata[opcode].c_str(), int(opcode));
+  LOG("[0x%04X]  %s (0x%x)", address, opcode_metadata[opcode].c_str(), opcode);
 
   cond_cycles = false;
 
@@ -175,3 +174,13 @@ int CPU::execute(byte opcode, word address)
   return cond_cycles ? TrueCycleTable[opcode] : FalseCycleTable[opcode];
 }
 
+int CPU::execute_cb(byte opcode, word address)
+{
+  LOG("[0x%04X]  %s (CB 0x%x)", address, opcode_metadata[opcode].c_str(), opcode);
+
+  switch (opcode) {
+
+  }
+
+  return CallbackCycleTable[opcode];
+}
