@@ -10,6 +10,10 @@ class ByteRegister
     void set(byte newValue) { value = newValue; }
     void increment() { value++; }
     void decrement() { value--; }
+
+    /* Only for register f - should be changed*/
+    bool read(const byte offset) { return (value >> offset) & 0x1; }
+    void write(const byte offset, const bool cond) { cond ? value |= (0x01 << offset) : value &= ~(0x01 << offset); }
 };
 
 class WordRegister
@@ -44,10 +48,10 @@ class RegisterPair
 
 };
 
-struct Flags
+enum class Flag
 {
-  bool zf; // Zero Flag
-  bool nf; // Subtract Flag
-  bool hf; // Half Carry Flag
-  bool cf; // Carry Flag
+  Z_ZERO = 7,
+  N_SUBTRACT = 6,
+  H_HALFCARRY = 5,
+  C_CARRY = 4,
 };

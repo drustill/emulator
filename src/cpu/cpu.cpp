@@ -67,6 +67,27 @@ int CPU::tick()
   return res;
 }
 
+/**
+ * read_pc: get the next byte from the program counter
+ */
+byte CPU::read_pc()
+{
+  word address = pc.get();
+  pc.increment();
+
+  return mmu->read(address);
+}
+
+/**
+ * read_pc_signed: get the next byte from the program counter as a signed int
+ */
+int8_t CPU::read_pc_signed()
+{
+  return static_cast<int8_t>(read_pc());
+}
+
+
+
 int CPU::execute(byte opcode)
 {
   cond_cycles = false;

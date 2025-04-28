@@ -12,16 +12,18 @@ class CPU
 
   private:
     MMU* mmu;
-    Flags flags;
 
-    ByteRegister a, b, c, d, e, h, l;
+    ByteRegister a, f, b, c, d, e, h, l;
 
-    // RegisterPair af = RegisterPair(a, f);
+    RegisterPair af = RegisterPair(a, f);
     RegisterPair bc = RegisterPair(b, c);
     RegisterPair de = RegisterPair(d, e);
     RegisterPair hl = RegisterPair(h, l);
 
     WordRegister sp, pc;
+
+    byte read_pc();
+    int8_t read_pc_signed();
 
     template<typename R>
     void stack_push(R& reg)
@@ -31,7 +33,7 @@ class CPU
       sp.decrement();
       mmu->write(sp.get(), reg.get() & 0xFF);
 
-      LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
+      // LOG("FLAGS: 0x%04X, 0x%04X, 0x%04X, 0x%04X", flags.zf, flags.nf, flags.hf, flags.cf);
       LOG("PUSH: 0x%04X", reg.get());
     }
 
@@ -305,6 +307,7 @@ class CPU
     // void PUSH_r16(WordRegister& reg);
 
     void AND(byte value);
+    void AND_n8();
     void AND_r8(ByteRegister& reg);
     void AND_r16(RegisterPair& reg);
 
