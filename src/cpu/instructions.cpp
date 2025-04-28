@@ -675,10 +675,20 @@ void CPU::ADD(byte value)
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) + (value & 0xF) > 0xF);
   f.write((uint8_t)Flag::C_CARRY, (result & 0x100) != 0);
+
 }
-void CPU::ADD_r8(ByteRegister& reg) {}
-void CPU::ADD_n8() {}
-void CPU::ADD_r16(RegisterPair& reg) {}
+void CPU::ADD_r8(ByteRegister& reg)
+{
+  ADD(reg.get());
+}
+void CPU::ADD_n8()
+{
+  ADD(read_pc());
+}
+void CPU::ADD_r16(RegisterPair& reg)
+{
+  ADD(mmu->read(reg.get()));
+}
 
 
 /* SUB */
@@ -694,9 +704,18 @@ void CPU::SUB(byte value)
   f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) - (value & 0xF) < 0));
   f.write((uint8_t)Flag::C_CARRY, result < 0);
 }
-void CPU::SUB_r8(ByteRegister& reg) {}
-void CPU::SUB_n8() {}
-void CPU::SUB_r16(RegisterPair& reg) {}
+void CPU::SUB_r8(ByteRegister& reg)
+{
+  SUB(reg.get());
+}
+void CPU::SUB_n8()
+{
+  SUB(read_pc());
+}
+void CPU::SUB_r16(RegisterPair& reg)
+{
+  SUB(mmu->read(reg.get()));
+}
 
 
 /* ADC */
@@ -715,9 +734,18 @@ void CPU::ADC(byte value)
   f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) + (value & 0xF) + carry) > 0xF);
   f.write((uint8_t)Flag::C_CARRY, result_full > 0xFF);
 }
-void CPU::ADC_r8(ByteRegister& reg) {}
-void CPU::ADC_n8() {}
-void CPU::ADC_r16(RegisterPair& reg) {}
+void CPU::ADC_r8(ByteRegister& reg)
+{
+  ADC(reg.get());
+}
+void CPU::ADC_n8()
+{
+  ADC(read_pc());
+}
+void CPU::ADC_r16(RegisterPair& reg)
+{
+  ADC(mmu->read(reg.get()));
+}
 
 
 /* SBC */
@@ -736,7 +764,15 @@ void CPU::SBC(byte value)
   f.write((uint8_t)Flag::H_HALFCARRY, result_full < 0);
   f.write((uint8_t)Flag::C_CARRY, ((reg & 0xF) - (value & 0xF) - carry) < 0);
 }
-void CPU::SBC_r8(ByteRegister& reg) {}
-void CPU::SBC_n8() {}
-void CPU::SBC_r16(RegisterPair& reg) {}
-
+void CPU::SBC_r8(ByteRegister& reg)
+{
+  SBC(reg.get());
+}
+void CPU::SBC_n8()
+{
+  SBC(read_pc());
+}
+void CPU::SBC_r16(RegisterPair& reg)
+{
+  SBC(mmu->read(reg.get()));
+}
