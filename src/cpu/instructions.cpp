@@ -1045,7 +1045,9 @@ void CPU::RLC_r8(ByteRegister& reg)
   RLC(reg.get());
 }
 void CPU::RLC_hl()
-{}
+{
+  mmu->write(hl.get(), RLC(mmu->read(hl.get())));
+}
 
 void CPU::RRC(byte value)
 {}
@@ -1054,7 +1056,9 @@ void CPU::RRC_r8(ByteRegister& reg)
   RRC(reg.get());
 }
 void CPU::RRC_hl()
-{}
+{
+  mmu->write(hl.get(), RRC(mmu->read(hl.get())));
+}
 
 void CPU::RL(byte value)
 {}
@@ -1063,7 +1067,9 @@ void CPU::RL_r8(ByteRegister& reg)
   RL(reg.get());
 }
 void CPU::RL_hl()
-{}
+{
+  mmu->write(hl.get(), RL(mmu->read(hl.get())));
+}
 
 void CPU::RR(byte value)
 {}
@@ -1072,7 +1078,9 @@ void CPU::RR_r8(ByteRegister& reg)
   RR(reg.get());
 }
 void CPU::RR_hl()
-{}
+{
+  mmu->write(hl.get(), RR(mmu->read(hl.get())));
+}
 
 void CPU::SLA(byte value)
 {}
@@ -1081,7 +1089,9 @@ void CPU::SLA_r8(ByteRegister& reg)
   SLA(reg.get());
 }
 void CPU::SLA_hl()
-{}
+{
+  mmu->write(hl.get(), SLA(mmu->read(hl.get())));
+}
 
 void CPU::SRA(byte value)
 {}
@@ -1090,7 +1100,9 @@ void CPU::SRA_r8(ByteRegister& reg)
   SRA(reg.get());
 }
 void CPU::SRA_hl()
-{}
+{
+  mmu->write(hl.get(), SRA(mmu->read(hl.get())));
+}
 
 void CPU::SWAP(byte value)
 {}
@@ -1099,7 +1111,9 @@ void CPU::SWAP_r8(ByteRegister& reg)
   SWAP(reg.get());
 }
 void CPU::SWAP_hl()
-{}
+{
+  mmu->write(hl.get(), SWAP(mmu->read(hl.get())));
+}
 
 void CPU::SRL(byte value)
 {}
@@ -1108,7 +1122,9 @@ void CPU::SRL_r8(ByteRegister& reg)
   SRL(reg.get());
 }
 void CPU::SRL_hl()
-{}
+{
+  mmu->write(hl.get(), SRL(mmu->read(hl.get())));
+}
 
 void CPU::BIT(byte value, uint8_t bit)
 {}
@@ -1117,7 +1133,9 @@ void CPU::BIT_r8(ByteRegister& reg, uint8_t bit)
   BIT(reg.get(), bit);
 }
 void CPU::BIT_hl(uint8_t bit)
-{}
+{
+  BIT(mmu->read(hl.get()), bit);
+}
 
 void CPU::RES(byte value, uint8_t bit)
 {}
@@ -1126,7 +1144,9 @@ void CPU::RES_r8(ByteRegister& reg, uint8_t bit)
   RES(reg.get(), bit);
 }
 void CPU::RES_hl(uint8_t bit)
-{}
+{
+  RES(mmu->read(hl.get()), bit);
+}
 
 void CPU::SET(byte value, uint8_t bit)
 {}
@@ -1135,4 +1155,6 @@ void CPU::SET_r8(ByteRegister& reg, uint8_t bit)
   SET(reg.get(), bit);
 }
 void CPU::SET_hl(uint8_t bit)
-{}
+{
+  SET(mmu->read(hl.get()), bit);
+}
