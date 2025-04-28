@@ -303,6 +303,32 @@ class CPU
     void opcode_0x90();
     void opcode_0xD6();
 
+
+    void opcode_0x8F();
+    void opcode_0x8D();
+    void opcode_0x8C();
+    void opcode_0x8B();
+    void opcode_0x8A();
+    void opcode_0x89();
+    void opcode_0x88();
+
+    void opcode_0xCE();
+    void opcode_0x8E();
+
+
+    void opcode_0x9F();
+    void opcode_0x9D();
+    void opcode_0x9C();
+    void opcode_0x9B();
+    void opcode_0x9A();
+    void opcode_0x99();
+    void opcode_0x98();
+
+    void opcode_0xDE();
+    void opcode_0x9E();
+
+
+
     /**
      * Opcode implementations
      */
@@ -376,4 +402,14 @@ class CPU
     void SUB_r8(ByteRegister& reg);
     void SUB_n8();
     void SUB_r16(RegisterPair& reg);
+
+    void ADC(byte value);
+    void ADC_r8(ByteRegister& reg);
+    void ADC_n8();
+    void ADC_r16(RegisterPair& reg);
+
+    void SBC(byte value);
+    void SBC_r8(ByteRegister& reg);
+    void SBC_n8();
+    void SBC_r16(RegisterPair& reg);
 };
