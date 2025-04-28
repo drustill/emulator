@@ -462,9 +462,9 @@ void CPU::CALL_nn(bool conditional)
 
 
 /* RET */
-void CPU::RET_cc(bool condtiional)
+void CPU::RET_cc(bool conditional)
 {
-  stack_pop(pc);
+  if (conditional) stack_pop(pc);
 }
 
 
