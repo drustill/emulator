@@ -1,8 +1,8 @@
 #include <cstdint>
 
-#include "../logger.h"
-#include "register.h"
+#include "log.h"
 #include "mmu.h"
+#include "register.h"
 
 class CPU
 {

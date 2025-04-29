@@ -1,5 +1,5 @@
 #include "register.h"
-#include "../logger.h"
+#include "common.h"
 
 word RegisterPair::get()
 {

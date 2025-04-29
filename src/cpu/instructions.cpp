@@ -1,5 +1,5 @@
 #include "cpu.h"
-#include "../logger.h"
+#include "log.h"
 
 /**
  * r8: ByteRegister

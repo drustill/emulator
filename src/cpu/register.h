@@ -1,4 +1,4 @@
-#include "../definitions.h"
+#include "common.h"
 
 class ByteRegister
 {

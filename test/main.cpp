@@ -2,15 +2,14 @@
 #include <iostream>
 #include <iomanip>
 #include <cstring>
+
+#include "log.h"
 #include "cpu/cpu.h"
 #include "cpu/mmu.h"
-#include "logger.h"
-
-const int MAXCYCLES = 69905;
 
 int main()
 {
-  const std::string ROMPATH = "../roms/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb";
+  const std::string ROMPATH = "test/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb";
 
   MMU mmu;
   std::memset(mmu.data, 0, sizeof(mmu.data));

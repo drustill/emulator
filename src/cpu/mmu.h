@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../definitions.h"
+#include "common.h"
 
 #include <iostream>
 #include <cstdint>

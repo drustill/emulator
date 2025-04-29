@@ -6,7 +6,7 @@
 class Logger
 {
   public:
-    Logger(const char* file = "_log.txt") { fs.open(file, std::fstream::in | std::fstream::out | std::fstream::trunc); }
+    Logger(const char* file = "_log.log") { fs.open(file, std::fstream::in | std::fstream::out | std::fstream::trunc); }
 
     std::fstream fs;
 
