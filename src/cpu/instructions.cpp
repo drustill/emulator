@@ -564,7 +564,12 @@ void CPU::RET_cc(bool conditional)
   }
 }
 
-void CPU::RETI() {}
+/* RETI */
+void CPU::RETI()
+{
+  RET_cc();
+  ime = true;
+}
 
 
 /* AND */
