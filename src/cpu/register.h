@@ -22,8 +22,13 @@ class WordRegister
 
   public:
     WordRegister() : value(0) {}
+
+    byte high() { return (value >> 8) & 0xFF; }
+    byte low() { return value & 0xFF; }
+
     word get() { return value; }
     void set(word newValue) { value = newValue; }
+
     void increment() { value++; }
     void decrement() { value--; }
 };

@@ -476,11 +476,12 @@ void CPU::LD_r16_nn16(WordRegister& reg)
 
 void CPU::LD_nn16_r16(WordRegister& reg)
 {
-  word addr = mmu->read(pc.get());
-  pc.increment();
-  addr |= mmu->read(pc.get()) << 8;
+  word addr = read_pc_word();
 
-  mmu->write(addr, reg.get());
+  byte lsb = reg.low();
+  mmu->write(addr, lsb);
+  byte msb = reg.high();
+  mmu->write(addr + 1, msb);
 }
 
 /* LD 16 */
@@ -507,10 +508,12 @@ void CPU::LD_nn16_r16(RegisterPair& reg)
 /* JP */
 void CPU::JP(bool conditional)
 {
+  word nn = read_pc_word();
+
   if (conditional) {
     cond_cycles = true;
 
-    pc.set(read_pc_word());
+    pc.set(nn);
   }
 }
 void CPU::JP_hl()

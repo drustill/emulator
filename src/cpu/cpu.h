@@ -46,7 +46,7 @@ class CPU
       sp.increment();
 
       word value = (msb << 8) | lsb;
-      // LOG("POP: 0x%04X", value);
+      LOG("POP: 0x%04X", value);
       reg.set(value);
     }
 
