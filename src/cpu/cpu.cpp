@@ -188,7 +188,7 @@ int CPU::execute(byte opcode, word address)
     case 0xE9: opcode_0xE9(); break; case 0x76: opcode_0x76(); break;
 
     default:
-      std::cerr << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
+      std::cout << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
       exit(1);
   }
 

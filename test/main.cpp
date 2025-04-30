@@ -34,6 +34,5 @@ int main(int argc, char* argv[])
     // TODO: Render
   }
 
-  std::cout << "Cycles: " << cycles_this_update << std::endl;
   CLOSE();
 }
