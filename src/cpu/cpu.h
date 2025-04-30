@@ -356,6 +356,17 @@ class CPU
 
     void opcode_0xD9();
 
+    void opcode_0xF7();
+    void opcode_0xE7();
+    void opcode_0xD7();
+    void opcode_0xC7();
+
+    void opcode_0xFF();
+    void opcode_0xEF();
+    void opcode_0xDF();
+    void opcode_0xCF();
+
+
     /**
      * Opcode implementations
      */
@@ -390,6 +401,8 @@ class CPU
 
     void RET_cc(bool conditional = true);
     void RETI();
+
+    void RST();
 
     void AND(byte value);
     void AND_n8();

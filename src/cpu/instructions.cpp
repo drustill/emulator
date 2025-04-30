@@ -209,8 +209,21 @@ void CPU::opcode_0xDC() { CALL_nn(f.read((uint8_t)Flag::C_CARRY)); }
 void CPU::opcode_0xC4() { CALL_nn(!f.read((uint8_t)Flag::Z_ZERO)); }
 void CPU::opcode_0xD4() { CALL_nn(!f.read((uint8_t)Flag::C_CARRY)); }
 
+
 /* RETI */
 void CPU::opcode_0xD9() { RETI(); }
+
+
+/* RST */
+void CPU::opcode_0xF7() { RST(); }
+void CPU::opcode_0xE7() { RST(); }
+void CPU::opcode_0xD7() { RST(); }
+void CPU::opcode_0xC7() { RST(); }
+
+void CPU::opcode_0xFF() { RST(); }
+void CPU::opcode_0xEF() { RST(); }
+void CPU::opcode_0xDF() { RST(); }
+void CPU::opcode_0xCF() { RST(); }
 
 /* RET */
 void CPU::opcode_0xC9() { RET_cc(); }
@@ -571,6 +584,8 @@ void CPU::RETI()
   ime = true;
 }
 
+/* RST */
+void CPU::RST() {}
 
 /* AND */
 void CPU::AND(byte value)
