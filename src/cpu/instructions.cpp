@@ -215,15 +215,15 @@ void CPU::opcode_0xD9() { RETI(); }
 
 
 /* RST */
-void CPU::opcode_0xF7() { RST(); }
-void CPU::opcode_0xE7() { RST(); }
-void CPU::opcode_0xD7() { RST(); }
-void CPU::opcode_0xC7() { RST(); }
+void CPU::opcode_0xF7() { RST(0x0000); }
+void CPU::opcode_0xE7() { RST(0x0010); }
+void CPU::opcode_0xD7() { RST(0x0020); }
+void CPU::opcode_0xC7() { RST(0x0030); }
 
-void CPU::opcode_0xFF() { RST(); }
-void CPU::opcode_0xEF() { RST(); }
-void CPU::opcode_0xDF() { RST(); }
-void CPU::opcode_0xCF() { RST(); }
+void CPU::opcode_0xFF() { RST(0x0008); }
+void CPU::opcode_0xEF() { RST(0x0018); }
+void CPU::opcode_0xDF() { RST(0x0028); }
+void CPU::opcode_0xCF() { RST(0x0038); }
 
 /* RET */
 void CPU::opcode_0xC9() { RET_cc(); }
@@ -585,7 +585,11 @@ void CPU::RETI()
 }
 
 /* RST */
-void CPU::RST() {}
+void CPU::RST(word address)
+{
+  stack_push(pc);
+  pc.set(address);
+}
 
 /* AND */
 void CPU::AND(byte value)
@@ -818,6 +822,8 @@ void CPU::ADC(byte value)
   byte result = static_cast<int8_t>(result_full);
 
   a.set(result);
+
+  LOG("result_full : 0x%04X", result_full);
 
   f.write((uint8_t)Flag::Z_ZERO, result == 0);
   f.write((uint8_t)Flag::N_SUBTRACT, false);

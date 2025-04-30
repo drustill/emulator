@@ -402,7 +402,7 @@ class CPU
     void RET_cc(bool conditional = true);
     void RETI();
 
-    void RST();
+    void RST(word address);
 
     void AND(byte value);
     void AND_n8();
