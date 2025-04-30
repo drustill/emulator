@@ -7,14 +7,18 @@
 #include "cpu/cpu.h"
 #include "cpu/mmu.h"
 
-int main()
+int main(int argc, char* argv[])
 {
-  const std::string ROMPATH = "test/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb";
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " <path_to_rom>" << std::endl;
+    return 1;
+  }
 
   MMU mmu;
   std::memset(mmu.data, 0, sizeof(mmu.data));
 
-  std::ifstream rom(ROMPATH, std::ios::binary);
+  const std::string rom_path = argv[1];
+  std::ifstream rom(rom_path, std::ios::binary);
 
   rom.read(reinterpret_cast<char*>(mmu.data), sizeof(mmu.data));
 

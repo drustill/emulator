@@ -8,7 +8,7 @@ build:
 	cmake --build build
 
 test:
-	cd build && ./emulator-test
+	./scripts/test-blargg-roms.sh
 
 clean:
 	rm -rf build
