@@ -339,6 +339,8 @@ void CPU::opcode_0x19() { ADD_hl_r16(de); }
 void CPU::opcode_0x29() { ADD_hl_r16(hl); }
 void CPU::opcode_0x39() { ADD_hl_r16(sp); }
 
+void CPU::opcode_0xE8() { ADD_sp_e8(); }
+
 
 /* SUB */
 void CPU::opcode_0x97() { SUB_r8(a); }
