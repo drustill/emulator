@@ -354,6 +354,8 @@ class CPU
 
     void opcode_0x76();
 
+    void opcode_0xD9();
+
     /**
      * Opcode implementations
      */
@@ -387,6 +389,7 @@ class CPU
     void CALL_nn(bool conditional = true);
 
     void RET_cc(bool conditional = true);
+    void RETI();
 
     void AND(byte value);
     void AND_n8();
