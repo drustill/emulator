@@ -174,10 +174,10 @@ void CPU::opcode_0xF8()
 
   f.write((uint8_t)Flag::Z_ZERO, false);
   f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, (reg ^ e ^ (result & 0xFFFF) & 0x10) == 0x10);
-  f.write((uint8_t)Flag::C_CARRY, (reg ^ e ^ (result & 0xFFFF) & 0x100) == 0x100);
+  f.write((uint8_t)Flag::H_HALFCARRY, ((reg ^ e ^ (result & 0xFFFF)) & 0x10) == 0x10);
+  f.write((uint8_t)Flag::C_CARRY, ((reg ^ e ^ (result & 0xFFFF)) & 0x100) == 0x100);
 
-  hl.set(result);
+  hl.set(static_cast<word>(result));
 }
 void CPU::opcode_0xF9() {
   sp.set(hl.get());
@@ -792,10 +792,10 @@ void CPU::ADD_sp_e8()
 
   f.write((uint8_t)Flag::Z_ZERO, false);
   f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, (reg ^ e ^ (result & 0xFFFF) & 0x10) == 0x10);
-  f.write((uint8_t)Flag::C_CARRY, (reg ^ e ^ (result & 0xFFFF) & 0x100) == 0x100);
+  f.write((uint8_t)Flag::H_HALFCARRY, ((reg ^ e ^ (result & 0xFFFF)) & 0x10) == 0x10);
+  f.write((uint8_t)Flag::C_CARRY, ((reg ^ e ^ (result & 0xFFFF)) & 0x100) == 0x100);
 
-  sp.set(result);
+  sp.set(static_cast<word>(result));
 }
 
 
