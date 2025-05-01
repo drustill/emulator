@@ -386,6 +386,23 @@ void CPU::opcode_0x98() { SBC_r8(b); }
 void CPU::opcode_0xDE() { SBC_n8(); }
 void CPU::opcode_0x9E() { SBC_r16(hl); }
 
+
+/* DAA */
+void CPU::opcode_0x27() { DAA(); }
+
+
+/* SFC */
+void CPU::opcode_0x37() { SFC(); }
+
+
+/* CCF */
+void CPU::opcode_0x3F() { CCF(); }
+
+
+/* CPL */
+void CPU::opcode_0x2F() { CPL(); }
+
+
 /* ======================================== */
 
 /* MISC */
@@ -892,6 +909,65 @@ void CPU::SBC_r16(RegisterPair& reg)
 }
 
 
+/* DAA */
+void CPU::DAA()
+{
+  bool flag_carry = f.read((uint8_t)Flag::C_CARRY);
+  bool flag_half_carry = f.read((uint8_t)Flag::H_HALFCARRY);
+  bool flag_subtract = f.read((uint8_t)Flag::N_SUBTRACT);
+
+  byte reg = a.get();
+  byte adjustment = flag_carry ? 0x60 : 0x00;
+
+  if (flag_half_carry || (!flag_subtract && ((reg & 0x0F) > 9))) {
+    adjustment |= 0x06;
+  }
+
+  if (flag_carry || (!flag_subtract && (reg > 0x99))) {
+    adjustment |= 0x60;
+  }
+
+  if (flag_subtract) {
+    reg = static_cast<byte>(reg - adjustment);
+  } else {
+    reg = static_cast<byte>(reg + adjustment);
+  }
+
+  if (((adjustment << 2) & 0x100) != 0) {
+    f.write((uint8_t)Flag::C_CARRY, true);
+  }
+
+  f.write((uint8_t)Flag::Z_ZERO, reg == 0);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
+
+  a.set(static_cast<byte>(reg));
+}
+
+
+/* SFC */
+void CPU::SFC()
+{
+  f.write((uint8_t)Flag::C_CARRY, true);
+}
+
+
+/* CCF */
+void CPU::CCF()
+{
+  bool current_carry = f.read((uint8_t)Flag::C_CARRY);
+  f.write((uint8_t)Flag::C_CARRY, ~current_carry);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
+}
+
+
+/* CPL */
+void CPU::CPL()
+{
+  a.set(~(a.get()));
+  f.write((uint8_t)Flag::N_SUBTRACT, true);
+  f.write((uint8_t)Flag::H_HALFCARRY, true);
+}
 
 
 void CPU::opcode_cb_0xFF() { SET_r8(a, 7); }

@@ -46,7 +46,6 @@ class CPU
       sp.increment();
 
       word value = (msb << 8) | lsb;
-      LOG("POP: 0x%04X", value);
       reg.set(value);
     }
 
@@ -368,6 +367,13 @@ class CPU
 
     void opcode_0xE8();
 
+    void opcode_0x27();
+    void opcode_0x37();
+
+    void opcode_0x2F();
+    void opcode_0x3F();
+
+
 
     /**
      * Opcode implementations
@@ -465,6 +471,11 @@ class CPU
     void RLA();
     void RRCA();
     void RRA();
+
+    void DAA();
+    void SFC();
+    void CCF();
+    void CPL();
 
     void opcode_cb_0xFF();
     void opcode_cb_0xFE();

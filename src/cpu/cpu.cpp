@@ -188,7 +188,8 @@ int CPU::execute(byte opcode, word address)
     case 0xE9: opcode_0xE9(); break; case 0x76: opcode_0x76(); break; case 0xD9: opcode_0xD9(); break; case 0xF7: opcode_0xF7(); break;
     case 0xE7: opcode_0xE7(); break; case 0xD7: opcode_0xD7(); break; case 0xC7: opcode_0xC7(); break; case 0xFF: opcode_0xFF(); break;
     case 0xEF: opcode_0xEF(); break; case 0xDF: opcode_0xDF(); break; case 0xCF: opcode_0xCF(); break; case 0x09: opcode_0x09(); break;
-    case 0x19: opcode_0x19(); break; case 0x39: opcode_0x39(); break; case 0xE8: opcode_0xE8(); break;
+    case 0x19: opcode_0x19(); break; case 0x39: opcode_0x39(); break; case 0xE8: opcode_0xE8(); break; case 0x27: opcode_0x27(); break;
+    case 0x37: opcode_0x37(); break; case 0x2F: opcode_0x2F(); break; case 0x3F: opcode_0x3F(); break;
 
     default:
       std::cout << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
