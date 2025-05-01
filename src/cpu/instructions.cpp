@@ -238,7 +238,12 @@ void CPU::opcode_0xD0() { RET_cc(!f.read((uint8_t)Flag::C_CARRY)); }
 void CPU::opcode_0xC1() { stack_pop(bc); }
 void CPU::opcode_0xD1() { stack_pop(de); }
 void CPU::opcode_0xE1() { stack_pop(hl); }
-void CPU::opcode_0xF1() { stack_pop(af); }
+void CPU::opcode_0xF1()
+{
+  // Flags are 4 - 7, so clear the 4 bits of reg f
+  stack_pop(af);
+  af.set(af.get() & 0xFFF0);
+}
 
 
 /* PUSH */
