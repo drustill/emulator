@@ -164,6 +164,7 @@ void CPU::opcode_0x31() { LD_r16_nn16(sp); }
 
 void CPU::opcode_0x08() { LD_nn16_r16(sp); } // SP -> nn16
 
+// 0xF8 and 0xE8 are almost the same
 void CPU::opcode_0xF8()
 {
   word reg = sp.get();
@@ -741,7 +742,7 @@ void CPU::XOR_r16(RegisterPair& reg)
 void CPU::ADD(byte value)
 {
   byte reg = a.get();
-  uint result = reg + value;
+  uint32_t result = reg + value;
 
   a.set(static_cast<byte>(result));
 
@@ -763,28 +764,40 @@ void CPU::ADD_r16(RegisterPair& reg)
 {
   ADD(mmu->read(reg.get()));
 }
-void CPU::ADD_hl_r16(RegisterPair& reg)
+void CPU::ADD_hl(word value)
 {
-  uint32_t result_full = reg.get() + hl.get();
-  word result = static_cast<word>(result_full);
+  word reg = hl.get();
+  unsigned int result = reg + value;
 
   f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, (reg.get() ^ hl.get() ^ (result_full & 0xFFFF)) & 0x1000);
-  f.write((uint8_t)Flag::C_CARRY, result_full > 0xFFFF);
+  f.write((uint8_t)Flag::H_HALFCARRY, (reg & 0xFFF) + (value & 0xFFF) > 0xFFF);
+  f.write((uint8_t)Flag::C_CARRY, (result & 0x10000) != 0);
 
-  reg.set(result);
+  hl.set(static_cast<word>(result));
+}
+void CPU::ADD_hl_r16(RegisterPair& reg)
+{
+  ADD_hl(reg.get());
 }
 void CPU::ADD_hl_r16(WordRegister& reg)
 {
-  uint32_t result_full = reg.get() + hl.get();
-  word result = static_cast<word>(result_full);
-
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, (reg.get() ^ hl.get() ^ (result_full & 0xFFFF)) & 0x1000);
-  f.write((uint8_t)Flag::C_CARRY, result_full > 0xFFFF);
-
-  reg.set(result);
+  ADD_hl(reg.get());
 }
+void CPU::ADD_sp_e8()
+{
+  word reg = sp.get();
+  int8_t e = read_pc_signed();
+
+  int result = static_cast<int>(reg + e);
+
+  f.write((uint8_t)Flag::Z_ZERO, false);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, (reg ^ e ^ (result & 0xFFFF) & 0x10) == 0x10);
+  f.write((uint8_t)Flag::C_CARRY, (reg ^ e ^ (result & 0xFFFF) & 0x100) == 0x100);
+
+  sp.set(result);
+}
+
 
 
 /* SUB */
@@ -820,12 +833,10 @@ void CPU::ADC(byte value)
   byte reg = a.get();
   byte carry = f.read((uint8_t)Flag::C_CARRY);
 
-  uint result_full = reg + value + carry;
+  uint32_t result_full = reg + value + carry;
   byte result = static_cast<int8_t>(result_full);
 
   a.set(result);
-
-  LOG("result_full : 0x%04X", result_full);
 
   f.write((uint8_t)Flag::Z_ZERO, result == 0);
   f.write((uint8_t)Flag::N_SUBTRACT, false);

@@ -366,6 +366,8 @@ class CPU
     void opcode_0xDF();
     void opcode_0xCF();
 
+    void opcode_0xE8();
+
 
     /**
      * Opcode implementations
@@ -439,8 +441,10 @@ class CPU
     void ADD_r8(ByteRegister& reg);
     void ADD_n8();
     void ADD_r16(RegisterPair& reg);
+    void ADD_hl(word value);
     void ADD_hl_r16(RegisterPair& reg);
     void ADD_hl_r16(WordRegister& reg);
+    void ADD_sp_e8();
 
     void SUB(byte value);
     void SUB_r8(ByteRegister& reg);
