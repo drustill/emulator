@@ -33,8 +33,6 @@ class CPU
       mmu->write(sp.get(), reg.get() >> 8);
       sp.decrement();
       mmu->write(sp.get(), reg.get() & 0xFF);
-
-      // LOG("PUSH: 0x%04X", reg.get());
     }
 
     template<typename R>

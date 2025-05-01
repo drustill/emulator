@@ -948,6 +948,8 @@ void CPU::DAA()
 void CPU::SFC()
 {
   f.write((uint8_t)Flag::C_CARRY, true);
+  f.write((uint8_t)Flag::N_SUBTRACT, false);
+  f.write((uint8_t)Flag::H_HALFCARRY, false);
 }
 
 
@@ -955,7 +957,7 @@ void CPU::SFC()
 void CPU::CCF()
 {
   bool current_carry = f.read((uint8_t)Flag::C_CARRY);
-  f.write((uint8_t)Flag::C_CARRY, ~current_carry);
+  f.write((uint8_t)Flag::C_CARRY, !current_carry);
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
 }
@@ -1352,7 +1354,9 @@ void CPU::SRA_hl()
 
 byte CPU::SWAP(byte value)
 {
-  byte swapped = ((value << 0x0F) & 4 | (value & 0xF0) >> 4);
+  byte low = value & 0x0F;
+  byte high = value & 0xF0 >> 4;
+  byte swapped = static_cast<byte>((low << 1) | high);
 
   f.write((uint8_t)Flag::Z_ZERO, swapped == 0);
   f.write((uint8_t)Flag::N_SUBTRACT, false);
