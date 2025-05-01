@@ -809,8 +809,8 @@ void CPU::SUB(byte value)
   a.set(static_cast<byte>(result));
 
   f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) - (value & 0xF) < 0));
+  f.write((uint8_t)Flag::N_SUBTRACT, true);
+  f.write((uint8_t)Flag::H_HALFCARRY, (((reg & 0xF) - (value & 0xF)) < 0));
   f.write((uint8_t)Flag::C_CARRY, result < 0);
 }
 void CPU::SUB_r8(ByteRegister& reg)
