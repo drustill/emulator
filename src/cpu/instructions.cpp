@@ -870,8 +870,8 @@ void CPU::SBC(byte value)
 
   f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
   f.write((uint8_t)Flag::N_SUBTRACT, true);
-  f.write((uint8_t)Flag::H_HALFCARRY, result_full < 0);
-  f.write((uint8_t)Flag::C_CARRY, ((reg & 0xF) - (value & 0xF) - carry) < 0);
+  f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) - (value & 0xF) - carry) < 0);
+  f.write((uint8_t)Flag::C_CARRY, result_full < 0);
 }
 void CPU::SBC_r8(ByteRegister& reg)
 {
