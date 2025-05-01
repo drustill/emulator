@@ -719,7 +719,7 @@ void CPU::CP_r16(RegisterPair& reg)
 void CPU::XOR(byte value)
 {
   a.set(a.get() ^ value);
-  f.write((uint8_t)Flag::Z_ZERO, a.get() == value);
+  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
   f.write((uint8_t)Flag::N_SUBTRACT, false);
   f.write((uint8_t)Flag::H_HALFCARRY, false);
   f.write((uint8_t)Flag::C_CARRY, false);
