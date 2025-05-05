@@ -68,6 +68,15 @@ int CallbackCycleTable[256] = {
  */
 CPU::CPU(MMU* mmu) : mmu(mmu)
 {
+  a.set(0x01);
+  f.set(0xB0);
+  b.set(0x00);
+  c.set(0x13);
+  d.set(0x00);
+  e.set(0xD8);
+  h.set(0x01);
+  l.set(0x4D);
+  sp.set(0xFFFE);
   pc.set(0x100);
 }
 
@@ -120,11 +129,44 @@ int8_t CPU::read_pc_signed()
   return static_cast<int8_t>(read_pc());
 }
 
-
+void CPU::set_zero_flag(bool value)
+{
+  // if (value != zero_flag()) {
+  //   LOG("Setting zero_flag to %d", value);
+  // }
+  f.write((uint8_t)Flag::Z_ZERO, value);
+}
+void CPU::set_subtract_flag(bool value)
+{
+  // if (value != subtract_flag()) {
+  //   LOG("Setting subtract_flag to %d", value);
+  // }
+  f.write((uint8_t)Flag::N_SUBTRACT, value);
+}
+void CPU::set_halfcarry_flag(bool value)
+{
+  // if (value != halfcarry_flag()) {
+  //   LOG("Setting halfcarry_flag to %d", value);
+  // }
+  f.write((uint8_t)Flag::H_HALFCARRY, value);
+}
+void CPU::set_carry_flag(bool value)
+{
+  // if (value != carry_flag()) {
+  //   LOG("Setting carry_flag to %d", value);
+  // }
+  f.write((uint8_t)Flag::C_CARRY, value);
+}
 
 int CPU::execute(byte opcode, word address)
 {
-  LOG("[0x%04X]  %s (0x%x)", address, opcode_metadata[opcode].c_str(), opcode);
+  // LOG("| 0x%04X: %s (0x%x)", address, opcode_metadata[opcode].c_str(), opcode);
+  // if ((address == 0xC9FF && opcode == 0x20) || (address == 0xC9FD && opcode == 0xFE)) {
+  //   LOG("Flags @ 0x%04X: 0x%x, 0x%x, 0x%x, 0x%x,", address, zero_flag(), subtract_flag(), halfcarry_flag(), carry_flag() );
+  // }
+  // LOG("| FLAGS: 0x%x, 0x%x, 0x%x, 0x%x", f.read((uint8_t)Flag::Z_ZERO),
+  //     f.read((uint8_t)Flag::N_SUBTRACT), f.read((uint8_t)Flag::H_HALFCARRY), f.read((uint8_t)Flag::C_CARRY)
+  // );
 
   cond_cycles = false;
 
@@ -201,7 +243,10 @@ int CPU::execute(byte opcode, word address)
 
 int CPU::execute_cb(byte opcode, word address)
 {
-  LOG("[0x%04X]  %s (CB 0x%x)", address, opcode_cb_metadata[opcode].c_str(), opcode);
+  // LOG("| 0x%04X: %s (CB 0x%x)", address, opcode_cb_metadata[opcode].c_str(), opcode);
+  // LOG("| FLAGS: 0x%x, 0x%x, 0x%x, 0x%x", f.read((uint8_t)Flag::Z_ZERO),
+  //     f.read((uint8_t)Flag::N_SUBTRACT), f.read((uint8_t)Flag::H_HALFCARRY), f.read((uint8_t)Flag::C_CARRY)
+  // );
 
   switch (opcode) {
     case 0xFF: opcode_cb_0xFF(); break; case 0xFE: opcode_cb_0xFE(); break; case 0xFD: opcode_cb_0xFD(); break; case 0xFC: opcode_cb_0xFC(); break;

@@ -9,6 +9,7 @@ class MMU
 {
   public:
     byte data[0x10000]; // 64KB
+    byte io[0x80];
 
     byte read(word addr);
     void write(word addr, byte value);

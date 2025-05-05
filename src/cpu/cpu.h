@@ -15,6 +15,16 @@ class CPU
 
     ByteRegister a, f, b, c, d, e, h, l;
 
+    void set_zero_flag(bool value);
+    void set_subtract_flag(bool value);
+    void set_halfcarry_flag(bool value);
+    void set_carry_flag(bool value);
+
+    bool zero_flag() { return f.read((uint8_t)Flag::Z_ZERO); }
+    bool subtract_flag() { return f.read((uint8_t)Flag::N_SUBTRACT); }
+    bool halfcarry_flag() { return f.read((uint8_t)Flag::H_HALFCARRY); }
+    bool carry_flag() { return f.read((uint8_t)Flag::C_CARRY); }
+
     RegisterPair af = RegisterPair(a, f);
     RegisterPair bc = RegisterPair(b, c);
     RegisterPair de = RegisterPair(d, e);
@@ -471,7 +481,7 @@ class CPU
     void RRA();
 
     void DAA();
-    void SFC();
+    void SCF();
     void CCF();
     void CPL();
 

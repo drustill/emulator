@@ -6,7 +6,14 @@ namespace {
 
 byte MMU::read(word addr)
 {
-  return data[addr];
+  switch (addr) {
+    case 0xFF44:
+      return 0x90;
+      break;
+
+    default:
+      return data[addr];
+  }
 }
 
 void MMU::write(word addr, byte value)

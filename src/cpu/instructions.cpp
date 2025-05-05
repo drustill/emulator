@@ -27,13 +27,14 @@ void CPU::opcode_0x24() { INC_r8(h); }
 void CPU::opcode_0x34()
 {
   word address = hl.get();
-  byte result = mmu->read(address) + 1;
+  byte value = mmu->read(address);
+  byte result = static_cast<byte>(value + 1);
 
   mmu->write(address, result);
 
-  f.write((uint8_t)Flag::Z_ZERO, result == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, (result & 0x0F) == 0x00);
+  set_zero_flag(result == 0);
+  set_subtract_flag(false);
+  set_halfcarry_flag((result & 0x0F) == 0x00);
 }
 
 void CPU::opcode_0x0C() { INC_r8(c); }
@@ -172,10 +173,10 @@ void CPU::opcode_0xF8()
 
   int result = static_cast<int>(reg + e);
 
-  f.write((uint8_t)Flag::Z_ZERO, false);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, ((reg ^ e ^ (result & 0xFFFF)) & 0x10) == 0x10);
-  f.write((uint8_t)Flag::C_CARRY, ((reg ^ e ^ (result & 0xFFFF)) & 0x100) == 0x100);
+  set_zero_flag(false);
+  set_subtract_flag(false);
+  set_halfcarry_flag(((reg ^ e ^ (result & 0xFFFF)) & 0x10) == 0x10);
+  set_carry_flag(((reg ^ e ^ (result & 0xFFFF)) & 0x100) == 0x100);
 
   hl.set(static_cast<word>(result));
 }
@@ -194,12 +195,12 @@ void CPU::opcode_0xC3() { JP(); }
 
 
 /* JR */
-void CPU::opcode_0x20() { JR_cc_e(!f.read((uint8_t)Flag::Z_ZERO)); }
-void CPU::opcode_0x30() { JR_cc_e(!f.read((uint8_t)Flag::C_CARRY)); }
+void CPU::opcode_0x20() { JR_cc_e(!zero_flag()); }
+void CPU::opcode_0x30() { JR_cc_e(!carry_flag()); }
 
 void CPU::opcode_0x18() { JR_cc_e(); }
-void CPU::opcode_0x28() { JR_cc_e(f.read((uint8_t)Flag::Z_ZERO)); }
-void CPU::opcode_0x38() { JR_cc_e(f.read((uint8_t)Flag::C_CARRY)); }
+void CPU::opcode_0x28() { JR_cc_e(zero_flag()); }
+void CPU::opcode_0x38() { JR_cc_e(carry_flag()); }
 
 /* CALL */
 void CPU::opcode_0xCD() { CALL_nn(); }
@@ -391,8 +392,8 @@ void CPU::opcode_0x9E() { SBC_r16(hl); }
 void CPU::opcode_0x27() { DAA(); }
 
 
-/* SFC */
-void CPU::opcode_0x37() { SFC(); }
+/* SCF */
+void CPU::opcode_0x37() { SCF(); }
 
 
 /* CCF */
@@ -409,22 +410,22 @@ void CPU::opcode_0x2F() { CPL(); }
 void CPU::RLCA()
 {
   a.set(RLC(a.get()));
-  f.write((uint8_t)Flag::Z_ZERO, false);
+  set_zero_flag(false);
 }
 void CPU::RLA()
 {
   a.set(RL(a.get()));
-  f.write((uint8_t)Flag::Z_ZERO, false);
+  set_zero_flag(false);
 }
 void CPU::RRCA()
 {
   a.set(RRC(a.get()));
-  f.write((uint8_t)Flag::Z_ZERO, false);
+  set_zero_flag(false);
 }
 void CPU::RRA()
 {
   a.set(RR(a.get()));
-  f.write((uint8_t)Flag::Z_ZERO, false);
+  set_zero_flag(false);
 }
 
 
@@ -432,9 +433,10 @@ void CPU::RRA()
 void CPU::INC_r8(ByteRegister& reg)
 {
   reg.increment();
-  f.write((uint8_t)Flag::Z_ZERO, reg.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, (reg.get() & 0x0F) == 0x00);
+
+  set_zero_flag(reg.get() == 0);
+  set_subtract_flag(false);
+  set_halfcarry_flag((reg.get() & 0x0F) == 0x00);
 }
 
 /* LD */
@@ -469,21 +471,13 @@ void CPU::LD_addr16_n8(RegisterPair& reg)
 
 void CPU::LD_nn16_r8(ByteRegister& reg)
 {
-  word addr = mmu->read(pc.get());
-  pc.increment();
-  addr |= mmu->read(pc.get()) << 8;
-  pc.increment();
-
+  word addr = read_pc_word();
   mmu->write(addr, reg.get());
 }
 
 void CPU::LD_r8_nn16(ByteRegister& reg)
 {
-  word addr = mmu->read(pc.get());
-  pc.increment();
-  addr |= mmu->read(pc.get()) << 8;
-  pc.increment();
-
+  word addr = read_pc_word();
   reg.set(mmu->read(addr));
 }
 
@@ -491,26 +485,25 @@ void CPU::LD_r8_nn16(ByteRegister& reg)
 /* LDH */
 void CPU::LDH_r8_n8(ByteRegister& reg)
 {
-  byte value = mmu->read(pc.get());
-  pc.increment();
-  mmu->write(0xFF00 + value, reg.get());
+  byte offset = read_pc();
+  word address = offset + 0xFF00;
+
+  mmu->write(address, reg.get());
 }
 
 void CPU::LDH_n8_r8(ByteRegister& reg)
 {
-  byte value = mmu->read(pc.get());
-  pc.increment();
-  reg.set(mmu->read(0xFF00 + value));
+  byte offset = read_pc();
+  word address = offset + 0xFF00;
+  byte value = mmu->read(address);
+
+  reg.set(value);
 }
 
 /* TEMPORARY */
 void CPU::LD_r16_nn16(WordRegister& reg)
 {
-  word addr = mmu->read(pc.get());
-  pc.increment();
-  addr |= mmu->read(pc.get()) << 8;
-  pc.increment();
-
+  word addr = read_pc_word();
   reg.set(addr);
 }
 
@@ -527,20 +520,13 @@ void CPU::LD_nn16_r16(WordRegister& reg)
 /* LD 16 */
 void CPU::LD_r16_nn16(RegisterPair& reg)
 {
-  word addr = mmu->read(pc.get());
-  pc.increment();
-  addr |= mmu->read(pc.get()) << 8;
-  pc.increment();
-
+  word addr = read_pc_word();
   reg.set(addr);
 }
 
 void CPU::LD_nn16_r16(RegisterPair& reg)
 {
-  word addr = mmu->read(pc.get());
-  pc.increment();
-  addr |= mmu->read(pc.get()) << 8;
-
+  word addr = read_pc_word();
   mmu->write(addr, reg.get());
 }
 
@@ -619,11 +605,15 @@ void CPU::RST(word address)
 /* AND */
 void CPU::AND(byte value)
 {
-  a.set(a.get() & value);
-  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, true);
-  f.write((uint8_t)Flag::C_CARRY, false);
+  byte reg = a.get();
+  byte result = reg & value;
+
+  a.set(result);
+
+  set_zero_flag(a.get() == 0);
+  set_halfcarry_flag(true);
+  set_carry_flag(false);
+  set_subtract_flag(false);
 }
 void CPU::AND_r8(ByteRegister& reg)
 {
@@ -651,20 +641,22 @@ void CPU::AND_r16(WordRegister& reg)
 void CPU::DEC_r8(ByteRegister& reg)
 {
   reg.decrement();
-  f.write((uint8_t)Flag::Z_ZERO, reg.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, true);
-  f.write((uint8_t)Flag::H_HALFCARRY, (reg.get() & 0x0F) == 0x0F);
+
+  set_zero_flag(reg.get() == 0);
+  set_subtract_flag(true);
+  set_halfcarry_flag((reg.get() & 0x0F) == 0x0F);
 }
 void CPU::DEC_hl()
 {
   word address = hl.get();
-  byte result = mmu->read(address) - 1;
+  byte value = mmu->read(address);
+  byte result = static_cast<byte>(value - 1);
 
   mmu->write(address, result);
 
-  f.write((uint8_t)Flag::Z_ZERO, hl.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, true);
-  f.write((uint8_t)Flag::H_HALFCARRY, (hl.get() & 0x0F) == 0x0F);
+  set_zero_flag(result == 0);
+  set_subtract_flag(true);
+  set_halfcarry_flag((result & 0x0F) == 0x0F);
 }
 
 /* TEMPORARY */
@@ -694,12 +686,15 @@ void CPU::DEC_r16(RegisterPair& reg)
 /* OR */
 void CPU::OR(byte value)
 {
-  a.set(a.get() | value);
+  byte reg = a.get();
+  byte result = reg | value;
 
-  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, false);
+  a.set(result);
+
+  set_zero_flag(a.get() == 0);
+  set_halfcarry_flag(false);
+  set_carry_flag(false);
+  set_subtract_flag(false);
 }
 void CPU::OR_r8(ByteRegister& reg)
 {
@@ -718,10 +713,13 @@ void CPU::OR_r16(RegisterPair& reg)
 /* CP */
 void CPU::CP(byte value)
 {
-  f.write((uint8_t)Flag::Z_ZERO, a.get() == value);
-  f.write((uint8_t)Flag::N_SUBTRACT, true);
-  f.write((uint8_t)Flag::H_HALFCARRY, (a.get() & 0xF) - (value & 0xF) < 0);
-  f.write((uint8_t)Flag::C_CARRY, a.get() < value);
+  byte reg = a.get();
+  byte result = static_cast<byte>(reg - value);
+
+  set_zero_flag(result == 0);
+  set_subtract_flag(true);
+  set_halfcarry_flag(((reg & 0xF) - (value & 0xF)) < 0);
+  set_carry_flag(reg < value);
 }
 void CPU::CP_r8(ByteRegister& reg)
 {
@@ -740,11 +738,15 @@ void CPU::CP_r16(RegisterPair& reg)
 /* XOR */
 void CPU::XOR(byte value)
 {
-  a.set(a.get() ^ value);
-  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, false);
+  byte reg = a.get();
+  byte result = reg ^ value;
+
+  set_zero_flag(result == 0);
+  set_subtract_flag(false);
+  set_halfcarry_flag(false);
+  set_carry_flag(false);
+
+  a.set(result);
 }
 void CPU::XOR_r8(ByteRegister& reg)
 {
@@ -768,11 +770,10 @@ void CPU::ADD(byte value)
 
   a.set(static_cast<byte>(result));
 
-  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) + (value & 0xF) > 0xF));
-  f.write((uint8_t)Flag::C_CARRY, (result & 0x100) != 0);
-
+  set_zero_flag(a.get() == 0);
+  set_subtract_flag(false);
+  set_halfcarry_flag(((reg & 0xF) + (value & 0xF)) > 0xF);
+  set_carry_flag((result & 0x100) != 0);
 }
 void CPU::ADD_r8(ByteRegister& reg)
 {
@@ -791,9 +792,9 @@ void CPU::ADD_hl(word value)
   word reg = hl.get();
   unsigned int result = reg + value;
 
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, (reg & 0xFFF) + (value & 0xFFF) > 0xFFF);
-  f.write((uint8_t)Flag::C_CARRY, (result & 0x10000) != 0);
+  set_subtract_flag(false);
+  set_halfcarry_flag(((reg & 0xFFF) + (value & 0xFFF)) > 0xFFF);
+  set_carry_flag((result & 0x10000) != 0);
 
   hl.set(static_cast<word>(result));
 }
@@ -812,10 +813,10 @@ void CPU::ADD_sp_e8()
 
   int result = static_cast<int>(reg + e);
 
-  f.write((uint8_t)Flag::Z_ZERO, false);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, ((reg ^ e ^ (result & 0xFFFF)) & 0x10) == 0x10);
-  f.write((uint8_t)Flag::C_CARRY, ((reg ^ e ^ (result & 0xFFFF)) & 0x100) == 0x100);
+  set_zero_flag(false);
+  set_subtract_flag(false);
+  set_halfcarry_flag(((reg ^ e ^ (result & 0xFFFF)) & 0x10) == 0x10);
+  set_carry_flag(((reg ^ e ^ (result & 0xFFFF)) & 0x100) == 0x100);
 
   sp.set(static_cast<word>(result));
 }
@@ -826,14 +827,14 @@ void CPU::ADD_sp_e8()
 void CPU::SUB(byte value)
 {
   byte reg = a.get();
-  int result = reg - value;
+  byte result = static_cast<byte>(reg - value);
 
-  a.set(static_cast<byte>(result));
+  a.set(result);
 
-  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, true);
-  f.write((uint8_t)Flag::H_HALFCARRY, (((reg & 0xF) - (value & 0xF)) < 0));
-  f.write((uint8_t)Flag::C_CARRY, result < 0);
+  set_zero_flag(a.get() == 0);
+  set_subtract_flag(true);
+  set_halfcarry_flag(((reg & 0xF) - (value & 0xF)) < 0);
+  set_carry_flag(reg < value);
 }
 void CPU::SUB_r8(ByteRegister& reg)
 {
@@ -853,17 +854,17 @@ void CPU::SUB_r16(RegisterPair& reg)
 void CPU::ADC(byte value)
 {
   byte reg = a.get();
-  byte carry = f.read((uint8_t)Flag::C_CARRY);
+  byte carry = carry_flag();
 
-  uint32_t result_full = reg + value + carry;
-  byte result = static_cast<int8_t>(result_full);
+  unsigned int result_full = reg + value + carry;
+  byte result = static_cast<byte>(result_full);
 
   a.set(result);
 
-  f.write((uint8_t)Flag::Z_ZERO, result == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) + (value & 0xF) + carry) > 0xF);
-  f.write((uint8_t)Flag::C_CARRY, result_full > 0xFF);
+  set_zero_flag(a.get() == 0);
+  set_subtract_flag(false);
+  set_halfcarry_flag(((reg & 0xF) + (value & 0xF) + carry) > 0xF);
+  set_carry_flag(result_full > 0xFF);
 }
 void CPU::ADC_r8(ByteRegister& reg)
 {
@@ -883,17 +884,18 @@ void CPU::ADC_r16(RegisterPair& reg)
 void CPU::SBC(byte value)
 {
   byte reg = a.get();
-  byte carry = f.read((uint8_t)Flag::C_CARRY);
+  byte carry = carry_flag();
 
   int result_full = reg - value - carry;
   byte result = static_cast<uint8_t>(result_full);
 
+  set_zero_flag(result == 0);
+  set_subtract_flag(true);
+  set_carry_flag(result_full < 0);
+  set_halfcarry_flag(((reg & 0xF) - (value & 0xF) - carry) < 0);
+
   a.set(result);
 
-  f.write((uint8_t)Flag::Z_ZERO, a.get() == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, true);
-  f.write((uint8_t)Flag::H_HALFCARRY, ((reg & 0xF) - (value & 0xF) - carry) < 0);
-  f.write((uint8_t)Flag::C_CARRY, result_full < 0);
 }
 void CPU::SBC_r8(ByteRegister& reg)
 {
@@ -934,41 +936,43 @@ void CPU::DAA()
   }
 
   if (((adjustment << 2) & 0x100) != 0) {
-    f.write((uint8_t)Flag::C_CARRY, true);
+    set_carry_flag(true);
   }
 
-  f.write((uint8_t)Flag::Z_ZERO, reg == 0);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  set_zero_flag(reg == 0);
+  set_halfcarry_flag(false);
 
   a.set(static_cast<byte>(reg));
 }
 
 
-/* SFC */
-void CPU::SFC()
+/* SCF */
+void CPU::SCF()
 {
-  f.write((uint8_t)Flag::C_CARRY, true);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  set_carry_flag(true);
+  set_halfcarry_flag(false);
+  set_subtract_flag(false);
 }
 
 
 /* CCF */
 void CPU::CCF()
 {
-  bool current_carry = f.read((uint8_t)Flag::C_CARRY);
-  f.write((uint8_t)Flag::C_CARRY, !current_carry);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
+  set_subtract_flag(false);
+  set_halfcarry_flag(false);
+  set_carry_flag(!carry_flag());
 }
 
 
 /* CPL */
 void CPU::CPL()
 {
-  a.set(~(a.get()));
-  f.write((uint8_t)Flag::N_SUBTRACT, true);
-  f.write((uint8_t)Flag::H_HALFCARRY, true);
+  byte reg = a.get();
+  byte result = ~reg;
+  a.set(result);
+
+  set_subtract_flag(true);
+  set_halfcarry_flag(true);
 }
 
 
@@ -1232,12 +1236,13 @@ void CPU::opcode_cb_0x00() { RLC_r8(b); }
 
 byte CPU::RLC(byte value)
 {
-  byte result = (value << 1) | ((value >> 7) & 0x1);
+  byte carry = (value & (1 << 7)) != 0;
+  byte result = static_cast<byte>((value << 1) | carry) ;
 
-  f.write((uint8_t)Flag::Z_ZERO, result == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, ((value >> 7) & 0x1) != 0);
+  set_carry_flag(carry);
+  set_zero_flag(result == 0);
+  set_halfcarry_flag(false);
+  set_subtract_flag(false);
 
   return result;
 }
@@ -1252,12 +1257,13 @@ void CPU::RLC_hl()
 
 byte CPU::RRC(byte value)
 {
-  byte result = ((value & 0x1) << 7) | (value >> 1);
+  byte carry_flag = (value & (1 << 0)) != 0;
+  byte result = static_cast<byte>((value >> 1) | (carry_flag << 7));
 
-  f.write((uint8_t)Flag::Z_ZERO, result == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, (value & 0x1) != 0);
+  set_carry_flag(carry_flag);
+  set_zero_flag(result == 0);
+  set_halfcarry_flag(false);
+  set_subtract_flag(false);
 
   return result;
 }
@@ -1272,13 +1278,18 @@ void CPU::RRC_hl()
 
 byte CPU::RL(byte value)
 {
-  byte carry = f.read((uint8_t)Flag::C_CARRY) ? 1 : 0;
-  byte result = (value << 1) | carry;
+  byte carry = carry_flag();
 
-  f.write((uint8_t)Flag::Z_ZERO, result == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, ((value >> 7) & 0x1) != 0);
+  bool set_carry = (value & (1 << 7)) != 0;
+  set_carry_flag(set_carry);
+
+  byte result = static_cast<byte>(value << 1);
+  result |= carry;
+
+  set_zero_flag(result == 0);
+
+  set_subtract_flag(false);
+  set_halfcarry_flag(false);
 
   return result;
 }
@@ -1293,13 +1304,17 @@ void CPU::RL_hl()
 
 byte CPU::RR(byte value)
 {
-  byte carry = f.read((uint8_t)Flag::C_CARRY) ? 0x80 : 0;
-  byte result = carry | (value >> 1);
+  byte carry = carry_flag();
 
-  f.write((uint8_t)Flag::Z_ZERO, result == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, (value & 0x1) != 0);
+  byte set_carry = (value & (1 << 0)) != 0;
+  set_carry_flag(set_carry);
+
+  byte result = static_cast<byte>(value >> 1);
+  result |= (carry << 7);
+
+  set_zero_flag(result == 0);
+  set_subtract_flag(false);
+  set_halfcarry_flag(false);
 
   return result;
 }
@@ -1314,12 +1329,14 @@ void CPU::RR_hl()
 
 byte CPU::SLA(byte value)
 {
-  byte result = value << 1;
+  byte set_carry = (value & (1 << 7)) != 0;
 
-  f.write((uint8_t)Flag::Z_ZERO, result == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, ((value >> 7) & 0x1) != 0);
+  byte result = static_cast<byte>(value << 1);
+
+  set_zero_flag(result == 0);
+  set_carry_flag(set_carry);
+  set_halfcarry_flag(false);
+  set_subtract_flag(false);
 
   return result;
 }
@@ -1336,10 +1353,10 @@ byte CPU::SRA(byte value)
 {
   byte result = (value & 0x80) | (value >> 1);
 
-  f.write((uint8_t)Flag::Z_ZERO, result == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, ((value & 0x1) != 0));
+  set_zero_flag(result == 0);
+  set_halfcarry_flag(false);
+  set_subtract_flag(false);
+  set_carry_flag((value & 0x1) != 0);
 
   return result;
 }
@@ -1355,13 +1372,13 @@ void CPU::SRA_hl()
 byte CPU::SWAP(byte value)
 {
   byte low = value & 0x0F;
-  byte high = value & 0xF0 >> 4;
-  byte swapped = static_cast<byte>((low << 1) | high);
+  byte high = (value & 0xF0) >> 4;
+  byte swapped = static_cast<byte>((low << 4) | high);
 
-  f.write((uint8_t)Flag::Z_ZERO, swapped == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, false);
+  set_zero_flag(swapped == 0);
+  set_subtract_flag(false);
+  set_halfcarry_flag(false);
+  set_carry_flag(false);
 
   return swapped;
 }
@@ -1376,12 +1393,14 @@ void CPU::SWAP_hl()
 
 byte CPU::SRL(byte value)
 {
-  byte result = value >> 1;
+  bool set_carry = (value & (1 << 0)) != 0;
 
-  f.write((uint8_t)Flag::Z_ZERO, result == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, false);
-  f.write((uint8_t)Flag::C_CARRY, (value & 0x1) != 0);
+  byte result = (value >> 1);
+
+  set_carry_flag(set_carry);
+  set_zero_flag(result == 0);
+  set_halfcarry_flag(false);
+  set_subtract_flag(false);
 
   return result;
 }
@@ -1396,9 +1415,9 @@ void CPU::SRL_hl()
 
 void CPU::BIT(byte value, uint8_t bit)
 {
-  f.write((uint8_t)Flag::Z_ZERO, ((value >> bit) & 0x1) == 0);
-  f.write((uint8_t)Flag::N_SUBTRACT, false);
-  f.write((uint8_t)Flag::H_HALFCARRY, true);
+  set_zero_flag(((value >> bit) & 0x1) == 0);
+  set_subtract_flag(false);
+  set_halfcarry_flag(true);
 }
 void CPU::BIT_r8(ByteRegister& reg, uint8_t bit)
 {
