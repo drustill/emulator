@@ -67,6 +67,8 @@ class CPU
       reg.set(value);
     }
 
+    void handle_interrupts();
+
     /**
      * Switch on opcode
      */

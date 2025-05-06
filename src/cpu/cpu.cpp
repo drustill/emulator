@@ -87,6 +87,7 @@ CPU::CPU(MMU* mmu) : mmu(mmu)
  */
 int CPU::tick()
 {
+  handle_interrupts();
   if (halted) return 1;
 
   word addr = pc.get();
@@ -98,6 +99,13 @@ int CPU::tick()
   }
 
   return execute(opcode, addr);
+}
+
+void CPU::handle_interrupts()
+{
+  if (ime) {
+    // TODO: Handle Interrupt
+  }
 }
 
 /**
