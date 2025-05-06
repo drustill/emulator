@@ -107,6 +107,12 @@ void CPU::handle_interrupts()
 {
   if (ime) {
     byte requests = InterruptFlag() & InterruptEnabled();
+
+    /**
+     * "The priorities follow the order of the bits in the IE and IF registers:
+     * Bit 0 (VBlank) has the highest priority, and Bit 4 (Joypad) has the lowest priority."
+     */
+
     for (int i = 0; requests; i++) {
       if (requests & 1) {
         stack_push(pc);
