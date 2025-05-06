@@ -101,22 +101,21 @@ int CPU::tick()
   return execute(opcode, addr);
 }
 
+static constexpr uint8_t interrupt_addresses[5] = { 0x40, 0x48, 0x50, 0x58, 0x60 };
+
 void CPU::handle_interrupts()
 {
   if (ime) {
     byte requests = InterruptFlag() & InterruptEnabled();
     for (int i = 0; requests; i++) {
       if (requests & 1) {
-        interrupt_(i);
+        stack_push(pc);
+        pc.set(interrupt_addresses[i]);
+        mmu->write(0xFF0F, InterruptEnabled() & ~(1 << i));
       }
       requests >>= 1;
     }
   }
-}
-
-void CPU::interrupt_(uint8_t bit)
-{
-
 }
 
 /**

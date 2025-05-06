@@ -68,7 +68,6 @@ class CPU
     }
 
     void handle_interrupts();
-    void interrupt_(uint8_t bit);
 
     /**
      * Checks bits 5 - 0
