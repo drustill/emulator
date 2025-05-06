@@ -4,8 +4,7 @@
 #include <cstring>
 
 #include "log.h"
-#include "cpu/cpu.h"
-#include "cpu/mmu.h"
+#include "emulator.h"
 
 int main(int argc, char* argv[])
 {
@@ -14,25 +13,12 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  MMU mmu;
-  std::memset(mmu.data, 0, sizeof(mmu.data));
+  Emulator emulator;
 
   const std::string rom_path = argv[1];
-  std::ifstream rom(rom_path, std::ios::binary);
+  emulator.loadROM(rom_path);
 
-  rom.read(reinterpret_cast<char*>(mmu.data), sizeof(mmu.data));
-
-  CPU cpu(&mmu);
-
-  int cycles_this_update = 0;
-
-  while (1)
-  {
-    int cycles = cpu.tick();
-    cycles_this_update += cycles;
-
-    // TODO: Render
-  }
+  emulator.run();
 
   CLOSE();
 }
