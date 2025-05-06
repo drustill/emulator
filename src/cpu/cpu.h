@@ -4,6 +4,13 @@
 #include "mmu.h"
 #include "register.h"
 
+// struct InstructionDescription
+// {
+//   void (CPU::*func)(uint16_t address);
+//   uint8_t cycles;
+//   uint8_t cycles_branch;
+// }
+
 class CPU
 {
   public:
@@ -13,12 +20,15 @@ class CPU
   private:
     MMU* mmu;
 
+    // std::array<InstructionDescription, 256> table_;
+    // std::array<InstructionDescription, 256> cb_table_;
+
     ByteRegister a, f, b, c, d, e, h, l;
 
-    void set_zero_flag(bool value);
-    void set_subtract_flag(bool value);
-    void set_halfcarry_flag(bool value);
-    void set_carry_flag(bool value);
+    void set_zero_flag(bool value) { f.write((uint8_t)Flag::Z_ZERO, value); }
+    void set_subtract_flag(bool value) { f.write((uint8_t)Flag::N_SUBTRACT, value); }
+    void set_halfcarry_flag(bool value) { f.write((uint8_t)Flag::H_HALFCARRY, value); }
+    void set_carry_flag(bool value) { f.write((uint8_t)Flag::C_CARRY, value); }
 
     bool zero_flag() { return f.read((uint8_t)Flag::Z_ZERO); }
     bool subtract_flag() { return f.read((uint8_t)Flag::N_SUBTRACT); }
@@ -386,6 +396,7 @@ class CPU
     /**
      * Opcode implementations
      */
+    void Nop();
     void LD_r8_r8(ByteRegister& reg1, ByteRegister& reg2);
     void LD_r8_r16(ByteRegister& reg, RegisterPair& reg16);
     void LD_r16_r8(RegisterPair& reg16, ByteRegister& reg);

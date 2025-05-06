@@ -78,6 +78,7 @@ CPU::CPU(MMU* mmu) : mmu(mmu)
   l.set(0x4D);
   sp.set(0xFFFE);
   pc.set(0x100);
+
 }
 
 /**
@@ -127,35 +128,6 @@ word CPU::read_pc_word()
 int8_t CPU::read_pc_signed()
 {
   return static_cast<int8_t>(read_pc());
-}
-
-void CPU::set_zero_flag(bool value)
-{
-  // if (value != zero_flag()) {
-  //   LOG("Setting zero_flag to %d", value);
-  // }
-  f.write((uint8_t)Flag::Z_ZERO, value);
-}
-void CPU::set_subtract_flag(bool value)
-{
-  // if (value != subtract_flag()) {
-  //   LOG("Setting subtract_flag to %d", value);
-  // }
-  f.write((uint8_t)Flag::N_SUBTRACT, value);
-}
-void CPU::set_halfcarry_flag(bool value)
-{
-  // if (value != halfcarry_flag()) {
-  //   LOG("Setting halfcarry_flag to %d", value);
-  // }
-  f.write((uint8_t)Flag::H_HALFCARRY, value);
-}
-void CPU::set_carry_flag(bool value)
-{
-  // if (value != carry_flag()) {
-  //   LOG("Setting carry_flag to %d", value);
-  // }
-  f.write((uint8_t)Flag::C_CARRY, value);
 }
 
 int CPU::execute(byte opcode, word address)

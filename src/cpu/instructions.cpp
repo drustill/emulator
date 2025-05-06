@@ -407,6 +407,8 @@ void CPU::opcode_0x2F() { CPL(); }
 /* ======================================== */
 
 /* MISC */
+void CPU::NOP() { /* NOP */ }
+
 void CPU::RLCA()
 {
   a.set(RLC(a.get()));
