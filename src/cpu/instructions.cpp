@@ -9,7 +9,7 @@
  */
 
 /* MISC */
-void CPU::opcode_0x00() { /* NOP */ }
+void CPU::opcode_0x00() { Nop(); }
 void CPU::opcode_0xF3() { ime = false; }
 void CPU::opcode_0xFB() { ime = true; }
 void CPU::opcode_0x76() { halted = true; }
@@ -407,7 +407,7 @@ void CPU::opcode_0x2F() { CPL(); }
 /* ======================================== */
 
 /* MISC */
-void CPU::NOP() { /* NOP */ }
+void CPU::Nop() { /* NOP */ }
 
 void CPU::RLCA()
 {

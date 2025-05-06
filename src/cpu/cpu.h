@@ -70,6 +70,14 @@ class CPU
     void handle_interrupts();
 
     /**
+     * Checks bits 5 - 0
+     * Joypad Serial Timer LCD VBlank
+     */
+
+    byte InterruptFlag() { return mmu->read(0xFFFF); }
+    byte InterruptEnabled() { return mmu->read(0xFF0F); }
+
+    /**
      * Switch on opcode
      */
     int execute(byte opcode, word address);

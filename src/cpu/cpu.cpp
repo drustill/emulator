@@ -104,7 +104,9 @@ int CPU::tick()
 void CPU::handle_interrupts()
 {
   if (ime) {
-    // TODO: Handle Interrupt
+    if (InterruptFlag() & InterruptEnabled()) {
+
+    }
   }
 }
 
