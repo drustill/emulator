@@ -2,7 +2,9 @@
 
 byte MMU::read(word addr)
 {
-  if (addr >= 0xFF00 & addr <= 0xFF7F) {
+  if (addr == 0xFFFF) {
+    return ie;
+  } else if (addr >= 0xFF00 & addr <= 0xFF7F) {
     return io[addr - 0xFF00];
   }
 
@@ -11,7 +13,9 @@ byte MMU::read(word addr)
 
 void MMU::write(word addr, byte value)
 {
-  if (addr >= 0xFF00 & addr <= 0xFF7F) {
+  if (addr == 0xFFFF) {
+    ie = value;
+  } else if (addr >= 0xFF00 & addr <= 0xFF7F) {
     io[addr - 0xFF00] = value;
 
     switch (addr) {

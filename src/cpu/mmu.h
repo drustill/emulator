@@ -11,6 +11,8 @@ class MMU
     byte data[0x10000]; // 64KB
     byte io[0x80];
 
+    byte ie = 0;
+
     byte serial_data = 0;
 
     byte read(word addr);
