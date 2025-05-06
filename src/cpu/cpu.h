@@ -8,7 +8,7 @@
 // {
 //   void (CPU::*func)(uint16_t address);
 //   uint8_t cycles;
-//   uint8_t cycles_branch;
+//   uint8_t branch_cycles;
 // }
 
 class CPU
