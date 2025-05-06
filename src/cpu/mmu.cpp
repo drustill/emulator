@@ -1,9 +1,5 @@
 #include "mmu.h"
 
-namespace {
-  static byte serial_data = 0;
-}
-
 byte MMU::read(word addr)
 {
   switch (addr) {
