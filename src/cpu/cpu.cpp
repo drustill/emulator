@@ -104,10 +104,19 @@ int CPU::tick()
 void CPU::handle_interrupts()
 {
   if (ime) {
-    if (InterruptFlag() & InterruptEnabled()) {
-
+    byte requests = InterruptFlag() & InterruptEnabled();
+    for (int i = 0; requests; i++) {
+      if (requests & 1) {
+        interrupt_(i);
+      }
+      requests >>= 1;
     }
   }
+}
+
+void CPU::interrupt_(uint8_t bit)
+{
+
 }
 
 /**
