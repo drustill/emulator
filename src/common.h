@@ -22,3 +22,10 @@ enum class Color
   Transparent,
 };
 
+enum class VideoMode
+{
+  OAM,
+  VRAM,
+  HBlank,
+  VBlank,
+};
