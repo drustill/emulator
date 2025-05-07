@@ -88,6 +88,7 @@ CPU::CPU(MMU* mmu) : mmu(mmu)
 int CPU::tick()
 {
   handle_interrupts(); // move to some higher level tick()
+
   if (halted) return 1;
 
   word addr = pc.get();
@@ -104,22 +105,33 @@ static constexpr uint8_t interrupt_addresses[5] = { 0x40, 0x48, 0x50, 0x58, 0x60
 
 void CPU::handle_interrupts()
 {
-  if (ime) {
-    byte requests = InterruptFlag() & InterruptEnabled();
+  byte requests = InterruptFlag() & InterruptEnabled();
+  if (!requests) {
+    return;
+  }
 
-    /**
-     * "The priorities follow the order of the bits in the IE and IF registers:
-     * Bit 0 (VBlank) has the highest priority, and Bit 4 (Joypad) has the lowest priority."
-     */
+  if (halted && requests != 0x0) {
+    halted = false;
+  }
 
-    for (int i = 0; requests; i++) {
-      if (requests & 1) {
-        stack_push(pc);
-        pc.set(interrupt_addresses[i]);
-        mmu->write(0xFF0F, InterruptEnabled() & ~(1 << i));
-      }
-      requests >>= 1;
+  if (!ime) {
+    return;
+  }
+
+  /**
+   * "The priorities follow the order of the bits in the IE and IF registers:
+   * Bit 0 (VBlank) has the highest priority, and Bit 4 (Joypad) has the lowest priority."
+   */
+
+  for (int i = 0; requests; i++) {
+    if (requests & 1) {
+      stack_push(pc);
+      pc.set(interrupt_addresses[i]);
+      mmu->write(0xFF0F, InterruptFlag() & ~(1 << i));
+      ime = false;
+      return;
     }
+    requests >>= 1;
   }
 }
 

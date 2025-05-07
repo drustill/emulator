@@ -6,13 +6,9 @@ Timer::Timer(MMU* mmu) : mmu(mmu)
 void Timer::tick(int cycles)
 {
   mmu->divider += cycles;
-  if (mmu->divider >= 256) {
-    mmu->divider %= 256;
-    mmu->write(0xFF04, mmu->divider);
-  }
   clocks += cycles * 4;
 
-  if (mmu->read(0xFF07) & 0x04) {
+  if ((mmu->read(0xFF07) & (1 << 2)) != 0) {
     unsigned int freq;
     switch (mmu->read(0xFF07) & 0x03) {
       case 0:
@@ -29,11 +25,11 @@ void Timer::tick(int cycles)
         break;
     }
 
-    if (clocks >= CLOCK_HZ / freq) {
-      clocks %= CLOCK_HZ / freq;
+    if (clocks >= (CLOCK_HZ / freq)) {
+      clocks %= (CLOCK_HZ / freq);
 
       if (mmu->read(0xFF05) == 0xFF) {
-        mmu->write(0xFF0F, (mmu->read(0xFF0F) & ~(1 << 2)));
+        mmu->write(0xFF0F, (mmu->read(0xFF0F) | (1 << 2)));
         mmu->write(0xFF05, mmu->read(0xFF06));
       } else {
         mmu->write(0xFF05, mmu->read(0xFF05) + 1);

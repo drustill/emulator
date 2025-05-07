@@ -33,6 +33,7 @@ void MMU::write(word addr, byte value)
       case 0xFF04:
         divider = 0;
         io[addr - 0xFF00] = 0;
+        break;
     }
 
   } else {

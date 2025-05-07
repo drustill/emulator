@@ -15,7 +15,7 @@ class MMU
 
     byte serial_data = 0;
 
-    int divider = 0;
+    unsigned int divider = 0;
 
     byte read(word addr);
     void write(word addr, byte value);
