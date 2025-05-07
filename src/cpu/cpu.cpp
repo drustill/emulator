@@ -87,7 +87,6 @@ CPU::CPU(MMU* mmu) : mmu(mmu)
  */
 int CPU::tick()
 {
-  int cycles;
   handle_interrupts(); // move to some higher level tick()
   if (halted) return 1;
 
@@ -96,32 +95,10 @@ int CPU::tick()
 
   if (opcode == 0xCB) {
     byte cb = read_pc();
-    cycles = execute_cb(cb, addr);
-  } else {
-    cycles = execute(opcode, addr);
+    return execute_cb(cb, addr);
   }
-
-  return cycles;
+  return execute(opcode, addr);
 }
-
-// void handle_timer(int cycles)
-// {
-//   div.set(div.get() + cycles);
-//   clocks += cycles * 4;
-
-//   if ((TimerControl() >> 2) & 1) {
-//     unsigned int frequency;
-//     switch (TimerControl() & 0x3) {
-//       case 0: frequency = 4096; break;
-//       case 1: frequency = 262144; break;
-//       case 2: frequency = 65536; break;
-//       case 3: frequency = 16384; break;
-//     }
-
-//     if (clocks >= (4194304 / frequency)) {
-//     }
-//   }
-// }
 
 static constexpr uint8_t interrupt_addresses[5] = { 0x40, 0x48, 0x50, 0x58, 0x60 };
 
