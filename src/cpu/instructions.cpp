@@ -13,6 +13,7 @@ void CPU::opcode_0x00() { Nop(); }
 void CPU::opcode_0xF3() { ime = false; }
 void CPU::opcode_0xFB() { ime = true; }
 void CPU::opcode_0x76() { halted = true; }
+void CPU::opcode_0x10() { Stop(); }
 
 void CPU::opcode_0x07() { RLCA(); }
 void CPU::opcode_0x17() { RLA(); }
@@ -408,6 +409,7 @@ void CPU::opcode_0x2F() { CPL(); }
 
 /* MISC */
 void CPU::Nop() { /* NOP */ }
+void CPU::Stop() { /* STOP */ } // https://gbdev.io/pandocs/Reducing_Power_Consumption.html#using-the-stop-instruction
 
 void CPU::RLCA()
 {

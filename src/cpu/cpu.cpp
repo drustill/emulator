@@ -167,14 +167,6 @@ int8_t CPU::read_pc_signed()
 
 int CPU::execute(byte opcode, word address)
 {
-  // LOG("| 0x%04X: %s (0x%x)", address, opcode_metadata[opcode].c_str(), opcode);
-  // if ((address == 0xC9FF && opcode == 0x20) || (address == 0xC9FD && opcode == 0xFE)) {
-  //   LOG("Flags @ 0x%04X: 0x%x, 0x%x, 0x%x, 0x%x,", address, zero_flag(), subtract_flag(), halfcarry_flag(), carry_flag() );
-  // }
-  // LOG("| FLAGS: 0x%x, 0x%x, 0x%x, 0x%x", f.read((uint8_t)Flag::Z_ZERO),
-  //     f.read((uint8_t)Flag::N_SUBTRACT), f.read((uint8_t)Flag::H_HALFCARRY), f.read((uint8_t)Flag::C_CARRY)
-  // );
-
   cond_cycles = false;
 
   switch (opcode) {
@@ -238,11 +230,7 @@ int CPU::execute(byte opcode, word address)
     case 0xE7: opcode_0xE7(); break; case 0xD7: opcode_0xD7(); break; case 0xC7: opcode_0xC7(); break; case 0xFF: opcode_0xFF(); break;
     case 0xEF: opcode_0xEF(); break; case 0xDF: opcode_0xDF(); break; case 0xCF: opcode_0xCF(); break; case 0x09: opcode_0x09(); break;
     case 0x19: opcode_0x19(); break; case 0x39: opcode_0x39(); break; case 0xE8: opcode_0xE8(); break; case 0x27: opcode_0x27(); break;
-    case 0x37: opcode_0x37(); break; case 0x2F: opcode_0x2F(); break; case 0x3F: opcode_0x3F(); break;
-
-    default:
-      std::cout << "Unknown opcode: 0x" << std::hex << (int)opcode << std::dec << std::endl;
-      exit(1);
+    case 0x37: opcode_0x37(); break; case 0x2F: opcode_0x2F(); break; case 0x3F: opcode_0x3F(); break; case 0x10: opcode_0x10(); break;
   }
 
   return cond_cycles ? TrueCycleTable[opcode] : FalseCycleTable[opcode];
@@ -250,11 +238,6 @@ int CPU::execute(byte opcode, word address)
 
 int CPU::execute_cb(byte opcode, word address)
 {
-  // LOG("| 0x%04X: %s (CB 0x%x)", address, opcode_cb_metadata[opcode].c_str(), opcode);
-  // LOG("| FLAGS: 0x%x, 0x%x, 0x%x, 0x%x", f.read((uint8_t)Flag::Z_ZERO),
-  //     f.read((uint8_t)Flag::N_SUBTRACT), f.read((uint8_t)Flag::H_HALFCARRY), f.read((uint8_t)Flag::C_CARRY)
-  // );
-
   switch (opcode) {
     case 0xFF: opcode_cb_0xFF(); break; case 0xFE: opcode_cb_0xFE(); break; case 0xFD: opcode_cb_0xFD(); break; case 0xFC: opcode_cb_0xFC(); break;
     case 0xFB: opcode_cb_0xFB(); break; case 0xFA: opcode_cb_0xFA(); break; case 0xF9: opcode_cb_0xF9(); break; case 0xF8: opcode_cb_0xF8(); break;

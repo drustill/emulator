@@ -105,6 +105,8 @@ class CPU
     void opcode_0xF3();
     void opcode_0xFB();
 
+    void opcode_0x10();
+
     void opcode_0x01();
     void opcode_0x11();
     void opcode_0x21();
@@ -407,6 +409,7 @@ class CPU
      * Opcode implementations
      */
     void Nop();
+    void Stop();
     void LD_r8_r8(ByteRegister& reg1, ByteRegister& reg2);
     void LD_r8_r16(ByteRegister& reg, RegisterPair& reg16);
     void LD_r16_r8(RegisterPair& reg16, ByteRegister& reg);
