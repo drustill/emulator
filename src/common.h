@@ -1,9 +1,17 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
-typedef uint8_t byte;
-typedef uint16_t word;
+using byte = uint8_t;
+using word = uint16_t;
+
+enum class Flag
+{
+  Z_ZERO = 7,
+  N_SUBTRACT = 6,
+  H_HALFCARRY = 5,
+  C_CARRY = 4,
+};
 
 enum class Color
 {
@@ -13,3 +21,4 @@ enum class Color
   Black,
   Transparent,
 };
+

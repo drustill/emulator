@@ -3,7 +3,6 @@
 
 #include "cpu.h"
 #include "log.h"
-#include "optable.h"
 
 int TrueCycleTable[256] = {
   1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,

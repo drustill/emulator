@@ -54,11 +54,3 @@ class RegisterPair
     void decrement();
 
 };
-
-enum class Flag
-{
-  Z_ZERO = 7,
-  N_SUBTRACT = 6,
-  H_HALFCARRY = 5,
-  C_CARRY = 4,
-};

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "timer.h"
-#include "cpu/cpu.h"
-#include "cpu/mmu.h"
+#include "cpu.h"
+#include "mmu.h"
 
 class Emulator
 {
@@ -16,9 +16,6 @@ class Emulator
     {
       std::memset(mmu.data, 0, sizeof(mmu.data));
       std::ifstream rom(path, std::ios::binary);
-      if (!rom) {
-          throw std::runtime_error("Failed to open ROM file");
-      }
       rom.read(reinterpret_cast<char*>(mmu.data), sizeof(mmu.data));
     }
 

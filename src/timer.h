@@ -1,7 +1,7 @@
 #pragma once
 
-#include "cpu/mmu.h"
-#include "cpu/register.h"
+#include "mmu.h"
+#include "register.h"
 
 static constexpr int CLOCK_HZ = 4194304;
 

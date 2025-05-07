@@ -4,13 +4,6 @@
 #include "mmu.h"
 #include "register.h"
 
-// struct InstructionDescription
-// {
-//   void (CPU::*func)(uint16_t address);
-//   uint8_t cycles;
-//   uint8_t branch_cycles;
-// }
-
 class CPU
 {
   public:
@@ -19,9 +12,6 @@ class CPU
 
   private:
     MMU* mmu;
-
-    // std::array<InstructionDescription, 256> table_;
-    // std::array<InstructionDescription, 256> cb_table_;
 
     ByteRegister a, f, b, c, d, e, h, l;
 
