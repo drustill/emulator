@@ -8,8 +8,11 @@
 class MMU
 {
   public:
-    byte data[0x10000]; // 64KB
+    byte data[0x10000];
+    byte boot[0x0100];
     byte io[0x80];
+
+    bool use_boot = false;
 
     byte ie = 0;
 

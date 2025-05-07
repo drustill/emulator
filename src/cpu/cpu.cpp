@@ -68,6 +68,10 @@ int CallbackCycleTable[256] = {
  */
 CPU::CPU(MMU* mmu) : mmu(mmu)
 {
+  if (mmu->use_boot) {
+    pc.set(0x0000);
+    return;
+  }
   a.set(0x01);
   f.set(0xB0);
   b.set(0x00);
@@ -77,8 +81,7 @@ CPU::CPU(MMU* mmu) : mmu(mmu)
   h.set(0x01);
   l.set(0x4D);
   sp.set(0xFFFE);
-  pc.set(0x100);
-
+  pc.set(0x0100);
 }
 
 /**

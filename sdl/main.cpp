@@ -1,146 +1,174 @@
-/*
- * Copyright (c) 2018, 2019 Amine Ben Hassouna <amine.benhassouna@gmail.com>
- * All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any
- * person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the
- * Software without restriction, including without
- * limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software
- * is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice
- * shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
- * ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
- * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
- * SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
- * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- */
-
-#include <stdio.h>
-#include <stdbool.h>
-
+#include <array>
+#include <vector>
 #include <SDL.h>
 
-// Define MAX and MIN macros
-#define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
-#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
+#include "common.h"
+#include "emulator.h"
 
-// Define screen dimensions
-#define SCREEN_WIDTH    800
-#define SCREEN_HEIGHT   600
+const uint8_t bootDMG[256] = {
+    0x31, 0xFE, 0xFF, 0xAF, 0x21, 0xFF, 0x9F, 0x32, 0xCB, 0x7C, 0x20, 0xFB, 0x21, 0x26, 0xFF, 0x0E,
+    0x11, 0x3E, 0x80, 0x32, 0xE2, 0x0C, 0x3E, 0xF3, 0xE2, 0x32, 0x3E, 0x77, 0x77, 0x3E, 0xFC, 0xE0,
+    0x47, 0x11, 0x04, 0x01, 0x21, 0x10, 0x80, 0x1A, 0xCD, 0x95, 0x00, 0xCD, 0x96, 0x00, 0x13, 0x7B,
+    0xFE, 0x34, 0x20, 0xF3, 0x11, 0xD8, 0x00, 0x06, 0x08, 0x1A, 0x13, 0x22, 0x23, 0x05, 0x20, 0xF9,
+    0x3E, 0x19, 0xEA, 0x10, 0x99, 0x21, 0x2F, 0x99, 0x0E, 0x0C, 0x3D, 0x28, 0x08, 0x32, 0x0D, 0x20,
+    0xF9, 0x2E, 0x0F, 0x18, 0xF3, 0x67, 0x3E, 0x64, 0x57, 0xE0, 0x42, 0x3E, 0x91, 0xE0, 0x40, 0x04,
+    0x1E, 0x02, 0x0E, 0x0C, 0xF0, 0x44, 0xFE, 0x90, 0x20, 0xFA, 0x0D, 0x20, 0xF7, 0x1D, 0x20, 0xF2,
+    0x0E, 0x13, 0x24, 0x7C, 0x1E, 0x83, 0xFE, 0x62, 0x28, 0x06, 0x1E, 0xC1, 0xFE, 0x64, 0x20, 0x06,
+    0x7B, 0xE2, 0x0C, 0x3E, 0x87, 0xE2, 0xF0, 0x42, 0x90, 0xE0, 0x42, 0x15, 0x20, 0xD2, 0x05, 0x20,
+    0x4F, 0x16, 0x20, 0x18, 0xCB, 0x4F, 0x06, 0x04, 0xC5, 0xCB, 0x11, 0x17, 0xC1, 0xCB, 0x11, 0x17,
+    0x05, 0x20, 0xF5, 0x22, 0x23, 0x22, 0x23, 0xC9, 0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B,
+    0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E,
+    0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC,
+    0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E, 0x3C, 0x42, 0xB9, 0xA5, 0xB9, 0xA5, 0x42, 0x3C,
+    0x21, 0x04, 0x01, 0x11, 0xA8, 0x00, 0x1A, 0x13, 0xBE, 0x00, 0x00, 0x23, 0x7D, 0xFE, 0x34, 0x20,
+    0xF5, 0x06, 0x19, 0x78, 0x86, 0x23, 0x05, 0x20, 0xFB, 0x86, 0x00, 0x00, 0x3E, 0x01, 0xE0, 0x50
+};
 
-int main(int argc, char* argv[])
-{
-    // Unused argc, argv
-    (void) argc;
-    (void) argv;
+static const int GB_W = 160;
+static const int GB_H = 144;
+static const int SCALE = 2;
 
-    // Initialize SDL
-    if(SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
-        printf("SDL could not be initialized!\n"
-               "SDL_Error: %s\n", SDL_GetError());
-        return 0;
+static uint32_t to_argb(Color c) {
+    switch(c) {
+      case Color::White:     return 0xFFFFFFFF;
+      case Color::LightGray: return 0xFFAAAAAA;
+      case Color::DarkGray:  return 0xFF555555;
+      case Color::Black:     return 0xFF000000;
+      default:               return 0xFFFF00FF;
     }
+}
 
-#if defined linux && SDL_VERSION_ATLEAST(2, 0, 8)
-    // Disable compositor bypass
-    if(!SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0"))
-    {
-        printf("SDL can not disable compositor bypass!\n");
-        return 0;
-    }
-#endif
+static std::vector<Color> buffer(GB_H * GB_W, Color::White);
 
-    // Create window
-    SDL_Window *window = SDL_CreateWindow("Basic C SDL project",
-                                          SDL_WINDOWPOS_UNDEFINED,
-                                          SDL_WINDOWPOS_UNDEFINED,
-                                          SCREEN_WIDTH, SCREEN_HEIGHT,
-                                          SDL_WINDOW_SHOWN);
-    if(!window)
-    {
-        printf("Window could not be created!\n"
-               "SDL_Error: %s\n", SDL_GetError());
+int main(int argc, char** argv) {
+    // 1) Init SDL
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+      SDL_Log("SDL_Init: %s", SDL_GetError());
+      return 1;
     }
-    else
-    {
-        // Create renderer
-        SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-        if(!renderer)
-        {
-            printf("Renderer could not be created!\n"
-                   "SDL_Error: %s\n", SDL_GetError());
+    SDL_Window*   win  = SDL_CreateWindow(
+        "GB Boot ROM", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        GB_W*SCALE, GB_H*SCALE, 0
+    );
+    SDL_Renderer* ren  = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Texture*  tex  = SDL_CreateTexture(
+        ren, SDL_PIXELFORMAT_ARGB8888,
+        SDL_TEXTUREACCESS_STREAMING, GB_W, GB_H
+    );
+
+    // 2) Set up emulator with only the boot ROM
+    Emulator emulator;
+    emulator.loadBootROM(bootDMG);
+
+    bool quit = false;
+    SDL_Event e;
+
+    while (!quit) {
+      // 3) Run until the PPU has drawn a full frame
+      emulator.tick_for(70224);
+
+      // 4) Poll quit events (so window stays responsive)
+      while (SDL_PollEvent(&e)) {
+        if (e.type == SDL_QUIT) quit = true;
+      }
+
+      // 5) Copy the GB frame into the SDL texture
+      void* pixels;
+      int  pitch;
+      SDL_LockTexture(tex, nullptr, &pixels, &pitch);
+      uint32_t* dst = (uint32_t*)pixels;
+      for (int y = 0; y < GB_H; ++y) {
+        for (int x = 0; x < GB_W; ++x) {
+          dst[y*(pitch/4) + x] = to_argb(buffer.at((y * GB_W) + x));
         }
-        else
-        {
-            // Declare rect of square
-            SDL_Rect squareRect;
+      }
+      SDL_UnlockTexture(tex);
 
-            // Square dimensions: Half of the min(SCREEN_WIDTH, SCREEN_HEIGHT)
-            squareRect.w = MIN(SCREEN_WIDTH, SCREEN_HEIGHT) / 2;
-            squareRect.h = MIN(SCREEN_WIDTH, SCREEN_HEIGHT) / 2;
-
-            // Square position: In the middle of the screen
-            squareRect.x = SCREEN_WIDTH / 2 - squareRect.w / 2;
-            squareRect.y = SCREEN_HEIGHT / 2 - squareRect.h / 2;
-
-
-            // Event loop exit flag
-            bool quit = false;
-
-            // Event loop
-            while(!quit)
-            {
-                SDL_Event e;
-
-                // Wait indefinitely for the next available event
-                SDL_WaitEvent(&e);
-
-                // User requests quit
-                if(e.type == SDL_QUIT)
-                {
-                    quit = true;
-                }
-
-                // Initialize renderer color white for the background
-                SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-                // Clear screen
-                SDL_RenderClear(renderer);
-
-                // Set renderer color red to draw the square
-                SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-
-                // Draw filled square
-                SDL_RenderFillRect(renderer, &squareRect);
-
-                // Update screen
-                SDL_RenderPresent(renderer);
-            }
-
-            // Destroy renderer
-            SDL_DestroyRenderer(renderer);
-        }
-
-        // Destroy window
-        SDL_DestroyWindow(window);
+      // 6) Render it scaled
+      SDL_RenderClear(ren);
+      SDL_RenderCopy(ren, tex, nullptr, nullptr);
+      SDL_RenderPresent(ren);
     }
 
-    // Quit SDL
+    // // 7) Clean up
+    SDL_DestroyTexture(tex);
+    SDL_DestroyRenderer(ren);
+    SDL_DestroyWindow(win);
     SDL_Quit();
-
     return 0;
 }
+
+
+// #include <SDL.h>
+
+// #include "emulator.h"
+
+// static SDL_Renderer* renderer;
+// static SDL_Window* window;
+// static SDL_Texture* texture;
+
+// void InitPPU()
+// {
+//   unsigned char* framebuffer[160 * 144 * 3]
+//   unsigned char* framebuffer_alpha[160 * 144 * 4] // RGBA allows multiple framebuffers to be drawn on top of each other
+
+//   //  init and create window and renderer
+//   SDL_Init(SDL_INIT_VIDEO);
+//   SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+//   SDL_CreateWindowAndRenderer(160, 144, 0, &window, &renderer);
+//   SDL_SetWindowSize(window, 480, 432);
+// 	SDL_SetWindowResizable(window, SDL_TRUE);
+
+//   Emulator emulator;
+// }
+
+// static void process_events()
+// {
+//   SDL_Event event;
+//   while (SDL_PollEvent(&event)) {
+//     switch (event.type) {
+//       case SDL_QUIT:
+//       case SDL_WINDOWEVENT:
+//         if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+//             should_exit = true;
+//         }
+//         break;
+//       default:
+//         break;
+//     }
+//   }
+// }
+
+// static void draw()
+// {
+//   process_events();
+
+//   SDL_RenderClear();
+
+//   void* pixels_ptr;
+//   int pitch;
+//   SDL_LockTexture(texture, nullptr, &pixels_ptr, &pitch);
+
+//   uint32_t* pixels = static_cast<uint32_t*>(pixels_ptr);
+
+//   for (uint y = 0; y < 160; y++) {
+//     for (uint x = 0; x < 144; x++) {
+//       Color color = buffer.get_pixel(x, y);
+//       uint32_t pixel_argb = get_real_color(color);
+//       set_large_pixel(pixels, x, y, pixel_argb);
+//     }
+//   }
+
+// }
+
+// int main(int argc, char* argv[])
+// {
+//   Emulator emulator;
+
+//   const std::string rom_path = argv[1];
+//   emulator.loadROM(rom_path);
+
+//   InitPPU();
+//   SDL_Quit();
+//   return 0;
+// }
