@@ -10,5 +10,8 @@ build:
 test:
 	./scripts/test-blargg-roms.sh
 
+emu:
+	./build/sdl/emulator
+
 clean:
 	rm -rf build
