@@ -29,6 +29,10 @@ void MMU::write(word addr, byte value)
           std::flush(std::cout);
         }
         break;
+
+      case 0xFF04:
+        divider = 0;
+        io[addr - 0xFF00] = 0;
     }
 
   } else {

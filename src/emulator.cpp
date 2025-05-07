@@ -16,6 +16,6 @@ void Emulator::run()
 
 void Emulator::tick()
 {
-    cpu.tick();
-    // timer.tick();
+    int cycles = cpu.tick();
+    timer.tick(cycles);
 }
