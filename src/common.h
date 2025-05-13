@@ -24,8 +24,8 @@ enum class Color
 
 enum class VideoMode
 {
-  OAM,
-  VRAM,
   HBlank,
   VBlank,
+  OAM,
+  VRAM,
 };

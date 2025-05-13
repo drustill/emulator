@@ -28,18 +28,6 @@ static const int GB_W = 160;
 static const int GB_H = 144;
 static const int SCALE = 2;
 
-static uint32_t to_argb(Color c) {
-    switch(c) {
-      case Color::White:     return 0xFFFFFFFF;
-      case Color::LightGray: return 0xFFAAAAAA;
-      case Color::DarkGray:  return 0xFF555555;
-      case Color::Black:     return 0xFF000000;
-      default:               return 0xFFFF00FF;
-    }
-}
-
-static std::vector<Color> buffer(GB_H * GB_W, Color::White);
-
 int main(int argc, char** argv) {
     // 1) Init SDL
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -76,12 +64,7 @@ int main(int argc, char** argv) {
       void* pixels;
       int  pitch;
       SDL_LockTexture(tex, nullptr, &pixels, &pitch);
-      uint32_t* dst = (uint32_t*)pixels;
-      for (int y = 0; y < GB_H; ++y) {
-        for (int x = 0; x < GB_W; ++x) {
-          dst[y*(pitch/4) + x] = to_argb(buffer.at((y * GB_W) + x));
-        }
-      }
+      emulator.draw(pixels, pitch);
       SDL_UnlockTexture(tex);
 
       // 6) Render it scaled

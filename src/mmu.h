@@ -13,16 +13,16 @@ class MMU
     byte boot[0x0100];
     byte io[0x80];
 
-    ByteRegister lcdc;
-    ByteRegister stat;
+    ByteRegister lcdc, stat;
+    VideoMode PPUMode = VideoMode::HBlank;
 
-    bool use_boot = false;
+    bool use_boot = false; // Boot ROM
 
-    byte ie = 0;
+    byte ie = 0; // interrupt enable
 
-    byte serial_data = 0;
+    byte serial_data = 0; // test output
 
-    unsigned int divider = 0;
+    unsigned int divider = 0; // divider register
 
     byte read(word addr);
     void write(word addr, byte value);
