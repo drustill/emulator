@@ -21,4 +21,6 @@ class PPU
     void vblank();
     void oam();
     void vram();
+
+    void update_lcd_mode(VideoMode m);
 };

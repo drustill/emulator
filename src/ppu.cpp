@@ -21,7 +21,42 @@ void PPU::tick(int cycles)
   }
 }
 
-void PPU::hblank() {};
-void PPU::vblank() {};
-void PPU::oam() {};
-void PPU::vram() {};
+void PPU::hblank()
+{
+  // Wait until the end of scanline
+  if (this->cycles >= 456)
+  {
+    this->cycles -= 456;
+    bool interrupt = ((mmu->stat.get() >> 3) & 1);
+
+    if (interrupt) {
+      mmu->write(0xFF0F, mmu->read(0xFF0F) | 2);
+    }
+
+    if (mmu->read(0xFF44) == 143) {
+      update_lcd_mode(VideoMode::VBlank);
+      mmu->write(0xFF40, 0); // LY
+    } else {
+      update_lcd_mode(VideoMode::OAM);
+    }
+  }
+};
+void PPU::vblank()
+{
+  // Wait until next frame
+};
+void PPU::oam()
+{
+  // Search for OBJs which overlap this line
+};
+void PPU::vram()
+{
+  // Sending pixels to the LCD
+};
+
+void update_lcd_mode(VideoMode m)
+{
+  mmu->PPUMode = m;
+  uint8_t masked = mmu->stat.get() & 0xFC;
+  mmu-write(0xFF41, masked | (uint8_t)m);
+}

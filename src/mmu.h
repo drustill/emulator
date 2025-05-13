@@ -26,5 +26,4 @@ class MMU
 
     byte read(word addr);
     void write(word addr, byte value);
-
 };
