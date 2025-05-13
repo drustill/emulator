@@ -2,10 +2,8 @@
 
 #include "mmu.h"
 
-static const int WIDTH = 160;
-static const int HEIGHT = 144;
-
-typedef void (*PPUModeFunc)();
+const int WIDTH = 160;
+const int HEIGHT = 144;
 
 class PPU
 {
@@ -14,24 +12,13 @@ class PPU
 
     void tick(int cycles);
 
-    // Color SpriteData[WIDTH][HEIGHT];
-    // Color BackgroundData[WIDTH][HEIGHT];
-
   private:
     MMU* mmu;
-    cycles = 0; // AKA dots
-    std::vector<Color> TileBuffer(WIDTH * HEIGHT, Color::White);
+    int cycles; // AKA dots
+    std::vector<Color> TileBuffer;
 
-    void Mode2OAM();
-    void Mode3VRAM();
-    void Mode0HBlank();
-    void Mode1VBlank();
-
-    PPUModeFunc operations[4] = {
-      &PPU::Mode0HBlank,
-      &PPU::Mode1VBlank
-      &PPU::Mode2OAM,
-      &PPU::Mode3VRAM,
-    };
-
+    void hblank();
+    void vblank();
+    void oam();
+    void vram();
 };

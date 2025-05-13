@@ -42,7 +42,7 @@ void Emulator::draw(void* pixels_ptr, int pitch)
   uint32_t* dst = (uint32_t*)pixels_ptr;
   for (int y = 0; y < HEIGHT; ++y) {
     for (int x = 0; x < WIDTH; ++x) {
-      dst[y*(pitch/4) + x] = to_argb(ppu.buffer.at((y * WIDTH) + x));
+      // dst[y*(pitch/4) + x] = to_argb(ppu.buffer.at((y * WIDTH) + x));
     }
   }
 }
