@@ -13,7 +13,10 @@ class ByteRegister
     void increment() { value++; }
     void decrement() { value--; }
 
-    /* Only for register f - should be changed*/
+    /*
+     * Only for register f - should be changed
+     * Update: LCD Control may also use
+     */
     bool read(const byte offset) { return (value >> offset) & 0x1; }
     void write(const byte offset, const bool cond) { cond ? value |= (0x01 << offset) : value &= ~(0x01 << offset); }
 };

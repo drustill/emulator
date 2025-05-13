@@ -4,6 +4,10 @@ byte MMU::read(word addr)
 {
   if (use_boot && addr < 0x0100) {
     return boot[addr];
+  } else if (addr == 0xFF40) {
+    return lcdc.get();
+  } else if (addr == 0xFF41) {
+    return stat.get();
   } else if (addr == 0xFFFF) {
     return ie;
   } else if (addr >= 0xFF00 & addr <= 0xFF7F) {
@@ -17,6 +21,10 @@ void MMU::write(word addr, byte value)
 {
   if (use_boot && addr == 0xFF50) {
     use_boot = false;
+  } else if (addr == 0xFF40) {
+    lcdc.set(value);
+  } else if (addr == 0xFF41) {
+    stat.set(value);
   } else if (addr == 0xFFFF) {
     ie = value;
   } else if (addr >= 0xFF00 & addr <= 0xFF7F) {

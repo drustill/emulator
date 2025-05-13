@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "register.h"
 
 #include <iostream>
 #include <cstdint>
@@ -11,6 +12,9 @@ class MMU
     byte data[0x10000];
     byte boot[0x0100];
     byte io[0x80];
+
+    ByteRegister lcdc;
+    ByteRegister stat;
 
     bool use_boot = false;
 
