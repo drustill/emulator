@@ -23,7 +23,6 @@ void PPU::tick(int cycles)
 
 void PPU::hblank()
 {
-  // Wait until the end of scanline
   if (this->cycles >= 456)
   {
     this->cycles -= 456;

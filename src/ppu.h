@@ -15,6 +15,7 @@ class PPU
   private:
     MMU* mmu;
     int cycles; // AKA dots
+
     std::vector<Color> TileBuffer;
 
     void hblank();
