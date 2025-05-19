@@ -104,11 +104,17 @@ int main(int argc, char** argv) {
     bool quit = false;
     SDL_Event e;
 
-    emulator.run(quit, draw);
 
-    while (SDL_PollEvent(&e)) {
-      if (e.type == SDL_QUIT) quit = true;
+    emulator.ppu.register_lcd(draw);
+
+    while (!quit) {
+      while (SDL_PollEvent(&e)) {
+        if (e.type == SDL_QUIT) quit = true;
+      }
+
+      emulator.tick();
     }
+
 
     // // 7) Clean up
     SDL_DestroyTexture(tex);

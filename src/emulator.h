@@ -25,11 +25,11 @@ class Emulator
       mmu.use_boot = true;
     }
 
-  private:
     void tick();
+    PPU ppu;
+  private:
 
     CPU cpu;
     MMU mmu;
-    PPU ppu;
     Timer timer;
 };
