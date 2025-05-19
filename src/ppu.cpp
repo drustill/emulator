@@ -28,7 +28,6 @@ void PPU::hblank()
   {
     this->cycles -= 456;
     bool interrupt = ((mmu->stat.get() >> 3) & 1);
-
     if (interrupt) {
       mmu->write(0xFF0F, mmu->read(0xFF0F) | 2);
     }
@@ -48,6 +47,33 @@ void PPU::vblank()
 void PPU::oam()
 {
   // Search for OBJs which overlap this line
+  if (this->cycles >= 80)
+  {
+    this->cycles -= 80;
+    bool interrupt = ((mmu->stat.get() >> 5) & 1);
+    if (interrupt) {
+      mmu->write(0xFF0F, mmu->read(0xFF0F) | 2);
+    }
+
+    byte lcdy = mmu->read(0xFF44);
+    byte ly = mmu->read(0xFF45);
+    if (lcdy == ly)
+    {
+      uint8_t masked = mmu->stat.get() & 0xFB;
+      mmu->write(0xFF41, masked | 0x04);
+      if (masked | 0x40)
+      {
+        mmu->write(0xFF0F, mmu->read(0xFF0F) | 2);
+      }
+    }
+    else
+    {
+      uint8_t masked = mmu->stat.get() & 0xFB;
+      mmu->write(0xFF41, masked);
+    }
+
+    update_lcd_mode(VideoMode::VRAM);
+  }
 };
 void PPU::vram()
 {
