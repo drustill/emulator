@@ -42,7 +42,25 @@ void PPU::hblank()
 };
 void PPU::vblank()
 {
-  // Wait until next frame
+  if (this->cycles >= 4560)
+  {
+    if (mmu->read(0xFF44) == 144)
+    {
+      mmu->write(0xFF0F, mmu->read(0xFF0F) | 1);
+
+      // TODO: Write buffers
+    }
+
+
+    if (mmu->read(0xFF44) == 153)
+    {
+      mmu->write(0xFF44, 0);
+      update_lcd_mode(VideoMode::OAM);
+    }
+
+    mmu->write(0xFF44, mmu->read(0xFF44) + 1);
+    this->cycles -= 4560;
+  }
 };
 void PPU::oam()
 {
@@ -77,12 +95,18 @@ void PPU::oam()
 };
 void PPU::vram()
 {
-  // Sending pixels to the LCD
+  if (this->cycles >= 173)
+  {
+    update_lcd_mode(VideoMode::HBlank);
+    this->cycles -= 173;
+
+    // TODO : ????? Where do we handle the Mode3 penalties OBJ penalty?
+  }
 };
 
-void update_lcd_mode(VideoMode m)
+void PPU::update_lcd_mode(VideoMode m)
 {
   mmu->PPUMode = m;
   uint8_t masked = mmu->stat.get() & 0xFC;
-  mmu-write(0xFF41, masked | (uint8_t)m);
+  mmu->write(0xFF41, masked | (uint8_t)m);
 }
