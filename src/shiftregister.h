@@ -12,6 +12,8 @@ class ShiftRegister
     void set_pixel(unsigned int x, unsigned int y, Color color);
     Color get_pixel(unsigned int x, unsigned int y) const;
 
+    void reset();
+
   private:
     unsigned int width;
     unsigned int height;

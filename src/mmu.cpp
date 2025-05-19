@@ -8,6 +8,14 @@ byte MMU::read(word addr)
     return lcdc.get();
   } else if (addr == 0xFF41) {
     return stat.get();
+  } else if (addr == 0xFF44) {
+    return scroll_y.get();
+  } else if (addr == 0xFF43) {
+    return scroll_x.get();
+  } else if (addr == 0xFF4B) {
+    return window_x.get();
+  } else if (addr == 0xFF4A) {
+    return window_y.get();
   } else if (addr == 0xFFFF) {
     return ie;
   } else if (addr >= 0xFF00 & addr <= 0xFF7F) {
@@ -25,6 +33,14 @@ void MMU::write(word addr, byte value)
     lcdc.set(value);
   } else if (addr == 0xFF41) {
     stat.set(value);
+  } else if (addr == 0xFF42) {
+    scroll_y.set(value);
+  } else if (addr == 0xFF43) {
+    scroll_x.set(value);
+  } else if (addr == 0xFF4B) {
+    window_x.set(value);
+  } else if (addr == 0xFF4A) {
+    window_y.set(value);
   } else if (addr == 0xFFFF) {
     ie = value;
   } else if (addr >= 0xFF00 & addr <= 0xFF7F) {

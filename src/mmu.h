@@ -16,6 +16,9 @@ class MMU
     ByteRegister lcdc, stat;
     VideoMode PPUMode = VideoMode::HBlank;
 
+    ByteRegister scroll_x, scroll_y;
+    ByteRegister window_x, window_y;
+
     bool use_boot = false; // Boot ROM
 
     byte ie = 0; // interrupt enable

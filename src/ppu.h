@@ -34,6 +34,9 @@ class PPU
 
     void update_lcd_mode(VideoMode m);
 
+    void write_scanline(byte line);
+    void draw_background(byte line);
+    void draw_window(byte line);
 
     void write_sprites();
     void draw_sprite(const unsigned int sprite_index);
@@ -41,4 +44,6 @@ class PPU
     void draw_lcd();
 
     bool pixel_on_screen(unsigned int x, unsigned int y);
+
+    Color get_color_from_byte(byte pixel_val);
 };

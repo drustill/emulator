@@ -20,3 +20,10 @@ unsigned int ShiftRegister::get_pixel_index(unsigned int x, unsigned int y) cons
 {
   return (y * width) + x;
 }
+
+void ShiftRegister::reset()
+{
+  for (uint i = 0; i < width * height; i++) {
+      buffer[i] = Color::White;
+  }
+}
