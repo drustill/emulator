@@ -56,8 +56,8 @@ void PPU::vblank()
 
     if (mmu->read(0xFF44) == 153)
     {
-      // write_sprites();
-      // draw();
+      write_sprites();
+      draw_lcd();
 
       mmu->write(0xFF44, 0);
       update_lcd_mode(VideoMode::OAM);
@@ -106,6 +106,14 @@ void PPU::vram()
     this->cycles -= 173;
   }
 };
+
+void PPU::update_lcd_mode(VideoMode m)
+{
+  mmu->PPUMode = m;
+  uint8_t masked = mmu->stat.get() & 0xFC;
+  mmu->write(0xFF41, masked | (uint8_t)m);
+}
+
 
 void PPU::write_sprites()
 {
@@ -161,14 +169,17 @@ void PPU::draw_sprite(const unsigned int sprite_num)
   }
 }
 
-void PPU::update_lcd_mode(VideoMode m)
-{
-  mmu->PPUMode = m;
-  uint8_t masked = mmu->stat.get() & 0xFC;
-  mmu->write(0xFF41, masked | (uint8_t)m);
-}
-
 bool PPU::pixel_on_screen(unsigned int x, unsigned int y)
 {
   return x < WIDTH && y < 144;
+}
+
+void register_lcd(const lcd_callback_t& _lcd_callback)
+{
+  lcd_callback = _lcd_callback;
+}
+
+void draw_lcd()
+{
+  lcd_callback(lcd);
 }
