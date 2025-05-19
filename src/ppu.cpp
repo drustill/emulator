@@ -2,8 +2,7 @@
 
 PPU::PPU(MMU* mmu) :
   mmu(mmu),
-  cycles(0),
-  TileBuffer(WIDTH * HEIGHT, Color::White)
+  cycles(0)
 { }
 
 void PPU::tick(int cycles)
@@ -23,9 +22,12 @@ void PPU::tick(int cycles)
 
 void PPU::hblank()
 {
-  if (this->cycles >= 456)
+  if (this->cycles >= 204)
   {
-    this->cycles -= 456;
+    this->cycles -= 204;
+
+    // write_scanline()
+
     bool interrupt = ((mmu->stat.get() >> 3) & 1);
     if (interrupt) {
       mmu->write(0xFF0F, mmu->read(0xFF0F) | 2);
@@ -41,24 +43,25 @@ void PPU::hblank()
 };
 void PPU::vblank()
 {
-  if (this->cycles >= 4560)
+  if (this->cycles >= 456)
   {
     if (mmu->read(0xFF44) == 144)
     {
       mmu->write(0xFF0F, mmu->read(0xFF0F) | 1);
-
-      // TODO: Write buffers
     }
 
 
     if (mmu->read(0xFF44) == 153)
     {
+      // write_sprites();
+      // draw();
+
       mmu->write(0xFF44, 0);
       update_lcd_mode(VideoMode::OAM);
     }
 
     mmu->write(0xFF44, mmu->read(0xFF44) + 1);
-    this->cycles -= 4560;
+    this->cycles -= 456;
   }
 };
 void PPU::oam()

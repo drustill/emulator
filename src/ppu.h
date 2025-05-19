@@ -12,11 +12,15 @@ class PPU
 
     void tick(int cycles);
 
+    std::vector<Color> sprite_data;
+    std::vector<Color> background_data;
+
   private:
     MMU* mmu;
     int cycles; // AKA dots
 
-    std::vector<Color> TileBuffer;
+    std::vector<Color> sprite_buffer;
+    std::vector<Color> background_buffer;
 
     void hblank();
     void vblank();
