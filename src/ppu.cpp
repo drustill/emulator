@@ -4,6 +4,7 @@
 PPU::PPU(MMU* mmu) :
   mmu(mmu),
   cycles(0),
+  lcd(WIDTH, HEIGHT),
   sprite_screen(WIDTH, HEIGHT),
   background_screen(WIDTH, HEIGHT)
 { }
@@ -174,12 +175,12 @@ bool PPU::pixel_on_screen(unsigned int x, unsigned int y)
   return x < WIDTH && y < 144;
 }
 
-void register_lcd(const lcd_callback_t& _lcd_callback)
+void PPU::register_lcd(const lcd_callback_t& _lcd_callback)
 {
   lcd_callback = _lcd_callback;
 }
 
-void draw_lcd()
+void PPU::draw_lcd()
 {
   lcd_callback(lcd);
 }

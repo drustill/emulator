@@ -24,24 +24,77 @@ const uint8_t bootDMG[256] = {
     0xF5, 0x06, 0x19, 0x78, 0x86, 0x23, 0x05, 0x20, 0xFB, 0x86, 0x00, 0x00, 0x3E, 0x01, 0xE0, 0x50
 };
 
-static const int GB_W = 160;
-static const int GB_H = 144;
-static const int SCALE = 2;
+static const int ScreenWidth = 160;
+static const int ScreenHeight = 144;
+static const int PerPixelScale = 2;
+
+static SDL_Window*   win;
+static SDL_Renderer* ren;
+static SDL_Texture*  tex;
+
+static uint32_t to_argb(Color c) {
+    switch(c) {
+      case Color::White:     return 0xFFFFFFFF;
+      case Color::LightGray: return 0xFFAAAAAA;
+      case Color::DarkGray:  return 0xFF555555;
+      case Color::Black:     return 0xFF000000;
+      default:               return 0xFFFF00FF;
+    }
+}
+
+static void draw_pixels(void* pixels_ptr, int pitch, const ShiftRegister& buffer)
+{
+  const int WIDTH = 160;
+  const int HEIGHT = 144;
+  uint32_t* dst = (uint32_t*)pixels_ptr;
+  for (int y = 0; y < HEIGHT; ++y) {
+    for (int x = 0; x < WIDTH; ++x) {
+      Color color = buffer.get_pixel(x, y);
+      dst[y*(pitch/4) + x] = to_argb(color);
+    }
+  }
+}
+
+static void draw(const ShiftRegister& buffer)
+{
+  SDL_RenderClear(ren);
+
+  void* pixels;
+  int  pitch;
+  SDL_LockTexture(tex, nullptr, &pixels, &pitch);
+
+  draw_pixels(pixels, pitch, buffer);
+  SDL_UnlockTexture(tex);
+
+  SDL_RenderCopy(ren, tex, nullptr, nullptr);
+  SDL_RenderPresent(ren);
+}
 
 int main(int argc, char** argv) {
-    // 1) Init SDL
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
       SDL_Log("SDL_Init: %s", SDL_GetError());
       return 1;
     }
-    SDL_Window*   win  = SDL_CreateWindow(
-        "GB Boot ROM", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        GB_W*SCALE, GB_H*SCALE, 0
+
+    win = SDL_CreateWindow(
+        "GB Boot ROM",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        ScreenWidth * PerPixelScale, ScreenHeight * PerPixelScale,
+        0
     );
-    SDL_Renderer* ren  = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
-    SDL_Texture*  tex  = SDL_CreateTexture(
-        ren, SDL_PIXELFORMAT_ARGB8888,
-        SDL_TEXTUREACCESS_STREAMING, GB_W, GB_H
+
+    ren = SDL_CreateRenderer(
+        win,
+        -1,
+        SDL_RENDERER_ACCELERATED);
+
+    tex = SDL_CreateTexture(
+        ren,
+        SDL_PIXELFORMAT_ARGB8888,
+        SDL_TEXTUREACCESS_STREAMING,
+        ScreenWidth,
+        ScreenHeight
     );
 
     // 2) Set up emulator with only the boot ROM
@@ -51,26 +104,10 @@ int main(int argc, char** argv) {
     bool quit = false;
     SDL_Event e;
 
-    while (!quit) {
-      // 3) Run until the PPU has drawn a full frame
-      emulator.tick_for(70224);
+    emulator.run(quit, draw);
 
-      // 4) Poll quit events (so window stays responsive)
-      while (SDL_PollEvent(&e)) {
-        if (e.type == SDL_QUIT) quit = true;
-      }
-
-      // 5) Copy the GB frame into the SDL texture
-      void* pixels;
-      int  pitch;
-      SDL_LockTexture(tex, nullptr, &pixels, &pitch);
-      emulator.draw(pixels, pitch);
-      SDL_UnlockTexture(tex);
-
-      // 6) Render it scaled
-      SDL_RenderClear(ren);
-      SDL_RenderCopy(ren, tex, nullptr, nullptr);
-      SDL_RenderPresent(ren);
+    while (SDL_PollEvent(&e)) {
+      if (e.type == SDL_QUIT) quit = true;
     }
 
     // // 7) Clean up

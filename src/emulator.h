@@ -10,10 +10,7 @@ class Emulator
   public:
     Emulator();
 
-    void run();
-    void tick_for(int cycles);
-
-    void draw(void* pixels_ptr, int pitch);
+    void run(bool& quit, const lcd_callback_t& lcd_callback);
 
     void loadROM(const std::string path)
     {
@@ -30,8 +27,6 @@ class Emulator
 
   private:
     void tick();
-
-    uint32_t to_argb(Color c);
 
     CPU cpu;
     MMU mmu;

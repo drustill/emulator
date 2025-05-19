@@ -6,6 +6,9 @@
 #include "log.h"
 #include "emulator.h"
 
+static void draw(const ShiftRegister& buffer)
+{}
+
 int main(int argc, char* argv[])
 {
   if (argc != 2) {
@@ -18,7 +21,9 @@ int main(int argc, char* argv[])
   const std::string rom_path = argv[1];
   emulator.loadROM(rom_path);
 
-  emulator.run();
+  bool quit = false;
+
+  emulator.run(quit, draw);
 
   CLOSE();
 }

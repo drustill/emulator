@@ -15,6 +15,8 @@ class PPU
 
     void tick(int cycles);
 
+    void register_lcd(const lcd_callback_t& _lcd_callback);
+
     ShiftRegister sprite_screen;
     ShiftRegister background_screen;
     ShiftRegister lcd;
@@ -36,7 +38,6 @@ class PPU
     void write_sprites();
     void draw_sprite(const unsigned int sprite_index);
 
-    void register_lcd(const lcd_callback& _lcd_callback);
     void draw_lcd();
 
     bool pixel_on_screen(unsigned int x, unsigned int y);

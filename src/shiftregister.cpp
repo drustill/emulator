@@ -11,12 +11,12 @@ void ShiftRegister::set_pixel(unsigned int x, unsigned int y, Color color)
   buffer[get_pixel_index(x, y)] = color;
 }
 
-Color ShiftRegister::get_pixel(unsigned int x, unsigned int y)
+Color ShiftRegister::get_pixel(unsigned int x, unsigned int y) const
 {
   return buffer.at(get_pixel_index(x, y));
 }
 
-unsigned int ShiftRegister::get_pixel_index(unsigned int x, unsigned int y)
+unsigned int ShiftRegister::get_pixel_index(unsigned int x, unsigned int y) const
 {
   return (y * width) + x;
 }
