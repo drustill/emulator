@@ -28,16 +28,6 @@ static const int GB_W = 160;
 static const int GB_H = 144;
 static const int SCALE = 2;
 
-static uint32_t to_argb(Color c) {
-    switch(c) {
-      case Color::White:     return 0xFFFFFFFF;
-      case Color::LightGray: return 0xFFAAAAAA;
-      case Color::DarkGray:  return 0xFF555555;
-      case Color::Black:     return 0xFF000000;
-      default:               return 0xFFFF00FF;
-    }
-}
-
 int main(int argc, char** argv) {
     // 1) Init SDL
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -74,12 +64,7 @@ int main(int argc, char** argv) {
       void* pixels;
       int  pitch;
       SDL_LockTexture(tex, nullptr, &pixels, &pitch);
-      uint32_t* dst = (uint32_t*)pixels;
-      for (int y = 0; y < GB_H; ++y) {
-        for (int x = 0; x < GB_W; ++x) {
-          // dst[y*(pitch/4) + x] = to_argb(buffer.at((y * GB_W) + x));
-        }
-      }
+      emulator.draw(pixels, pitch);
       SDL_UnlockTexture(tex);
 
       // 6) Render it scaled
@@ -95,78 +80,3 @@ int main(int argc, char** argv) {
     SDL_Quit();
     return 0;
 }
-
-
-// #include <SDL.h>
-
-// #include "emulator.h"
-
-// static SDL_Renderer* renderer;
-// static SDL_Window* window;
-// static SDL_Texture* texture;
-
-// void InitPPU()
-// {
-//   unsigned char* framebuffer[160 * 144 * 3]
-//   unsigned char* framebuffer_alpha[160 * 144 * 4] // RGBA allows multiple framebuffers to be drawn on top of each other
-
-//   //  init and create window and renderer
-//   SDL_Init(SDL_INIT_VIDEO);
-//   SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-//   SDL_CreateWindowAndRenderer(160, 144, 0, &window, &renderer);
-//   SDL_SetWindowSize(window, 480, 432);
-// 	SDL_SetWindowResizable(window, SDL_TRUE);
-
-//   Emulator emulator;
-// }
-
-// static void process_events()
-// {
-//   SDL_Event event;
-//   while (SDL_PollEvent(&event)) {
-//     switch (event.type) {
-//       case SDL_QUIT:
-//       case SDL_WINDOWEVENT:
-//         if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
-//             should_exit = true;
-//         }
-//         break;
-//       default:
-//         break;
-//     }
-//   }
-// }
-
-// static void draw()
-// {
-//   process_events();
-
-//   SDL_RenderClear();
-
-//   void* pixels_ptr;
-//   int pitch;
-//   SDL_LockTexture(texture, nullptr, &pixels_ptr, &pitch);
-
-//   uint32_t* pixels = static_cast<uint32_t*>(pixels_ptr);
-
-//   for (uint y = 0; y < 160; y++) {
-//     for (uint x = 0; x < 144; x++) {
-//       Color color = buffer.get_pixel(x, y);
-//       uint32_t pixel_argb = get_real_color(color);
-//       set_large_pixel(pixels, x, y, pixel_argb);
-//     }
-//   }
-
-// }
-
-// int main(int argc, char* argv[])
-// {
-//   Emulator emulator;
-
-//   const std::string rom_path = argv[1];
-//   emulator.loadROM(rom_path);
-
-//   InitPPU();
-//   SDL_Quit();
-//   return 0;
-// }

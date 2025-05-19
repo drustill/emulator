@@ -25,7 +25,7 @@ void Emulator::tick_for(int max_cycles)
   }
 }
 
-uint32_t to_argb(Color c) {
+uint32_t Emulator::to_argb(Color c) {
     switch(c) {
       case Color::White:     return 0xFFFFFFFF;
       case Color::LightGray: return 0xFFAAAAAA;

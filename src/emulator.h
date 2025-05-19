@@ -31,7 +31,7 @@ class Emulator
   private:
     void tick();
 
-    void to_argb(Color c);
+    uint32_t to_argb(Color c);
 
     CPU cpu;
     MMU mmu;
