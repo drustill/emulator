@@ -8,7 +8,7 @@ byte MMU::read(word addr)
     return lcdc.get();
   } else if (addr == 0xFF41) {
     return stat.get();
-  } else if (addr == 0xFF44) {
+  } else if (addr == 0xFF42) {
     return scroll_y.get();
   } else if (addr == 0xFF43) {
     return scroll_x.get();

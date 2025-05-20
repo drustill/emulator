@@ -40,10 +40,11 @@ void PPU::hblank()
 
     if (mmu->read(0xFF44) == 143) {
       update_lcd_mode(VideoMode::VBlank);
-      mmu->write(0xFF40, 0); // LY
     } else {
       update_lcd_mode(VideoMode::OAM);
     }
+
+    mmu->write(0xFF44, mmu->read(0xFF44) + 1);
   }
 };
 void PPU::vblank()
@@ -289,6 +290,7 @@ void PPU::register_lcd(const lcd_callback_t& _lcd_callback)
 
 void PPU::draw_lcd()
 {
+  std::cout << "DRAWING DRAWING" << std::endl;
   lcd_callback(lcd);
 }
 
