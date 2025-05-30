@@ -32,13 +32,33 @@ static SDL_Window*   win;
 static SDL_Renderer* ren;
 static SDL_Texture*  tex;
 
-static uint32_t to_argb(Color c) {
-    switch(c) {
-      case Color::White:     return 0xFFFFFFFF;
-      case Color::LightGray: return 0xFFAAAAAA;
-      case Color::DarkGray:  return 0xFF555555;
-      case Color::Black:     return 0xFF000000;
-      default:               return 0xFFFF00FF;
+static uint32_t get_real_color(Color color) {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+
+    switch (color) {
+        case Color::White: r = g = b = 255; break;
+        case Color::LightGray: r = g = b = 170; break;
+        case Color::DarkGray: r = g = b = 85; break;
+        case Color::Black: r = g = b = 0; break;
+        default: r = g = b = 0; break;
+    }
+
+    return (r << 16) | (g << 8) | (b << 0);
+}
+
+static void set_pixel(uint32_t* pixels, uint x, uint y, uint32_t pixel_argb)
+{
+  // std::cout << WIDTH * y + x << std::endl;
+  pixels[(WIDTH * y + x) % 23040] = pixel_argb;
+}
+
+static void set_large_pixel(uint32_t* pixels, uint x, uint y, uint32_t pixel_argb) {
+    for (uint w = 0; w < PerPixelScale; w++) {
+        for (uint h = 0; h < PerPixelScale; h++) {
+            set_pixel(pixels, x + w, y + h, pixel_argb);
+        }
     }
 }
 
@@ -50,7 +70,8 @@ static void draw_pixels(void* pixels_ptr, int pitch, const ShiftRegister& buffer
   for (int y = 0; y < HEIGHT; ++y) {
     for (int x = 0; x < WIDTH; ++x) {
       Color color = buffer.get_pixel(x, y);
-      dst[y*(pitch/4) + x] = to_argb(color);
+      uint32_t pixel_argb = get_real_color(color);
+      set_large_pixel(dst, x, y, pixel_argb);
     }
   }
 }
@@ -59,10 +80,11 @@ static void draw(const ShiftRegister& buffer)
 {
   SDL_RenderClear(ren);
 
-  void* pixels;
+  void* pixels_ptr;
   int  pitch;
-  SDL_LockTexture(tex, nullptr, &pixels, &pitch);
+  SDL_LockTexture(tex, nullptr, &pixels_ptr, &pitch);
 
+  uint32_t* pixels = (uint32_t*)pixels;
   draw_pixels(pixels, pitch, buffer);
   SDL_UnlockTexture(tex);
 

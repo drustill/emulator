@@ -170,6 +170,7 @@ void PPU::draw_background(byte line)
     byte pixel_color_u8 = static_cast<uint8_t>((bitwise::test_bit(pixels_high, 7 - tile_pixel_x) << 1) | bitwise::test_bit(pixels_low, 7 - tile_pixel_x));
     Color screen_color = get_color_from_byte(pixel_color_u8);
 
+
     // background_screen.set_pixel(screen_x, screen_y, screen_color);
     lcd.set_pixel(screen_x, screen_y, screen_color);
   }
@@ -261,15 +262,14 @@ void PPU::draw_sprite(const unsigned int sprite_num)
     {
       // TODO: Apply flip_y and flip_x
       Color tile_color = Color::Black; // TODO
+      if (tile_color == Color::Transparent) continue;
 
       int screen_y = viewport_y + y;
       int screen_x = viewport_x + x;
+      if (!pixel_on_screen(screen_x, screen_y)) continue;
 
       // Color current_color = sprite_screen.get_pixel(screen_x, screen_y);
       Color current_color = lcd.get_pixel(screen_x, screen_y);
-
-      if (tile_color == Color::Transparent) continue;
-      if (!pixel_on_screen(screen_x, screen_y)) continue;
       if (behind_background && current_color != Color::White) continue;
 
       // sprite_screen.set_pixel(screen_x, screen_y, tile_color);
@@ -290,7 +290,6 @@ void PPU::register_lcd(const lcd_callback_t& _lcd_callback)
 
 void PPU::draw_lcd()
 {
-  std::cout << "DRAWING DRAWING" << std::endl;
   lcd_callback(lcd);
 }
 
